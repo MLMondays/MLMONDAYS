@@ -1,28 +1,33 @@
 # DL-CDI2020
-Materials for the USGS "Deep Learning for Image Classification and Segmentation" CDI workshop, 2020
+Materials for the USGS "Deep Learning for Image Classification and Segmentation" CDI workshop, Fall 2020
+
+One module per week. All modules include slides and jupyter notebooks
+
 
 ## Pre-requisites
 
 #### Introduction to Machine Learning for Image Classification
 
-Slides and jupyter notebooks ...
+Slides and jupyter notebooks introducing Machine Learning for Image Classification
 
 #### Introduction to Deep Learning for Image Classification
 
-Slides and jupyter notebooks ...
+Slides and jupyter notebooks introducing Deep Learning for Image Classification
 
 
 ## Module 1: Supervised Image Recognition (Whole-Image Classification)
 
-#### LULC Classification Using Transfer Learning
+#### LULC Classification Using Transfer Learning and Fine-Tuning
 
-We use a convolutional neural network, with weights pre-trained on a large amount of imagery
+We use a convolutional neural network, with weights pre-trained on a large amount of imagery, then fine-tune to another dataset
 
-#### LULC Classification Using Transfer Learning and Fine-Tunng
+#### LULC Classification Using Transfer Learning, Fine-Tuning, and Pruning 
+
+We repeat the previous exercise, this time using model pruning to acheive a more parsimonious predictor
 
 #### LULC Classification From Scratch
 
-We use a convolutional neural network, with weights trained from scratch
+We use a convolutional neural network, with weights trained from scratch with no transfer learning
 
 
 ## Module 2: Supervised Object Recognition (Bounding Box Classification)
