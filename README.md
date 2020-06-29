@@ -1,7 +1,7 @@
 # DL-CDI2020
 Materials for the USGS "Deep Learning for Image Classification and Segmentation" CDI workshop, Fall 2020
 
-One module per week. All modules include slides and jupyter notebooks
+One module per week. All modules include slides, videos and jupyter notebooks. Each module introduce two topics. A third (more advanced) topic may be introduced using video
 
 
 ## Pre-requisites
@@ -21,7 +21,7 @@ Slides and jupyter notebooks introducing Deep Learning for Image Classification
 
 We use a convolutional neural network, with weights pre-trained on a large amount of imagery, then fine-tune to another dataset
 
-#### LULC Classification Using Transfer Learning, Fine-Tuning, and Pruning 
+#### LULC Classification Using Transfer Learning, Fine-Tuning, and Pruning (video)
 
 We repeat the previous exercise, this time using model pruning to acheive a more parsimonious predictor
 
@@ -45,20 +45,45 @@ We use a deep neural network called YOLO, which is a single-shot-detector or SSD
 
 #### Semi-supervised image segmentation using Doodler
 
-We use a "human-in-the-loop" machine learning tool (based on a fully connected Conditional Random Field) to segment imagery based on sparse manual annotations. This can be used as a stand-alone tool, or to generate label imagery to train a deep learning based image segmentation model
+We use a "human-in-the-loop" machine learning tool called `Doodler` (authored by myself, based on a fully connected Conditional Random Field) to segment imagery based on sparse manual annotations. This can be used as a stand-alone tool, or to generate label imagery to train a deep learning based image segmentation model
 
-#### LULC Segmentation using U-Nets
+#### Binary segmentation of intertidal reefs using U-Nets
 
 We use a deep convolutional "encoder-decoder" architecture called a "U-Net" for semantic segmentation of imagery
 
+#### Multiclass segmentation of LULC using U-Nets (video)
+We use a different U-Net model trained for each class, and merge them into a multiclass label image
 
-## Module 4: Unsupervised and Semi-Supervised Image Recognition
+
+## Module 4: Semi-Supervised and Unsupervised Image Recognition
 
 #### LULC Classification Using Distance Metric Learning (semi-supervised)
 
 We use a deep convolutional "autoencoder" neural network to extract features from imagery, and then using a weakly supervised training strategy to create embedded features. Finally, we classify images based on how similar its embedded feature is to its nearest neighbors. An image is classified according to which class its features are closest to.
 
-#### LULC Classification Using Deep Belief Networks (unsupervised)
+#### LULC Classification Using Deep Belief Networks (unsupervised and semi-supervised)
+
+We use a Deep Belief Network (DBN) to classify imagery using unsupervised training. The DBN consists of several RBNs or Restricted Boltzman Machines, which are shallow neural networks for feature extraction. We use the DBN to learn the underlying structure in the data (unsupervised), and classify using that. Then we use some labels to fine-tune the DBN, and classify, which is considered 'semi-supervised'. 
+
+#### Using Deep Belief Networks for training with augmented data (video)
+
+The DBN is a generative model that is able to generate 'fake' realizations of the data. We can use this to generate many more examples of each class, and train a classifier with this augmented data set
 
 
+## Datasets
+
+#### Prerequisites: 
+TBD
+
+#### Modules 1 and 4: 
+* NWPU-45
+* EuroSAT
+* Our own coastal classes
+
+#### Module 2: 
+* SECOORA webcam videos
+
+#### Module 3: 
+* OysterNet
+* Our own coastal classes
 
