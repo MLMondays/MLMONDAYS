@@ -24,7 +24,7 @@ const siteConfig = {
   title: '"ML Mondays"', // Title for your website.
   tagline: 'A weekly USGS-CDI course on image analysis using machine learning',
   url: 'https://dbuscombe-usgs.github.io', // Your website URL
-  baseUrl: '/', // Base URL for your project */
+  baseUrl: '/DL-CDI2020/', // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
   //   url: 'https://facebook.github.io',
   //   baseUrl: '/test-site/',
