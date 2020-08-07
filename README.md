@@ -1,5 +1,5 @@
-# DL-CDI2020
-Materials for the USGS "Deep Learning for Image Classification and Segmentation" CDI workshop, Fall 2020
+# MLMONDAYS
+Materials for the USGS Deep Learning for Image Classification and Segmentation CDI workshop, October 2020, called ML MONDAYS
 
 One module per week. All modules include slides, videos and jupyter notebooks. Each module introduce two topics. A third (more advanced) topic may be introduced using video
 
