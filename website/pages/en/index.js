@@ -176,7 +176,7 @@ class Index extends React.Component {
         {[
           {
             content:
-            'The image on the right shows an example of image "recognition", which is classification '+
+            'The image on the left shows an example of image "recognition", which is classification '+
             'of the entire image, rather than individual pixels. It answers the question, "is this thing in this image?"'+
             '<br/><br/>We get a measure of the likelihood that the image contains each class in a set of classes. '+
             'The models we use to do this need to be trained using lots of examples of images '+
@@ -188,7 +188,7 @@ class Index extends React.Component {
             '<br/><br/> * presence/absence detection - for example, the model depicted by the image to the right '+
             'is set up to detect the presence or otherwise of a coastal barrier breach.',
             image: `${baseUrl}img/imrecog_web.png`,
-            imageAlign: 'right',
+            imageAlign: 'left',
             title: 'Week 1: Image recognition',
           },
         ]}
@@ -236,7 +236,7 @@ class Index extends React.Component {
             'windows powershell, git bash terminal, AWS-CLI, or other terminals',
 
             image: `${baseUrl}img/undraw_questions_75e0.png`,
-            imageAlign: 'left',
+            imageAlign: 'right',
             title: 'Who is this course for?',
           },
         ]}

@@ -23,19 +23,19 @@ To gain familiarity with machine learning and deep learning concepts and termino
 
 ## Week 1: Supervised Image Recognition
 
-Live session: we'll log into USGS Pangeo on CHS, and work through jupyter notebooks containing workflows for image recognition (whole image classification)
+Live session: we'll log into USGS Pangeo on CHS, and work through jupyter notebooks containing workflows for image recognition (whole image classification). We'll be trying to answer the question, `How much of the Texas coastline is developed?`. To answer this question, we will
 
 Optional class assignment:
 
 ## Week 2: Supervised Image Object Detection
 
-We'll log into USGS Pangeo on CHS, and work through jupyter notebooks containing workflows for image object detection (pixelwise classification)
+We'll log into USGS Pangeo on CHS, and work through jupyter notebooks containing workflows for image object detection (pixelwise classification). We'll be trying to answer the question, `How do people use beaches?`. To answer this question, we will
 
 Optional class assignment:
 
 ## Week 3: Supervised Image Segmentation
 
-We'll log into USGS Pangeo on CHS, and work through jupyter notebooks containing workflows for image segmentation (pixelwise classification)
+We'll log into USGS Pangeo on CHS, and work through jupyter notebooks containing workflows for image segmentation (pixelwise classification). We'll be trying to answer the question, `How much sand is there in the Outer Banks?`. To answer this question, we will
 
 Optional class assignment:
 
