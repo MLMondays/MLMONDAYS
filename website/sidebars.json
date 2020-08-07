@@ -1,0 +1,9 @@
+{
+  "docs": {
+    "ML Mondays": ["doc1"],
+    "Data": ["doc2"],
+    "Image Recognition": ["doc3"],
+    "Object Recognition": ["doc4"],
+    "Image Segmentation": ["doc5"]
+  }
+}
