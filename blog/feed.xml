@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>"ML Mondays" Blog</title>
+        <link>https://dbuscombe-usgs.github.io/blog</link>
+        <description>The best place to stay up-to-date with the latest "ML Mondays" news and events.</description>
+        <lastBuildDate>Wed, 05 Aug 2020 06:00:00 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <image>
+            <title>"ML Mondays" Blog</title>
+            <url>https://dbuscombe-usgs.github.io/img/favicon.ico</url>
+            <link>https://dbuscombe-usgs.github.io/blog</link>
+        </image>
+        <copyright>Copyright © 2020 Marda Science, LLC</copyright>
+        <item>
+            <title><![CDATA[Trimming and decompiling a video into png image files, for use in your deep learning project]]></title>
+            <link>https://dbuscombe-usgs.github.io/blog/2020/08/05/blog-post.html</link>
+            <guid>https://dbuscombe-usgs.github.io/blog/2020/08/05/blog-post.html</guid>
+            <pubDate>Wed, 05 Aug 2020 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p><img src="/blog/assets/secoora.png" alt></p> <p>You can access from the NOAA NOS Web Camera Applications Testbed (WebCAT) <a href="https://secoora.org/webcat/">Live Cameras and Historic Feeds</a> site. The image above shows how to view the image I will use in the demonstration below.</p> <p>To extract a subsection (or trim) of the file <code>staugust...</code></p>]]></description>
+        </item>
+    </channel>
+</rss>
