@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <id>https://dbuscombe-usgs.github.io/blog</id>
+    <id>https://dbuscombe-usgs.github.io/DL-CDI2020/blog</id>
     <title>"ML Mondays" Blog</title>
     <updated>2020-08-05T06:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
-    <link rel="alternate" href="https://dbuscombe-usgs.github.io/blog"/>
+    <link rel="alternate" href="https://dbuscombe-usgs.github.io/DL-CDI2020/blog"/>
     <subtitle>The best place to stay up-to-date with the latest "ML Mondays" news and events.</subtitle>
-    <logo>https://dbuscombe-usgs.github.io/img/favicon.ico</logo>
+    <logo>https://dbuscombe-usgs.github.io/DL-CDI2020/img/favicon.ico</logo>
     <rights>Copyright © 2020 Marda Science, LLC</rights>
     <entry>
         <title type="html"><![CDATA[Trimming and decompiling a video into png image files, for use in your deep learning project]]></title>
-        <id>https://dbuscombe-usgs.github.io/blog/2020/08/05/blog-post.html</id>
-        <link href="https://dbuscombe-usgs.github.io/blog/2020/08/05/blog-post.html"/>
+        <id>https://dbuscombe-usgs.github.io/DL-CDI2020/blog/2020/08/05/blog-post.html</id>
+        <link href="https://dbuscombe-usgs.github.io/DL-CDI2020/blog/2020/08/05/blog-post.html"/>
         <updated>2020-08-05T06:00:00.000Z</updated>
-        <summary type="html"><![CDATA[<p><img src="/blog/assets/secoora.png" alt></p> <p>You can access from the NOAA NOS Web Camera Applications Testbed (WebCAT) <a href="https://secoora.org/webcat/">Live Cameras and Historic Feeds</a> site. The image above shows how to view the image I will use in the demonstration below.</p> <p>To extract a subsection (or trim) of the file <code>staugust...</code></p>]]></summary>
+        <summary type="html"><![CDATA[<p><img src="/DL-CDI2020/blog/assets/secoora.png" alt></p> <p>You can access from the NOAA NOS Web Camera Applications Testbed (WebCAT) <a href="https://secoora.org/webcat/">Live Cameras and Historic Feeds</a> site. The image above shows how to view the image I will use in the demonstration below.</p> <p>To extract a subsection (or trim) of the file <code>staugust...</code></p>]]></summary>
         <author>
             <name>Dan Buscombe</name>
             <uri>http://twitter.com/magic_walnut</uri>
