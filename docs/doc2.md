@@ -36,6 +36,12 @@ The dataset is described further [here](https://cloud.google.com/blog/products/a
 
 > Acknowledgements: This dataset is courtesy of Texas A&M University (See https://storage.googleapis.com/tamucc_coastline/GooglePermissionForImages_20170119.pdf  for details). Philippe Tissot, Associate Director, Conrad Blucher Institute for Surveying and Science, Texas A&M University - Corpus Christi; James Gibeaut, Endowed Chair for Coastal and Marine Geospatial Sciences, Harte Research Institute, Texas A&M University - Corpus Christi; and Valliappa Lakshmanan, Tech Lead, Google Big Data and Machine Learning Professional Services
 
+#### Additional dataset
+
+An additional dataset will be provided that you can work on using the same models introduced in the class on your own. This is a more conventional satellite-derived land use/land cover dataset, we chose the NWPU-RESISC45, which is a publicly available benchmark for REmote Sensing Image Scene Classification (RESISC), created by Northwestern Polytechnical University (NWPU). The entire dataset contains 31,500 high-resolution images from Google Earth imagery, in 45 scene classes with 700 images in each class. The majority of those classes are urban/anthropogenic. We chose to use a subset of 11 classes corresponding to natural landforms and land cover, namely: beach, chaparral, desert, forest, island, lake, meadow, mountain, river, sea ice, and wetland. For more details, see [this paper](https://www.mdpi.com/2076-3263/8/7/244)
+
+![](assets/geosciences-08-00244-g003-550.jpg)
+
 ## Object Detection
 
 ### *How do people use beaches?*
@@ -60,7 +66,7 @@ For more information about the data and its uses, see [here](https://secoora.org
 
 ![](assets/imseg.png)
 
-The images above are examples of segmentations. The image is overlain with a color-coded semi-transparent *label image* (as opposed to image label, as used in image recognition). 
+The images above are examples of segmentations. The image is overlain with a color-coded semi-transparent *label image* (as opposed to image label, as used in image recognition).
 
 We will use very high-resolution digital images of coastal environments in the Outer Banks, North Carolina. The imagery and associated label data have been curated especially for this course, as part of the USGS Remote Sensing of Coastal Change Florence Supplemental Project.
 
@@ -71,3 +77,9 @@ The categories are (and corresponding colors in the above image):
 * dry sandy terrain (red)
 
 > Acknowledgements: This dataset is courtesy of the U.S. Geological Survey. These data were collected as part of the USGS Remote Sensing of Coastal Change Florence Supplemental Project, and processed collectively by Wayne Wight (?), Jonathan Warrick (USGS-PCSMC), Christopher Sherwood (USGS-WHCMSC), Andrew Ritchie (USGS-PCSMC), Jenna Brown (USGS-MD-DE-DC WSC), Christine Kranenburg (USGS-SPCMSC), Jin-Si Over (USGS-WHCMSC), and Daniel Buscombe (USGS-PCSMC contractor). Although these data have been processed successfully on a computer system at the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty. The USGS or the U.S. Government shall not be held liable for improper or incorrect use of the data described and/or contained herein.
+
+
+#### Additional dataset
+An additional dataset will be provided that you can work on using the same models introduced in the class on your own. This [dataset](https://scholars.duke.edu/display/pub1419444) consists of aerial UAV color imagery and labels of oyster reefs in shallow water, made publicly available by Duke University researcher [Patrick Gray](https://github.com/patrickcgray/oyster_net). There are two labels: `reef` and `no reef`.
+
+![](assets/reef_montage.png)

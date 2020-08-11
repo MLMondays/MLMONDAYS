@@ -60,7 +60,7 @@ class HomeSplash extends React.Component {
 
     return (
       <SplashContainer>
-        <Logo img_src={`${baseUrl}img/android-chrome-512x512.png`} />
+        <Logo img_src={`${baseUrl}img/android-chrome-192x192.png`} />
         <div className="inner">
           <ProjectTitle tagline={siteConfig.tagline} title={siteConfig.title} />
           <PromoSection>
@@ -68,12 +68,61 @@ class HomeSplash extends React.Component {
             <Button href={docUrl('doc2.html')}>Data</Button>
             <Button href={docUrl('doc3.html')}>Help</Button>
             <Button href={"https://github.com/dbuscombe-usgs/DL-CDI2020"}>Github Repository</Button>
+            <Button href={"https://forms.office.com/Pages/ResponsePage.aspx?id=urWTBhhLe02TQfMvQApUlAxdiRifVmlAg0g-PN54QUVUQVJKUjRDM0pNWk5UUVBaOFdQUE9IRUVISiQlQCN0PWcu"}>Register your interest</Button>
+
           </PromoSection>
         </div>
       </SplashContainer>
     );
   }
 }
+
+
+class HomeSplash2 extends React.Component {
+  render() {
+    const {siteConfig, language = ''} = this.props;
+    const {baseUrl, docsUrl} = siteConfig;
+    const docsPart = `${docsUrl ? `${docsUrl}/` : ''}`;
+    const langPart = `${language ? `${language}/` : ''}`;
+    const docUrl = doc => `${baseUrl}${docsPart}${langPart}${doc}`;
+
+    const SplashContainer = props => (
+      <div className="homeContainer">
+        <div className="homeSplashFade">
+          <div className="wrapper homeWrapper">{props.children}</div>
+        </div>
+      </div>
+    );
+
+    const PromoSection = props => (
+      <div className="section promoSection">
+        <div className="promoRow">
+          <div className="pluginRowBlock">{props.children}</div>
+        </div>
+      </div>
+    );
+
+    const Button = props => (
+      <div className="pluginWrapper buttonWrapper">
+        <a className="button" href={props.href} target={props.target}>
+          {props.children}
+        </a>
+      </div>
+    );
+
+    return (
+      <SplashContainer>
+        <div className="inner">
+          <PromoSection>
+            <Button href={"https://forms.office.com/Pages/ResponsePage.aspx?id=urWTBhhLe02TQfMvQApUlAxdiRifVmlAg0g-PN54QUVUQVJKUjRDM0pNWk5UUVBaOFdQUE9IRUVISiQlQCN0PWcu"}>Register your interest</Button>
+
+          </PromoSection>
+        </div>
+      </SplashContainer>
+    );
+  }
+}
+
 
 class Index extends React.Component {
   render() {
@@ -248,15 +297,17 @@ class Index extends React.Component {
         {[
           {
             content:
-            'Information here about how to register interest in this online event.',
+            'Please register your interest in attending this course, using the button below. '+
+            '<br/><br/>In the event of over-subscription, the course leaders and CDI leadership '+
+            'will use the information you provide to determine your potential suitability for this course.',
             image: `${baseUrl}img/undraw_programming_2svr.png`,
-            imageAlign: 'bottom',
+            imageAlign: 'top',
             title: 'How to sign up',
           },
         ]}
+
       </Block>
     );
-
 
     const Warning = () => (
       <Block background="dark" layout="twoColumn">
@@ -312,12 +363,18 @@ class Index extends React.Component {
             content:
             'ML Mondays is an intensive USGS course in image analysis using deep learning. '+
             'It is supported by the USGS Community for Data Integration, '+
-            'in collaboration with the USGS Coastal Hazards Program'+
-            '<br><br> Each Monday in October 2020, Dr Daniel Buscombe, and some guests, will introduce an applied image analysis topic, '+
+            'in collaboration with the USGS Coastal Hazards Program.'+
+            '<br><br> Deep learning is a set of methods in machine learning that use '+
+            'very large neural networks to automatically extract features from imagery '+
+            'then classify them. This course will assume you already know a little about '+
+            'python, that you have heard of deep learning and machine learning, and you have '+
+            'identified these tools as ones you would like  '+
+            'to gain practical experience using together.  '+
+            '<br><br> Each Monday in October 2020, Dr Daniel Buscombe, and some guests (TBD), will introduce an applied image analysis topic, '+
             'and demonstrate a technique using data and python code that have been specially curated for the course. Participants will be expected '+
             'to participate fully by carrying out the same analysis, either on the provided data or their own data. '+
-            '<br><br> The course will be conducted entirely online, using Teams and USGS Cloud Hosting Solutions, '+
-            'a cloud computing environment build upon AWS.',
+            '<br><br> The course will be conducted entirely online, using Microsoft Teams and USGS Cloud Hosting Solutions, '+
+            'a cloud computing environment built upon Amazon Web Services (AWS).',
             image: `${baseUrl}img/undraw_researching_22gp.png`,
             imageAlign: 'right',
             title: '',
@@ -359,6 +416,7 @@ class Index extends React.Component {
           <ImSeg />
           <ImClass />
           <SignUp />
+          <HomeSplash2 siteConfig={siteConfig} language={language} />
           <Disclaimer />
         </div>
       </div>

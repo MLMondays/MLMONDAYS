@@ -27,11 +27,14 @@ function Help(props) {
       title: 'Browse Docs',
     },
     {
-      content: 'Ask questions about the documentation and project',
+      content: 'Ask questions about the documentation and project on the dedicated Microsoft Teams channel - '+
+      'please check back later for more details',
       title: 'Join the community',
     },
     {
-      content: "Find out what's new with this project",
+      content: 'This website is your go-to for all information about this course and will be updated regularly. '+
+      'Find out what is new with this project by checking this site regularly in the weeks leading up to the course '+
+      'and during the course.<br/><br/> Also, check out the Blog posts.',
       title: 'Stay up to date',
     },
   ];
@@ -43,7 +46,7 @@ function Help(props) {
           <header className="postHeader">
             <h1>Need help?</h1>
           </header>
-          <p>This project is maintained by a dedicated group of people.</p>
+          <p>This project is maintained by a dedicated group of people, but we are also reliant on course participants to be active on the forums and message boards, helping each other out as much as possible. Please check back later for more details.</p>
           <GridBlock contents={supportLinks} layout="threeColumn" />
         </div>
       </Container>
