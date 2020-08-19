@@ -2,12 +2,23 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog</id>
     <title>"ML Mondays" Blog</title>
-    <updated>2020-08-05T06:00:00.000Z</updated>
+    <updated>2020-08-17T06:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog"/>
     <subtitle>The best place to stay up-to-date with the latest "ML Mondays" news and events.</subtitle>
     <logo>https://dbuscombe-usgs.github.io/MLMONDAYS/img/favicon.ico</logo>
     <rights>Copyright © 2020 Marda Science, LLC</rights>
+    <entry>
+        <title type="html"><![CDATA[Converting between YOLO and PASCAL-VOC object recognition formats, and creating a Tensorflow Dataset]]></title>
+        <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/08/17/blog-post.html</id>
+        <link href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/08/17/blog-post.html"/>
+        <updated>2020-08-17T06:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>This blog post walks through the (somewhat cumbersome - I won't lie!) process of converting between YOLO and PASCAL-VOC 'bounding box' annotation data formats for image recognition problems.</p> <p>The files we create using <code>makesense.ai</code> and downloaded in <code>YO...</code></p>]]></summary>
+        <author>
+            <name>Dan Buscombe</name>
+            <uri>http://twitter.com/magic_walnut</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Trimming and decompiling a video into png image files, for use in your deep learning project]]></title>
         <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/08/05/blog-post.html</id>
