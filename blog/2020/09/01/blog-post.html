@@ -1,0 +1,370 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Creating a Tensorflow Dataset for an image recognition task · &quot;ML Mondays&quot;</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="### Use case"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Creating a Tensorflow Dataset for an image recognition task · &quot;ML Mondays&quot;"/><meta property="og:type" content="website"/><meta property="og:url" content="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/09/01/blog-post"/><meta property="og:description" content="### Use case"/><meta property="og:image" content="https://dbuscombe-usgs.github.io/MLMONDAYS/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://dbuscombe-usgs.github.io/MLMONDAYS/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/MLMONDAYS/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/atom.xml" title="&quot;ML Mondays&quot; Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/feed.xml" title="&quot;ML Mondays&quot; Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/MLMONDAYS/js/scrollSpy.js"></script><link rel="stylesheet" href="/MLMONDAYS/css/main.css"/><script src="/MLMONDAYS/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/MLMONDAYS/"><img class="logo" src="/MLMONDAYS/img/favicon.ico" alt="&quot;ML Mondays&quot;"/><h2 class="headerTitleWithLogo">&quot;ML Mondays&quot;</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/MLMONDAYS/docs/doc1" target="_self">Docs</a></li><li class=""><a href="/MLMONDAYS/docs/doc2" target="_self">Data</a></li><li class=""><a href="/MLMONDAYS/help" target="_self">Help</a></li><li class="siteNavGroupActive"><a href="/MLMONDAYS/blog/" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Recent Posts</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Recent Posts</h3><ul class=""><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/09/05/blog-post">ML terminology, demystified</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/09/02/blog-post">Tensorflow terminology, demystified</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/MLMONDAYS/blog/2020/09/01/blog-post">Creating a Tensorflow Dataset for an image recognition task</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/08/17/blog-post">Converting between YOLO and PASCAL-VOC object recognition formats, and creating a Tensorflow Dataset</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/08/05/blog-post">Trimming and decompiling a video into png image files, for use in your deep learning project</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/MLMONDAYS/blog/2020/09/01/blog-post">Creating a Tensorflow Dataset for an image recognition task</a></h1><p class="post-meta">September 1, 2020</p><div class="authorBlock"><p class="post-authorName"><a href="http://twitter.com/magic_walnut" target="_blank" rel="noreferrer noopener">Dan Buscombe</a></p></div></header><div><span><h3><a class="anchor" aria-hidden="true" id="use-case"></a><a href="#use-case" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Use case</h3>
+<p>You have a folder called <code>data</code>, in which there are two additional folders <code>train</code> and <code>test</code>. The <code>train</code> folder contains hundreds to millions of jpeg files, each with a descriptive label in the file name. The <code>test</code> folder contains samples for which we do not yet know the label (we will use our trained model to estimate that). These are jpeg images without any descriptive label in the file name.</p>
+<h3><a class="anchor" aria-hidden="true" id="problem"></a><a href="#problem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Problem:</h3>
+<p>We use a GPU (or TPU) to train Deep Neural Networks. To use such 'accelerated hardware' most efficiently, you should feed data fast enough to keep them busy. <em>If your data stored as thousands of individual files (i.e. images), you may not be utilizing your GPU at maximum throughput.</em></p>
+<h3><a class="anchor" aria-hidden="true" id="solution"></a><a href="#solution" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Solution:</h3>
+<p>You should split your data across several larger files, and stream from multiple files in parallel</p>
+<p>For maintaining efficient high-throughput for GPU computation</p>
+<p>Tensorflow has strategies for this scenario:</p>
+<ol>
+<li>First, we batch the numerous small files in a TFRecord file</li>
+<li>Then, we use the power of <code>tf.data.Dataset</code> to read from multiple files in parallel.</li>
+</ol>
+<p>The TFRecord file format is a record-oriented binary format. If your input data are on disk or working with large data then TensorFlow recommended using TFRecord format. You get a significant impact on the performance of your input pipeline. Binary data takes less space on disk, takes less time to copy and can be read more efficiently from disk.</p>
+<pre><code class="hljs"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+<span class="hljs-title">from</span> tqdm <span class="hljs-keyword">import</span> tqdm
+<span class="hljs-title">from</span> matplotlib.image <span class="hljs-keyword">import</span> imread
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> os, json, random, requests, glob, math
+</code></pre>
+<p><code>tf.data.experimental.AUTOTUNE</code>, or simply <code>AUTO</code> is used in the <code>tf.data.Dataset API</code> as a strategy for efficient use of your hardware. It will prompt the <code>tf.data</code> runtime to tune the value dynamically at runtime. This will be used here in the following contexts:</p>
+<ol>
+<li>set and optimize the number of parallel calls for functions that apply transformations to imagery (cropping, resizing, etc), using <code>dataset.map</code> calls</li>
+<li>Set and optimize the number of parallel calls for functions that load data into memory while models train, using <code>dataset.interleave</code> calls</li>
+<li>Set and optimize the number of parallel calls for functions that load data into asynchronously memory while models train, using <code>dataset.prefetch</code> calls. These use a background thread and an internal buffer to prefetch elements from the input dataset ahead of the time they are requested.</li>
+</ol>
+<p>You could familiarize yourself with these topic by following <a href="https://www.tensorflow.org/guide/data">this guide</a> and then <a href="https://www.tensorflow.org/guide/data_performance">this one</a></p>
+<pre><code class="hljs">os<span class="hljs-selector-class">.environ</span>[<span class="hljs-string">"TF_DETERMINISTIC_OPS"</span>] = <span class="hljs-string">"1"</span>
+
+SEED=<span class="hljs-number">42</span>
+np<span class="hljs-selector-class">.random</span>.seed(SEED)
+
+AUTO = tf<span class="hljs-selector-class">.data</span><span class="hljs-selector-class">.experimental</span><span class="hljs-selector-class">.AUTOTUNE</span>
+</code></pre>
+<p>You have a folder called <code>data</code>, in which there are two additional folders <code>train</code> and <code>test</code>. The <code>train</code> folder contains hundreds to millions of jpeg files, each with a descriptive label in the file name. The <code>test</code> folder contains samples for which we do not yet know the label (we will use our trained model to estimate that). These are jpeg images without any descriptive label in the file name.</p>
+<p>In this example below, we have a folder of more than 250,000 images of cats and dogs. Each jpeg file has either 'cat' or 'dog' in the file name. This workflow would apply to situations where you had more than 2 classes, as I will explain in a later post (illustrated using a different data set)</p>
+<h3><a class="anchor" aria-hidden="true" id="creating-tfrecords-of-images-and-discrete-labels"></a><a href="#creating-tfrecords-of-images-and-discrete-labels" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating TFRecords of images and discrete labels</h3>
+<p>Discrete labels in this sense means two things:</p>
+<ol>
+<li>There is only one label per image (known as single-label classification, to distingusih from multi-label classification where there are many labels per image)</li>
+<li>There is no overlap between labels, such that each label can be represented by a discrete number, i.e. an integer, counting up from zero.</li>
+</ol>
+<p>We first have to define some variables - how many individual TFRecords per dataset -- called <code>shards</code> -- do we wish to make? (16)</p>
+<p>How large are the square images we will use, in pixels? (160)</p>
+<p>What are the classes? (cat, and dog, as a list of binary strings). Note that the class labels must be binary strings (<code>b'binary string'</code>) rather than regular strngs (<code>'string'</code>)</p>
+<pre><code class="hljs"><span class="hljs-attr">SHARDS</span> = <span class="hljs-number">16</span>
+<span class="hljs-attr">TARGET_SIZE</span>=<span class="hljs-number">160</span>
+<span class="hljs-attr">CLASSES</span> = [b<span class="hljs-string">'cat'</span>, b<span class="hljs-string">'dog'</span>]
+</code></pre>
+<p>Next we need to define the number of images in the train directory, <code>nb_images</code>, which is used to define how large each shard will be. Later, <code>nb_images</code> will be used for defining the number of model training and validation steps per epoch - more on that later.</p>
+<pre><code class="hljs"><span class="hljs-attr">nb_images</span>=len(tf.io.gfile.glob(<span class="hljs-string">'data/train/*.jpg'</span>))
+
+<span class="hljs-attr">shared_size</span> = math.ceil(<span class="hljs-number">1.0</span> * nb_images / SHARDS)
+</code></pre>
+<p>To create a TFRecord, we need a function that reads an image from a file, and strips the class name from the file name. This will be different for each dataset and therefore the below function would need modification for each new dataset. In the below, the <code>label</code> is extracted by first stripping the file separator out and removing all the file path before the file name (<code>label = tf.strings.split(img_path, sep='/')</code>), then taking everything before the dot (<code>label = tf.strings.split(label[-1], sep='.')</code>), then finally taking just the first item of the resulting list of file name parts <code>label[0]</code>. The image is simply read in as a binary string of bytes, then reconstructed into the jpeg format using the handy utility <code>tf.image.decode_jpeg</code>.</p>
+<pre><code class="hljs">def read_image_and_label(img_path):
+
+  bits = tf.io.read_file(img_path)
+  <span class="hljs-built_in">image</span> = tf.<span class="hljs-built_in">image</span>.decode_jpeg(bits)
+
+  <span class="hljs-built_in">label</span> = tf.strings.<span class="hljs-built_in">split</span>(img_path, sep='/')
+  <span class="hljs-built_in">label</span> = tf.strings.<span class="hljs-built_in">split</span>(<span class="hljs-built_in">label</span>[-<span class="hljs-number">1</span>], sep='.')
+
+  <span class="hljs-built_in">return</span> <span class="hljs-built_in">image</span>,<span class="hljs-built_in">label</span>[<span class="hljs-number">0</span>]
+</code></pre>
+<p>Neural nets often use imagery that is not at full resolution, due to memory limitations on GPUs. In this course, downsizing and cropping of imagery will be a fairly common practice. The function below carries out a resizing to the desired <code>TARGET_SIZE</code> (keeping track of which horizontal dimension is the largest), the crops to square</p>
+<pre><code class="hljs">def resize_and_crop_image(<span class="hljs-built_in">image</span>, label):
+  w = tf.<span class="hljs-built_in">shape</span>(<span class="hljs-built_in">image</span>)[<span class="hljs-number">0</span>]
+  h = tf.<span class="hljs-built_in">shape</span>(<span class="hljs-built_in">image</span>)[<span class="hljs-number">1</span>]
+  tw = TARGET_SIZE
+  th = TARGET_SIZE
+  resize_crit = (w * th) / (h * tw)
+  <span class="hljs-built_in">image</span> = tf.cond(resize_crit &lt; <span class="hljs-number">1</span>,
+                  lambda: tf.<span class="hljs-built_in">image</span>.resize(<span class="hljs-built_in">image</span>, [w*tw/w, h*tw/w]), # <span class="hljs-keyword">if</span> <span class="hljs-keyword">true</span>
+                  lambda: tf.<span class="hljs-built_in">image</span>.resize(<span class="hljs-built_in">image</span>, [w*th/h, h*th/h])  # <span class="hljs-keyword">if</span> <span class="hljs-keyword">false</span>
+                 )
+  nw = tf.<span class="hljs-built_in">shape</span>(<span class="hljs-built_in">image</span>)[<span class="hljs-number">0</span>]
+  nh = tf.<span class="hljs-built_in">shape</span>(<span class="hljs-built_in">image</span>)[<span class="hljs-number">1</span>]
+  <span class="hljs-built_in">image</span> = tf.<span class="hljs-built_in">image</span>.crop_to_bounding_box(<span class="hljs-built_in">image</span>, (nw - tw) <span class="hljs-comment">// 2, (nh - th) // 2, tw, th)</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">image</span>, label
+</code></pre>
+<p>When a TFRecord is read back into memory, it is just a string of bytes, so the following function makes sure those bytes get encoded back into jpeg format (with no chroma subsampling)</p>
+<pre><code class="hljs">def recompress_image(<span class="hljs-built_in">image</span>, <span class="hljs-built_in">label</span>):
+  <span class="hljs-built_in">image</span> = tf.cast(<span class="hljs-built_in">image</span>, tf.uint8)
+  <span class="hljs-built_in">image</span> = tf.<span class="hljs-built_in">image</span>.encode_jpeg(<span class="hljs-built_in">image</span>, optimize_size=True, chroma_downsampling=False)
+  <span class="hljs-built_in">return</span> <span class="hljs-built_in">image</span>, <span class="hljs-built_in">label</span>
+</code></pre>
+<p>You should stuff data in a protocol buffer called <code>Example</code>. Example protocol buffer contains <code>Features</code>. The feature is a protocol to describe the data and could have three types: bytes (images), float (floating point labels), and int64 (discrete labels).</p>
+<pre><code class="hljs">def <span class="hljs-constructor">_bytestring_feature(<span class="hljs-params">list_of_bytestrings</span>)</span>:
+  return tf.train.<span class="hljs-constructor">Feature(<span class="hljs-params">bytes_list</span>=<span class="hljs-params">tf</span>.<span class="hljs-params">train</span>.BytesList(<span class="hljs-params">value</span>=<span class="hljs-params">list_of_bytestrings</span>)</span>)
+
+def <span class="hljs-constructor">_int_feature(<span class="hljs-params">list_of_ints</span>)</span>: # <span class="hljs-built_in">int64</span>
+  return tf.train.<span class="hljs-constructor">Feature(<span class="hljs-params">int64_list</span>=<span class="hljs-params">tf</span>.<span class="hljs-params">train</span>.Int64List(<span class="hljs-params">value</span>=<span class="hljs-params">list_of_ints</span>)</span>)
+
+def <span class="hljs-constructor">_float_feature(<span class="hljs-params">list_of_floats</span>)</span>: # float32
+  return tf.train.<span class="hljs-constructor">Feature(<span class="hljs-params">float_list</span>=<span class="hljs-params">tf</span>.<span class="hljs-params">train</span>.FloatList(<span class="hljs-params">value</span>=<span class="hljs-params">list_of_floats</span>)</span>)
+</code></pre>
+<p>We serialize the protocol buffer to a string and write it to a TFRecords files.</p>
+<pre><code class="hljs">def <span class="hljs-keyword">to</span><span class="hljs-constructor">_tfrecord(<span class="hljs-params">img_bytes</span>, <span class="hljs-params">label</span>)</span>:  
+
+  class_num = np.argmax(np.<span class="hljs-built_in">array</span>(CLASSES)==label)
+  feature = {
+      <span class="hljs-string">"image"</span>: <span class="hljs-constructor">_bytestring_feature([<span class="hljs-params">img_bytes</span>])</span>, # one image <span class="hljs-keyword">in</span> the <span class="hljs-built_in">list</span>
+      <span class="hljs-string">"class"</span>: <span class="hljs-constructor">_int_feature([<span class="hljs-params">class_num</span>])</span>,        # one <span class="hljs-keyword">class</span> <span class="hljs-keyword">in</span> the <span class="hljs-built_in">list</span>      
+  }
+  return tf.train.<span class="hljs-constructor">Example(<span class="hljs-params">features</span>=<span class="hljs-params">tf</span>.<span class="hljs-params">train</span>.Features(<span class="hljs-params">feature</span>=<span class="hljs-params">feature</span>)</span>)
+
+</code></pre>
+<p>Get a list of files and shuffle them, then create a mapping to link them to the jpeg files so they can be read on the fly</p>
+<pre><code class="hljs">dataset = tf.data.<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Dataset</span>.</span></span><span class="hljs-built_in">list</span><span class="hljs-constructor">_files('<span class="hljs-params">data</span><span class="hljs-operator">/</span><span class="hljs-params">train</span><span class="hljs-operator">/</span><span class="hljs-operator">*</span>.<span class="hljs-params">jpg</span>', <span class="hljs-params">seed</span>=10000)</span> # This also shuffles the images
+dataset = dataset.map(read_image_and_label)
+</code></pre>
+<p>Next, create a new mapping to the resize and crop function</p>
+<pre><code class="hljs"><span class="hljs-attr">dataset</span> = dataset.<span class="hljs-built_in">map</span>(resize_and_crop_image, <span class="hljs-attr">num_parallel_calls=AUTO)</span>  
+</code></pre>
+<p>Finally, a mapping to the jpeg recompression function, and then set the <code>batch</code> which dictates how many images per shard</p>
+<pre><code class="hljs"><span class="hljs-attr">dataset</span> = dataset.map(recompress_image, num_parallel_calls=AUTO)
+<span class="hljs-attr">dataset</span> = dataset.batch(shared_size)
+</code></pre>
+<p>Okay, now the dataset is set up, we can begin writing the data to TFRecords. The following function oads image files, resizes them to a common size and then stores them across <code>NUM_SHARDS</code> TFRecord files. It reads from files in parallel and disregards the order of the data in favour of reading speed. Selecting each (random) pair of image and label sequentially, we call the <code>to_tfrecord</code> function we defined earlier to create the <code>example</code> record, then that is serialized to string and appended to the file. When the requisite number of images for a <code>shard</code> has been reached, a new <code>shard</code> is created.</p>
+<pre><code class="hljs">for shard, (image, <span class="hljs-meta">label</span>) <span class="hljs-meta">in</span> enumerate(dataset):
+  shard_size = image.numpy().shape[0]
+  <span class="hljs-meta">filename</span> = <span class="hljs-string">"cat_dog"</span> + <span class="hljs-string">"{:02d}-{}.tfrec"</span>.<span class="hljs-meta">format</span>(shard, shard_size)
+
+  with tf.io.TFRecordWriter(<span class="hljs-meta">filename</span>) <span class="hljs-meta">as</span> out_file:
+    for i <span class="hljs-meta">in</span><span class="hljs-meta"> range(</span>shard_size):
+      example = to_tfrecord(image.numpy()[i],<span class="hljs-meta">label</span>.numpy()[i])
+      out_file.write(example.SerializeToString())
+    p<span class="hljs-meta">rint(</span><span class="hljs-string">"Wrote file {} containing {} records"</span>.<span class="hljs-meta">format</span>(<span class="hljs-meta">filename</span>, shard_size))
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="preparing-for-model-training"></a><a href="#preparing-for-model-training" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Preparing for model training</h3>
+<p>We now need some functions to read those TFRecords in and use them during model training. We wish to parallelize the data loading step as much as possible; individual images and labels are small, but there are many thousands of them, so we need to ensure both fast and also consistent rate of data throughput. We acheive this by interleaving the contents of the datasets. The number of datasets to overlap can be specified by the cycle_length argument (set to <code>16</code> here). This is where we also see many of the benefits of <code>tf.data.experimental.AUTOTUNE</code>, or simply <code>AUTO</code> is used in the <code>tf.data.Dataset API</code> to tune the value dynamically at runtime.</p>
+<pre><code class="hljs">def get_batched_dataset(filenames):
+  <span class="hljs-attr">option_no_order</span> = tf.data.Options()
+  option_no_order.<span class="hljs-attr">experimental_deterministic</span> = False
+
+  <span class="hljs-attr">dataset</span> = tf.data.Dataset.list_files(filenames)
+  <span class="hljs-attr">dataset</span> = dataset.with_options(option_no_order)
+  <span class="hljs-attr">dataset</span> = dataset.interleave(tf.data.TFRecordDataset, <span class="hljs-attr">cycle_length=16,</span> <span class="hljs-attr">num_parallel_calls=AUTO)</span>
+  <span class="hljs-attr">dataset</span> = dataset.<span class="hljs-built_in">map</span>(read_tfrecord, <span class="hljs-attr">num_parallel_calls=AUTO)</span>
+
+  <span class="hljs-attr">dataset</span> = dataset.cache() <span class="hljs-comment"># This dataset fits in RAM</span>
+  <span class="hljs-attr">dataset</span> = dataset.repeat()
+  <span class="hljs-attr">dataset</span> = dataset.shuffle(<span class="hljs-number">2048</span>)
+  <span class="hljs-attr">dataset</span> = dataset.batch(BATCH_SIZE, <span class="hljs-attr">drop_remainder=True)</span> <span class="hljs-comment"># drop_remainder will be needed on TPU</span>
+  <span class="hljs-attr">dataset</span> = dataset.prefetch(AUTO) <span class="hljs-comment">#</span>
+
+  return dataset
+</code></pre>
+<p>We call that function for both training and validation subsets, that we will define below</p>
+<pre><code class="hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_training_dataset</span><span class="hljs-params">()</span></span>:
+  <span class="hljs-keyword">return</span> get_batched_dataset(training_filenames)
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_validation_dataset</span><span class="hljs-params">()</span></span>:
+  <span class="hljs-keyword">return</span> get_batched_dataset(validation_filenames)
+</code></pre>
+<p>The following function will read an individual example (random image, label pair) in a TFRecord. Extract the <code>tf.train.Example</code> protocol buffer messages from a TFRecord-format file. Each <code>tf.train.Example</code> record contains one or more “features”, and the input pipeline typically converts these features into tensors.</p>
+<pre><code class="hljs">def read_tfrecord(<span class="hljs-built_in">example</span>):
+    <span class="hljs-built_in">features</span> = {
+        <span class="hljs-string">"image"</span>: tf.io.FixedLenFeature([], tf.<span class="hljs-built_in">string</span>),  # tf.<span class="hljs-built_in">string</span> = bytestring (<span class="hljs-keyword">not</span> text <span class="hljs-built_in">string</span>)
+        <span class="hljs-string">"class"</span>: tf.io.FixedLenFeature([], tf.int64),   # shape [] means <span class="hljs-built_in">scalar</span>
+    }
+    # decode the TFRecord
+    <span class="hljs-built_in">example</span> = tf.io.parse_single_example(<span class="hljs-built_in">example</span>, <span class="hljs-built_in">features</span>)
+
+    <span class="hljs-built_in">image</span> = tf.<span class="hljs-built_in">image</span>.decode_jpeg(<span class="hljs-built_in">example</span>['<span class="hljs-built_in">image</span>'], channels=<span class="hljs-number">3</span>)
+    <span class="hljs-built_in">image</span> = tf.cast(<span class="hljs-built_in">image</span>, tf.float32) / <span class="hljs-number">255.0</span>
+    <span class="hljs-built_in">image</span> = tf.reshape(<span class="hljs-built_in">image</span>, [TARGET_SIZE,TARGET_SIZE, <span class="hljs-number">3</span>])
+
+    class_label = tf.cast(<span class="hljs-built_in">example</span>['class'], tf.int32)
+
+    <span class="hljs-built_in">return</span> <span class="hljs-built_in">image</span>, class_label
+
+</code></pre>
+<p>Here we set the batch size. This is a hyperparameter (i.e. set by you, not by model training) and its value is dictated (for the most part) by GPU memory considerations. We are using small imagery, so we can fit a relatively large batch into memory at once. We'll go for something relatively high (&gt; say, 20)</p>
+<pre><code class="hljs"><span class="hljs-attr">BATCH_SIZE</span> = <span class="hljs-number">32</span>
+</code></pre>
+<p>This bit of code just makes sure that the dataset will be read correctly from the TFRecord files. We find them all using <code>glob</code> pattern matching (using 'cat*.tfrec') to form an input dataset, then use the <code>.take()</code> command to grab <code>1</code> batch. Print the labels out to screen - they should be integers. We also print the image dimensions out to ensure they are correct</p>
+<pre><code class="hljs"><span class="hljs-attribute">training_filenames</span>=tf.io.gfile.glob('cat*.tfrec')
+
+train_ds = get_training_dataset()
+<span class="hljs-keyword">for</span> imgs,lbls <span class="hljs-keyword">in</span> train_ds.take(1):
+  <span class="hljs-builtin-name">print</span>(lbls)
+  <span class="hljs-builtin-name">print</span>(imgs.shape)
+</code></pre>
+<p>We wrote all of our images out to TFRecords - we didn't split them into test and validation sets first. That gives us more flexibility to assign train/validation subsets (called <code>splits</code>) here. Below we define <code>VALIDATION_SPLIT</code>, which is the proportion of the total data that will be used for validation. The rest will be used for training. We grab the filenames (again). These are already shuffled, but we can shuffle yet again to ensure the images really do get drawn as randomly as possible from the deck. Then we define train and validation file lists based on the split.</p>
+<pre><code class="hljs">VALIDATION_SPLIT = <span class="hljs-number">0.19</span>
+
+filenames=<span class="hljs-keyword">tf</span>.io.gfile.<span class="hljs-built_in">glob</span>(<span class="hljs-string">'cat*.tfrec'</span>)
+
+random.shuffle(filenames)
+<span class="hljs-keyword">split</span> = <span class="hljs-keyword">int</span>(<span class="hljs-built_in">len</span>(filenames) * VALIDATION_SPLIT)
+
+training_filenames = filenames[spli<span class="hljs-variable">t:</span>]
+validation_filenames = filenames[:<span class="hljs-keyword">split</span>]
+</code></pre>
+<p>During model training, one epoch provides the model an opportunity to 'see' the entire dataset. So the number of steps per epoch is essentially the number of unique samples of your dataset divided by the batch size.</p>
+<pre><code class="hljs">validation_steps = int(<span class="hljs-name">nb_images</span> // len(<span class="hljs-name">filenames</span>) * len(validation_filenames)) // BATCH_SIZE
+steps_per_epoch = int(nb_images // len(filenames) * len(<span class="hljs-name">training_filenames</span>)) // BATCH_SIZE  
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="model-training-using-tfrecords"></a><a href="#model-training-using-tfrecords" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model training using TFRecords</h3>
+<p>To demonstrate training using this workflow, we choose a simple (so-called <code>vanilla</code>) model that we construct using a few convolutional filter blocks of increasing size, interspersed with <code>MaxPooling</code> layers, and finally a global pooling and a classifier head layer. This is very similar in design to dozens of examples you can find online using toy datasets such as this. This isn't necessarily the most optimal or powerful model for this or any other dataset, but it'll do fine for demonstration (and will actually likely to be close to optimal considering the relative simplicity of the data/problem)</p>
+<pre><code class="hljs">model = tf.keras.Sequential([
+
+    tf.keras.layers.Conv2D(<span class="hljs-attribute">kernel_size</span>=3, <span class="hljs-attribute">filters</span>=16, <span class="hljs-attribute">padding</span>=<span class="hljs-string">'same'</span>, <span class="hljs-attribute">activation</span>=<span class="hljs-string">'relu'</span>, input_shape=[TARGET_SIZE,TARGET_SIZE, 3]),
+    tf.keras.layers.Conv2D(<span class="hljs-attribute">kernel_size</span>=3, <span class="hljs-attribute">filters</span>=32, <span class="hljs-attribute">padding</span>=<span class="hljs-string">'same'</span>, <span class="hljs-attribute">activation</span>=<span class="hljs-string">'relu'</span>),
+    tf.keras.layers.MaxPooling2D(<span class="hljs-attribute">pool_size</span>=2),
+
+    tf.keras.layers.Conv2D(<span class="hljs-attribute">kernel_size</span>=3, <span class="hljs-attribute">filters</span>=64, <span class="hljs-attribute">padding</span>=<span class="hljs-string">'same'</span>, <span class="hljs-attribute">activation</span>=<span class="hljs-string">'relu'</span>),
+    tf.keras.layers.MaxPooling2D(<span class="hljs-attribute">pool_size</span>=2),
+
+    tf.keras.layers.Conv2D(<span class="hljs-attribute">kernel_size</span>=3, <span class="hljs-attribute">filters</span>=128, <span class="hljs-attribute">padding</span>=<span class="hljs-string">'same'</span>, <span class="hljs-attribute">activation</span>=<span class="hljs-string">'relu'</span>),
+    tf.keras.layers.MaxPooling2D(<span class="hljs-attribute">pool_size</span>=2),
+
+    tf.keras.layers.Conv2D(<span class="hljs-attribute">kernel_size</span>=3, <span class="hljs-attribute">filters</span>=256, <span class="hljs-attribute">padding</span>=<span class="hljs-string">'same'</span>, <span class="hljs-attribute">activation</span>=<span class="hljs-string">'relu'</span>),
+
+    tf.keras.layers.GlobalAveragePooling2D(),
+    tf.keras.layers.Dense(1,<span class="hljs-string">'sigmoid'</span>)
+])
+</code></pre>
+<p>You must <code>.compile</code> your model before you train, giving it an optimizer, loss function and a metric to keep track of. The options below are fairly standard - we use <code>binary_crossentropy</code> -  'binary' because we only have two classes (otherwise you would choose 'categorical') and 'crossentropy' because this is an image recognition problem</p>
+<pre><code class="hljs">model.compile(<span class="hljs-attribute">optimizer</span>=<span class="hljs-string">'Adam'</span>,
+              <span class="hljs-attribute">loss</span>=<span class="hljs-string">'binary_crossentropy'</span>,
+              metrics=[<span class="hljs-string">'accuracy'</span>])
+</code></pre>
+<p>Call <code>.fit()</code> to train the model</p>
+<pre><code class="hljs">model.fit(get_training_dataset(), <span class="hljs-attribute">steps_per_epoch</span>=steps_per_epoch, <span class="hljs-attribute">epochs</span>=10,
+                      <span class="hljs-attribute">validation_data</span>=get_validation_dataset(), <span class="hljs-attribute">validation_steps</span>=validation_steps)
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="model-validation"></a><a href="#model-validation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model validation</h3>
+<p>This little function will convert the integer label into a string label</p>
+<pre><code class="hljs">get_label = lambda <span class="hljs-symbol">x</span> : <span class="hljs-string">'cat'</span> <span class="hljs-keyword">if</span> (<span class="hljs-symbol">x</span>==<span class="hljs-number">0</span>) <span class="hljs-keyword">else</span> <span class="hljs-string">'dog'</span>
+</code></pre>
+<p>Below we call the validation dataset (<code>ds=get_validation_dataset()</code>) and plot one (<code>ds.take(1)</code>) batch. The figure shows 8 x 4 example images, their actual labels and their model-predicted values</p>
+<pre><code class="hljs">fig = plt.figure(figsize=(12,28))
+
+<span class="hljs-attribute">cnt</span>=1
+
+<span class="hljs-attribute">ds</span>=get_validation_dataset()
+
+<span class="hljs-keyword">for</span> imgs,lbls <span class="hljs-keyword">in</span> ds.take(1):
+  <span class="hljs-attribute">predicted_classes</span>=model.predict_classes(imgs)
+  <span class="hljs-keyword">for</span> img,lbl,cl <span class="hljs-keyword">in</span> zip(imgs,lbls,predicted_classes):
+
+    fig.add_subplot(8,4, cnt)
+    plt.title(<span class="hljs-string">'obs: {} / est: {}'</span>.format(get_label(lbl),get_label(cl[0])))
+    plt.imshow(img)
+    plt.axis(<span class="hljs-string">'off'</span>)
+    <span class="hljs-attribute">cnt</span>=cnt+1
+
+</code></pre>
+<p>We need a new function for model evaluation. This version creates batches, but doesn't <em>repeat</em> them (no <code>dataset.repeat()</code> command)</p>
+<pre><code class="hljs">def get_eval_dataset(filenames):
+  <span class="hljs-attr">option_no_order</span> = tf.data.Options()
+  option_no_order.<span class="hljs-attr">experimental_deterministic</span> = False
+
+  <span class="hljs-attr">dataset</span> = tf.data.Dataset.list_files(filenames)
+  <span class="hljs-attr">dataset</span> = dataset.with_options(option_no_order)
+  <span class="hljs-attr">dataset</span> = dataset.interleave(tf.data.TFRecordDataset, <span class="hljs-attr">cycle_length=16,</span> <span class="hljs-attr">num_parallel_calls=AUTO)</span>
+  <span class="hljs-attr">dataset</span> = dataset.<span class="hljs-built_in">map</span>(read_tfrecord, <span class="hljs-attr">num_parallel_calls=AUTO)</span>
+
+  <span class="hljs-attr">dataset</span> = dataset.cache() <span class="hljs-comment"># This dataset fits in RAM</span>
+  <span class="hljs-attr">dataset</span> = dataset.shuffle(<span class="hljs-number">2048</span>)
+  <span class="hljs-attr">dataset</span> = dataset.batch(BATCH_SIZE, <span class="hljs-attr">drop_remainder=True)</span> <span class="hljs-comment"># drop_remainder will be needed on TPU</span>
+  <span class="hljs-attr">dataset</span> = dataset.prefetch(AUTO) <span class="hljs-comment">#</span>
+
+  return dataset
+
+def get_validation_eval_dataset():
+  return get_eval_dataset(validation_filenames)
+</code></pre>
+<p>To get a global sense of the skill of the model, call <code>.evaluate</code> on the entire validation set, which will use the model for prediction on all validation images, then compare the predicted versus observed labels for each, with what <code>metrics</code> you used when you compiled the model before training (we used <code>accuracy</code>). Print the mean accuracy in percent to screen.</p>
+<pre><code class="hljs">loss, accuracy = model.evaluate(get_validation_eval_dataset())
+<span class="hljs-builtin-name">print</span>(<span class="hljs-string">'Test Mean Accuracy: '</span>, round((accuracy)<span class="hljs-number">*100</span>, 2))
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="model-deployment"></a><a href="#model-deployment" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model deployment</h3>
+<p>Apply to test (unseen) sample imagery - here I have limited to <code>BATCH_SIZE</code> number of images just for illustration</p>
+<pre><code class="hljs">test_filenames = glob.glob(<span class="hljs-string">'data/test1/*.jpg'</span>)[:BATCH_SIZE]
+<span class="hljs-function"><span class="hljs-title">len</span><span class="hljs-params">(test_filenames)</span></span>
+</code></pre>
+<p>For prediction on raw imagery (rather than pre-processed tensors in the TFRecords file), we need a resizing and converting and normalizing function</p>
+<pre><code class="hljs"><span class="hljs-function">def <span class="hljs-title">preprocess_image</span><span class="hljs-params">(<span class="hljs-built_in">image</span>)</span>:
+  <span class="hljs-built_in">image</span> </span>= tf.<span class="hljs-built_in">image</span>.resize(<span class="hljs-built_in">image</span>, (TARGET_SIZE, TARGET_SIZE))
+  <span class="hljs-built_in">image</span> = tf.<span class="hljs-built_in">image</span>.convert_image_dtype(<span class="hljs-built_in">image</span>, tf.float32)
+  <span class="hljs-built_in">image</span> = <span class="hljs-built_in">image</span>/<span class="hljs-number">255.</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">image</span>
+</code></pre>
+<p>Test using one image</p>
+<pre><code class="hljs">im = preprocess<span class="hljs-constructor">_image(<span class="hljs-params">imread</span>(<span class="hljs-params">test_filenames</span>[13])</span>)
+plt.imshow(im)
+</code></pre>
+<pre><code class="hljs">predicted_classes=model.predict<span class="hljs-constructor">_classes(<span class="hljs-params">np</span>.<span class="hljs-params">expand_dims</span>(<span class="hljs-params">im</span>,<span class="hljs-params">axis</span>=0)</span>)
+get<span class="hljs-constructor">_label(<span class="hljs-params">predicted_classes</span>.<span class="hljs-params">squeeze</span>()</span>)
+</code></pre>
+<p>Test on a whole batch</p>
+<pre><code class="hljs">imgs = <span class="hljs-literal">[]</span>
+predicted_classes = <span class="hljs-literal">[]</span>
+for f <span class="hljs-keyword">in</span> test_filenames:
+  im = preprocess<span class="hljs-constructor">_image(<span class="hljs-params">imread</span>(<span class="hljs-params">f</span>)</span>)
+  imgs.append(im)
+  predicted_classes.append(<span class="hljs-built_in">int</span>(model.predict<span class="hljs-constructor">_classes(<span class="hljs-params">np</span>.<span class="hljs-params">expand_dims</span>(<span class="hljs-params">im</span>,<span class="hljs-params">axis</span>=0)</span>).squeeze<span class="hljs-literal">()</span>.astype('<span class="hljs-built_in">int</span>')))
+</code></pre>
+<p>Make a similar plot as before, but this time we only have the model predicted class, not the ground truth class</p>
+<pre><code class="hljs">fig = plt.figure(figsize=(<span class="hljs-number">12</span>,<span class="hljs-number">28</span>))
+
+cnt=<span class="hljs-number">1</span>
+<span class="hljs-keyword">for</span> img,cl <span class="hljs-keyword">in</span> zip(imgs,predicted_classes):
+  fig.add_subplot(<span class="hljs-number">8</span>,<span class="hljs-number">4</span>, cnt)
+  plt.title(<span class="hljs-string">'est: {}'</span>.format(get_label(cl)))
+  plt.imshow(img)
+  plt.axis(<span class="hljs-string">'off'</span>)
+  cnt=cnt+<span class="hljs-number">1</span>
+</code></pre>
+</span></div></div><div class="blogSocialSection"></div></div><div class="blog-recent"><a class="button" href="/MLMONDAYS/blog/">Recent Posts</a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/MLMONDAYS/" class="nav-home"><img src="/MLMONDAYS/img/favicon.ico" alt="&quot;ML Mondays&quot;" width="66" height="58"/></a><div><h5>Internal links</h5><a href="/MLMONDAYS/docs/en/doc1.html">Docs</a><a href="/MLMONDAYS/docs/en/doc2.html">Data</a><a href="/MLMONDAYS/docs/en/doc3.html">Help</a></div><div><h5>Community</h5><a href="https://stackoverflow.com/questions/tagged/" target="_blank" rel="noreferrer noopener">Stack Overflow</a><a href="https://www.usgs.gov/centers/cdi" target="_blank" rel="noreferrer noopener">USGS Community for Data Integration (CDI)</a><a href="https://www.usgs.gov/centers/pcmsc/science/remote-sensing-coastal-change?qt-science_center_objects=0#qt-science_center_objects" target="_blank" rel="noreferrer noopener">USGS Remote Sensing Coastal Change Project</a><a href="https://www.danielbuscombe.com" target="_blank" rel="noreferrer noopener">www.danielbuscombe.com</a></div><div><h5>More</h5><a href="/MLMONDAYS/blog">Blog</a><a href="https://github.com/dbuscombe-usgs/DL-CDI2020">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a><div class="social"><a href="https://twitter.com/magic_walnut" class="twitter-follow-button">Follow @magic_walnut</a></div></div></section><a href="https://mardascience.com/" target="_blank" rel="noreferrer noopener" class="fbOpenSource"><img src="/MLMONDAYS/img/dash-logo-new.png" alt="Marda Science" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Marda Science, LLC</section></footer></div><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script></body></html>

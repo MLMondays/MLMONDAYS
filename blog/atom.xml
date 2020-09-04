@@ -2,12 +2,45 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog</id>
     <title>"ML Mondays" Blog</title>
-    <updated>2020-08-17T06:00:00.000Z</updated>
+    <updated>2020-09-05T06:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog"/>
     <subtitle>The best place to stay up-to-date with the latest "ML Mondays" news and events.</subtitle>
     <logo>https://dbuscombe-usgs.github.io/MLMONDAYS/img/favicon.ico</logo>
     <rights>Copyright © 2020 Marda Science, LLC</rights>
+    <entry>
+        <title type="html"><![CDATA[ML terminology, demystified]]></title>
+        <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/09/05/blog-post.html</id>
+        <link href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/09/05/blog-post.html"/>
+        <updated>2020-09-05T06:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<h3><a class="anchor" aria-hidden="true" id="machine-learning-ml-deep-learning-dl-and-artificial-intelligence-ai"></a><a href="#machine-learning-ml-deep-learning-dl-and-artificial-intelligence-ai" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>Machine learning (ML), deep learning (DL), and artificial intelligence (AI)</h3> <h3><a class="anchor" aria-hidden="true" id="data-augmentation"></a><a href="#data-augmentation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>Data augmentation</h3> ]]></summary>
+        <author>
+            <name>Dan Buscombe</name>
+            <uri>http://twitter.com/magic_walnut</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Tensorflow terminology, demystified]]></title>
+        <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/09/02/blog-post.html</id>
+        <link href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/09/02/blog-post.html"/>
+        <updated>2020-09-02T06:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<h3><a class="anchor" aria-hidden="true" id="eager-execution"></a><a href="#eager-execution" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>&quot;Eager execution&quot;</h3> <h3><a class="anchor" aria-hidden="true" id="asynchronous-computation"></a><a href="#asynchronous-computation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>&quot;Asynchronous computation&quot;</h3> ]]></summary>
+        <author>
+            <name>Dan Buscombe</name>
+            <uri>http://twitter.com/magic_walnut</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Creating a Tensorflow Dataset for an image recognition task]]></title>
+        <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/09/01/blog-post.html</id>
+        <link href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/09/01/blog-post.html"/>
+        <updated>2020-09-01T06:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<h3><a class="anchor" aria-hidden="true" id="use-case"></a><a href="#use-case" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>Use case</h3> <p>You have a folder called <code>data</code>, in which there are two additional folders <code>train</code> and <code>test</code>. The <code>train</code> folder contains hundreds to millions of jpeg files, each with a descriptive label in the file name. The <code>test</code> folder contains samples for which...</p>]]></summary>
+        <author>
+            <name>Dan Buscombe</name>
+            <uri>http://twitter.com/magic_walnut</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Converting between YOLO and PASCAL-VOC object recognition formats, and creating a Tensorflow Dataset]]></title>
         <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/08/17/blog-post.html</id>
