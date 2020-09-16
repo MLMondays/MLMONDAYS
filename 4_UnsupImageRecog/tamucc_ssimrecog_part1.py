@@ -110,6 +110,10 @@ VALIDATION_SPLIT = 0.4
 ims_per_shard = 200
 BATCH_SIZE = 6
 
+
+num_embed_dim = 8
+max_epochs = 200
+lr = 1e-4
 ###############################################################
 ## EXECUTION
 ###############################################################
@@ -180,49 +184,64 @@ ytrain = np.hstack(ytrain)
 
 
 
+X_test = [] #np.zeros((nb_images,TARGET_SIZE, TARGET_SIZE, 3), dtype='uint8')
+ytest = []
+test_ds = get_validation_dataset()
+
+counter = 0
+for imgs,lbls in test_ds.take(num_batches):
+  ytest.append(lbls.numpy())
+  for im in imgs:
+    X_test.append(im)
+
+X_test = np.array(X_test)
+
+ytest = np.hstack(ytest)
+
+
 # get x_train, y_train, x_test and y_test  arrays
 
-x_train = x_train.astype("float32")
-y_train = np.squeeze(y_train)
-x_test = x_test.astype("float32")
-y_test = np.squeeze(y_test)
+X_train = X_train.astype("float32")
+ytrain = np.squeeze(ytrain)
+X_test = X_test.astype("float32")
+ytest = np.squeeze(ytest)
 
 # code repurposed from https://keras.io/examples/vision/metric_learning/
 
 class_idx_to_train_idxs = defaultdict(list)
-for y_train_idx, y in enumerate(y_train):
+for y_train_idx, y in enumerate(ytrain):
     class_idx_to_train_idxs[y].append(y_train_idx)
 
 class_idx_to_test_idxs = defaultdict(list)
-for y_test_idx, y in enumerate(y_test):
+for y_test_idx, y in enumerate(ytest):
     class_idx_to_test_idxs[y].append(y_test_idx)
 
 
-    num_classes = len(classes)
+num_classes = len(CLASSES)
 
-    # code repurposed from https://keras.io/examples/vision/metric_learning/
+# code repurposed from https://keras.io/examples/vision/metric_learning/
 
-    class AnchorPositivePairs(keras.utils.Sequence):
-        def __init__(self, num_batchs):
-            self.num_batchs = num_batchs
+class AnchorPositivePairs(tf.keras.utils.Sequence):
+    def __init__(self, num_batchs):
+        self.num_batchs = num_batchs
 
-        def __len__(self):
-            return self.num_batchs
+    def __len__(self):
+        return self.num_batchs
 
-        def __getitem__(self, _idx):
-            x = np.empty((2, num_classes, height_width, height_width, 3), dtype=np.float32)
-            for class_idx in range(num_classes):
-                examples_for_class = class_idx_to_train_idxs[class_idx]
-                anchor_idx = random.choice(examples_for_class)
+    def __getitem__(self, _idx):
+        x = np.empty((2, num_classes, height_width, height_width, 3), dtype=np.float32)
+        for class_idx in range(num_classes):
+            examples_for_class = class_idx_to_train_idxs[class_idx]
+            anchor_idx = random.choice(examples_for_class)
+            positive_idx = random.choice(examples_for_class)
+            while positive_idx == anchor_idx:
                 positive_idx = random.choice(examples_for_class)
-                while positive_idx == anchor_idx:
-                    positive_idx = random.choice(examples_for_class)
-                x[0, class_idx] = x_train[anchor_idx]
-                x[1, class_idx] = x_train[positive_idx]
-            return x
+            x[0, class_idx] = x_train[anchor_idx]
+            x[1, class_idx] = x_train[positive_idx]
+        return x
 
 
-class EmbeddingModel(keras.Model):
+class EmbeddingModel(tf.keras.Model):
     def train_step(self, data):
         # Note: Workaround for open issue, to be removed.
         if isinstance(data, tuple):
@@ -263,26 +282,24 @@ class EmbeddingModel(keras.Model):
 
 
 
-inputs = layers.Input(shape=(height_width, height_width, 3))
-x = layers.Conv2D(filters=32, kernel_size=3, strides=2, activation="relu")(inputs) #
-x = layers.Conv2D(filters=64, kernel_size=3, strides=2, activation="relu")(x) #32
-x = layers.Conv2D(filters=128, kernel_size=3, strides=2, activation="relu")(x) #64
-x = layers.GlobalAveragePooling2D()(x)
-embeddings = layers.Dense(units = num_embed_dim, activation=None)(x)
+inputs = tf.keras.layers.Input(shape=(TARGET_SIZE, TARGET_SIZE, 3))
+x = tf.keras.layers.Conv2D(filters=32, kernel_size=3, strides=2, activation="relu")(inputs) #
+x = tf.keras.layers.Conv2D(filters=64, kernel_size=3, strides=2, activation="relu")(x) #32
+x = tf.keras.layers.Conv2D(filters=128, kernel_size=3, strides=2, activation="relu")(x) #64
+x = tf.keras.layers.GlobalAveragePooling2D()(x)
+embeddings = tf.keras.layers.Dense(units = num_embed_dim, activation=None)(x)
 #embeddings = tf.nn.l2_normalize(embeddings, axis=-1)
 
 model = EmbeddingModel(inputs, embeddings)
 
-max_epochs = 200
-lr = 1e-4
 
-num_batches = int(np.ceil(len(x_train) / len(classes)))
+num_batches = int(np.ceil(len(X_train) / len(CLASSES)))
 print(num_batches)
 
 
 model.compile(
-    optimizer=keras.optimizers.Adam(learning_rate=lr),
-    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
+    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
      metrics=['accuracy'],
 )
 
