@@ -298,6 +298,9 @@ num_batches = int(np.ceil(len(X_train) / len(CLASSES)))
 print(num_batches)
 
 
+# adaptive lr
+# early stopping
+
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
