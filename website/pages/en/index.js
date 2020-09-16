@@ -272,7 +272,14 @@ class Index extends React.Component {
         {[
           {
             content:
-            'This course is designed for USGS employees and contractors across all mission areas actively engaged '+
+            'ML-Mondays consists of 4 in-person (i.e. live, online/virtual) classes, on Oct 5, Oct 13 (a day delayed, due to the Federal Holiday Columbus Day), Oct 19, and Oct 26. '+
+            'Each class starts at 10 am Pacific time (12pm Central time, 1pm Eastern time, 7am Hawaii) and lasts for up to 3 hours. '+
+            '<br><br>Each class follows on from the last. Classes 1 and 4 are pairs, as are classes 2 and 3. Participants are therefore expected to last the course. '+
+            'Optional homework assignments will be set for participants to carry out in their own time. '+
+            '<br><br>If you cannot guarantee blocking out 3 hrs on those days in Oct, then you do not have time for the course.'+
+            '<br><br>However, all course materials, including code, data, notebooks, this website, and videos, '+
+            'will be made available to the entire USGS in November, after the event. Full agenda to be announced in September. '+
+            '<br><br> This course is designed for USGS employees and contractors across all mission areas actively engaged '+
             'in one or more of the following topics:'+
             '<br><br> * satellite and aerial remote sensing'+
             '<br><br> * image analysis'+
@@ -282,15 +289,16 @@ class Index extends React.Component {
             '**and** some experience with:'+
             '<br><br> * the python programming language (or extensive experience in any programming language, such as R, matlab, C++)'+
             '<br><br> * a command line interface such as a bash shell, '+
-            'windows powershell, git bash terminal, AWS-CLI, or other terminals',
+            'windows powershell, git bash terminal, AWS-CLI, or other terminals. ',
 
             image: `${baseUrl}img/undraw_questions_75e0.png`,
             imageAlign: 'right',
-            title: 'Who is this course for?',
+            title: 'Who is this course for? And when is it?',
           },
         ]}
       </Block>
     );
+
 
     const SignUp = () => (
       <Block background="light" layout="twoColumn">
