@@ -54,13 +54,6 @@ hist_fig = os.getcwd()+os.sep+'results/tamucc_sample_2class_custom_model1.png'
 CLASSES = [b'dev', b'undev']
 patience = 10
 
-start_lr = 1e-5
-min_lr = start_lr
-max_lr = 1e-3
-rampup_epochs = 5
-sustain_epochs = 0
-exp_decay = .9
-
 ###############################################################
 ## EXECUTION
 ###############################################################
@@ -178,26 +171,7 @@ if do_train:
                           callbacks=callbacks)
 
     # Plot training history
-
-    print(history.history.keys())
-
-    n = len(history.history['accuracy'])
-
-    plt.figure(figsize=(20,10))
-    plt.subplot(121)
-    plt.plot(np.arange(1,n+1), history.history['accuracy'], 'b', label='train accuracy')
-    plt.plot(np.arange(1,n+1), history.history['val_accuracy'], 'k', label='validation accuracy')
-    plt.xlabel('Epoch number', fontsize=10); plt.ylabel('Accuracy', fontsize=10)
-    plt.legend(fontsize=10)
-
-    plt.subplot(122)
-    plt.plot(np.arange(1,n+1), history.history['loss'], 'b', label='train loss')
-    plt.plot(np.arange(1,n+1), history.history['val_loss'], 'k', label='validation loss')
-    plt.xlabel('Epoch number', fontsize=10); plt.ylabel('Loss', fontsize=10)
-    plt.legend(fontsize=10)
-
-    # plt.show()
-    plt.savefig(hist_fig, dpi=200, bbox_inches='tight')
+    plot_history(history, hist_fig)
 
     plt.close('all')
     K.clear_session()

@@ -145,45 +145,6 @@ def plot_tsne(tsne_result, label_ids):
   return fig, ax
 
 
-
-# #-----------------------------------
-# def get_batched_dataset(filenames):
-#   option_no_order = tf.data.Options()
-#   option_no_order.experimental_deterministic = False  ##True?
-#
-#   dataset = tf.data.Dataset.list_files(filenames)
-#   dataset = dataset.with_options(option_no_order)
-#   dataset = dataset.interleave(tf.data.TFRecordDataset, cycle_length=16, num_parallel_calls=AUTO)
-#   dataset = dataset.map(read_tfrecord_mv2, num_parallel_calls=AUTO)
-#
-#   dataset = dataset.cache() # This dataset fits in RAM
-#   dataset = dataset.repeat()
-#   dataset = dataset.shuffle(2048)
-#   dataset = dataset.batch(BATCH_SIZE, drop_remainder=True) # drop_remainder will be needed on TPU
-#   dataset = dataset.prefetch(AUTO) #
-#
-#   return dataset
-#
-# #-----------------------------------
-# def read_tfrecord_mv2(example):
-#     features = {
-#         "image": tf.io.FixedLenFeature([], tf.string),  # tf.string = bytestring (not text string)
-#         "class": tf.io.FixedLenFeature([], tf.int64),   # shape [] means scalar
-#     }
-#     # decode the TFRecord
-#     example = tf.io.parse_single_example(example, features)
-#
-#     image = tf.image.decode_jpeg(example['image'], channels=3)
-#     image = tf.cast(image, tf.uint8) #/ 255.0
-#
-#     image = tf.reshape(image, [TARGET_SIZE,TARGET_SIZE, 3])
-#     #image = tf.image.per_image_standardization(image)
-#     #image = tf.keras.applications.mobilenet_v2.preprocess_input(image) #specific to model
-#
-#     class_label = tf.cast(example['class'], tf.int32)
-#
-#     return image, class_label
-
 # Show images with t-SNE
 # Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
 def visualize_scatter_with_images(X_2d_data, images, figsize=(15,15), image_zoom=1):
@@ -202,21 +163,13 @@ def visualize_scatter_with_images(X_2d_data, images, figsize=(15,15), image_zoom
 
 ####================================================
 
-data_path= "/media/marda/TWOTB/USGS/SOFTWARE/DL-CDI2020/1_ImageRecog/data/tamucc/subset_3class/400"
-
-# data_path= "/media/marda/TWOTB/USGS/SOFTWARE/DL-CDI2020/1_ImageRecog/data/tamucc/subset/400"
+data_path= os.getcwd()+os.sep+"data/tamucc/subset_2class/400"
 
 training_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
-# json_file = '/media/marda/TWOTB/USGS/SOFTWARE/DL-CDI2020/1_ImageRecog/data/tamucc/subset/tamucc_subset.json'
-#
-# with open(json_file) as f:
-#     class_dict = json.load(f)
-#
-# # string names
-# CLASSES = [class_dict[k] for k in class_dict.keys()]
+# CLASSES = ['marsh', 'dev', 'other']
 
-CLASSES = ['marsh', 'dev', 'other']
+CLASSES = ['undev', 'dev']
 
 nb_images = ims_per_shard * len(training_filenames)
 print(nb_images)
@@ -252,7 +205,7 @@ for class_idx in [0,1,2]:
   print("Total number of {} (s) in the dataset: {}".format(CLASSES[class_idx], len(locs[:][0])))
   X_subset = X_train[samples]
   plot_one_class(X_subset, samples, class_idx, bs)
-  plt.savefig('tamucc_sample_3class_samples_'+CLASSES[class_idx]+'.png', dpi=200, bbox_inches='tight')
+  plt.savefig( os.getcwd()+os.sep+'results/tamucc_sample_2class_samples_'+CLASSES[class_idx]+'.png', dpi=200, bbox_inches='tight')
   plt.close('all')
 
 
@@ -260,7 +213,7 @@ for class_idx in [0,1,2]:
 # plot mean images per class
 
 plot_mean_images(X_train, ytrain)
-plt.savefig('tamucc_sample_3class_mean.png', dpi=200, bbox_inches='tight')
+plt.savefig( os.getcwd()+os.sep+'results/tamucc_sample_2class_mean.png', dpi=200, bbox_inches='tight')
 plt.close('all')
 
 
@@ -268,15 +221,15 @@ plt.close('all')
 
 
 plot_distribution(X_train, ytrain, 0)
-plt.savefig('tamucc_sample_3class_hist_'+CLASSES[0]+'.png', dpi=200, bbox_inches='tight')
+plt.savefig( os.getcwd()+os.sep+'results/tamucc_sample_2class_hist_'+CLASSES[0]+'.png', dpi=200, bbox_inches='tight')
 plt.close('all')
 
 plot_distribution(X_train, ytrain, 1)
-plt.savefig('tamucc_sample_3class_hist_'+CLASSES[1]+'.png', dpi=200, bbox_inches='tight')
+plt.savefig( os.getcwd()+os.sep+'results/tamucc_sample_2class_hist_'+CLASSES[1]+'.png', dpi=200, bbox_inches='tight')
 plt.close('all')
 
 plot_distribution(X_train, ytrain, 2)
-plt.savefig('tamucc_sample_3class_hist_'+CLASSES[2]+'.png', dpi=200, bbox_inches='tight')
+plt.savefig( os.getcwd()+os.sep+'results/tamucc_sample_2class_hist_'+CLASSES[2]+'.png', dpi=200, bbox_inches='tight')
 plt.close('all')
 
 
@@ -302,7 +255,7 @@ tsne_result_scaled = StandardScaler().fit_transform(tsne_result)
 
 
 fig, ax = plot_tsne(tsne_result_scaled,y_subset)
-plt.savefig('tamucc_sample_3class_tsne_sample.png', dpi=200, bbox_inches='tight')
+plt.savefig( os.getcwd()+os.sep+'results/tamucc_sample_2class_tsne_sample.png', dpi=200, bbox_inches='tight')
 plt.close('all')
 
 
@@ -310,7 +263,7 @@ plt.close('all')
 
 f = visualize_scatter_with_images(tsne_result_scaled, images = [np.reshape(i, (TARGET_SIZE,TARGET_SIZE,3)) for i in X_subset], image_zoom=0.1)
 
-plt.savefig('tamucc_sample_3class_tsne_vizimages_sample.png', dpi=200, bbox_inches='tight')
+plt.savefig( os.getcwd()+os.sep+'results/tamucc_sample_2class_tsne_vizimages_sample.png', dpi=200, bbox_inches='tight')
 plt.close('all')
 
 
@@ -319,11 +272,11 @@ plt.close('all')
 
 ####================================================
 
-data_path= "/media/marda/TWOTB/USGS/SOFTWARE/DL-CDI2020/1_ImageRecog/data/tamucc/subset/400"
+data_path=  os.getcwd()+os.sep+"data/tamucc/subset/400"
 
 training_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
-json_file = '/media/marda/TWOTB/USGS/SOFTWARE/DL-CDI2020/1_ImageRecog/data/tamucc/subset/tamucc_subset.json'
+json_file =  os.getcwd()+os.sep+'data/tamucc/subset/tamucc_subset.json'
 
 with open(json_file) as f:
     class_dict = json.load(f)
@@ -413,7 +366,7 @@ tsne_result_scaled = StandardScaler().fit_transform(tsne_result)
 
 
 fig, ax = plot_tsne(tsne_result_scaled,y_subset)
-plt.savefig('tamucc_sample_12class_tsne_sample.png', dpi=200, bbox_inches='tight')
+plt.savefig( os.getcwd()+os.sep+'results/tamucc_sample_12class_tsne_sample.png', dpi=200, bbox_inches='tight')
 plt.close('all')
 
 
@@ -421,5 +374,5 @@ plt.close('all')
 
 f = visualize_scatter_with_images(tsne_result_scaled, images = [np.reshape(i, (TARGET_SIZE,TARGET_SIZE,3)) for i in X_subset], image_zoom=0.1)
 
-plt.savefig('tamucc_sample_12class_tsne_vizimages_sample.png', dpi=200, bbox_inches='tight')
+plt.savefig( os.getcwd()+os.sep+'results/tamucc_sample_12class_tsne_vizimages_sample.png', dpi=200, bbox_inches='tight')
 plt.close('all')
