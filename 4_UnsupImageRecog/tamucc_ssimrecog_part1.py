@@ -13,6 +13,7 @@ from PIL import Image
 from sklearn.metrics import ConfusionMatrixDisplay
 from collections import Counter
 
+import random ## candidate for removel
 
 SEED=42
 np.random.seed(SEED)
@@ -199,7 +200,7 @@ X_test = np.array(X_test)
 ytest = np.hstack(ytest)
 
 
-# get x_train, y_train, x_test and y_test  arrays
+# get X_train, y_train, X_test and y_test  arrays
 
 X_train = X_train.astype("float32")
 ytrain = np.squeeze(ytrain)
@@ -229,15 +230,15 @@ class AnchorPositivePairs(tf.keras.utils.Sequence):
         return self.num_batchs
 
     def __getitem__(self, _idx):
-        x = np.empty((2, num_classes, height_width, height_width, 3), dtype=np.float32)
+        x = np.empty((2, num_classes, TARGET_SIZE, TARGET_SIZE, 3), dtype=np.float32)
         for class_idx in range(num_classes):
             examples_for_class = class_idx_to_train_idxs[class_idx]
-            anchor_idx = random.choice(examples_for_class)
-            positive_idx = random.choice(examples_for_class)
+            anchor_idx = random.choice(examples_for_class) # remove random dependency? replace with np.random?
+            positive_idx = random.choice(examples_for_class) # remove random dependency? replace with np.random?
             while positive_idx == anchor_idx:
-                positive_idx = random.choice(examples_for_class)
-            x[0, class_idx] = x_train[anchor_idx]
-            x[1, class_idx] = x_train[positive_idx]
+                positive_idx = random.choice(examples_for_class) # remove random dependency? replace with np.random?
+            x[0, class_idx] = X_train[anchor_idx]
+            x[1, class_idx] = X_train[positive_idx]
         return x
 
 
@@ -314,7 +315,7 @@ plt.show()
 
 # code from https://keras.io/examples/vision/metric_learning/
 
-embeddings = model.predict(x_test)
+embeddings = model.predict(X_test)
 
 embeddings = tf.nn.l2_normalize(embeddings, axis=-1)
 
@@ -360,7 +361,7 @@ plt.xlabel('number of nearest neighbours')
 near_neighbours_per_example = np.argmax(MN)+1
 print(near_neighbours_per_example)
 
-embeddings = model.predict(x_train)
+embeddings = model.predict(X_train)
 
 embeddings = tf.nn.l2_normalize(embeddings, axis=-1)
 
@@ -388,7 +389,7 @@ disp.plot(include_values=True, cmap="viridis", ax=ax, xticks_rotation="vertical"
 # plt.show()
 
 
-embeddings = model.predict(x_test)
+embeddings = model.predict(X_test)
 
 embeddings = tf.nn.l2_normalize(embeddings, axis=-1)
 
