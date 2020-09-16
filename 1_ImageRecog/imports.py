@@ -1,10 +1,10 @@
 
 
 ## TAMUCC
-#from tamucc_imports import *
+from tamucc_imports import *
 
 ##UNCOMMENT BELOW TO USE NWPU DATA
-from nwpu_imports import *
+# from nwpu_imports import *
 
 #see mlmondays blog post:
 import os

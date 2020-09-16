@@ -1,14 +1,185 @@
+
+#see mlmondays blog post:
+import os
+os.environ["TF_DETERMINISTIC_OPS"] = "1"
+
+
 import tensorflow as tf
 
-import requests, os
 import matplotlib.pyplot as plt
 import numpy as np
-from glob import glob
-import random
 from collections import defaultdict
 from PIL import Image
 from sklearn.metrics import ConfusionMatrixDisplay
 from collections import Counter
+
+
+SEED=42
+np.random.seed(SEED)
+AUTO = tf.data.experimental.AUTOTUNE # used in tf.data.Dataset API
+
+tf.random.set_seed(SEED)
+
+print("Version: ", tf.__version__)
+print("Eager mode: ", tf.executing_eagerly())
+print('GPU name: ', tf.config.experimental.list_physical_devices('GPU'))
+print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+
+
+#-----------------------------------
+def get_training_dataset():
+  return get_batched_dataset(training_filenames)
+
+#-----------------------------------
+def get_validation_dataset():
+  return get_batched_dataset(validation_filenames)
+
+def get_validation_eval_dataset():
+  return get_eval_dataset(validation_filenames)
+
+#-----------------------------------
+def get_batched_dataset(filenames):
+    """
+    This function
+    """
+    option_no_order = tf.data.Options()
+    option_no_order.experimental_deterministic = False  ##True?
+
+    dataset = tf.data.Dataset.list_files(filenames)
+    dataset = dataset.with_options(option_no_order)
+    dataset = dataset.interleave(tf.data.TFRecordDataset, cycle_length=16, num_parallel_calls=AUTO)
+    dataset = dataset.map(read_tfrecord, num_parallel_calls=AUTO)
+
+    dataset = dataset.cache() # This dataset fits in RAM
+    #dataset = dataset.repeat()
+    dataset = dataset.shuffle(2048)
+    dataset = dataset.batch(BATCH_SIZE, drop_remainder=True) # drop_remainder will be needed on TPU
+    dataset = dataset.prefetch(AUTO) #
+
+    return dataset
+
+#-----------------------------------
+def read_tfrecord(example):
+    """
+    This function
+    """
+    features = {
+        "image": tf.io.FixedLenFeature([], tf.string),  # tf.string = bytestring (not text string)
+        "class": tf.io.FixedLenFeature([], tf.int64),   # shape [] means scalar
+    }
+    # decode the TFRecord
+    example = tf.io.parse_single_example(example, features)
+
+    image = tf.image.decode_jpeg(example['image'], channels=3)
+    image = tf.cast(image, tf.float32) / 255.0
+    image = tf.reshape(image, [TARGET_SIZE,TARGET_SIZE, 3])
+
+    class_label = tf.cast(example['class'], tf.int32)
+
+    return image, class_label
+
+
+###############################################################
+## VARIABLES
+###############################################################
+
+#what's the goal? Yo're trying to maximize your validation accuracy. You want your training accuracy to be high too, but not if the validation accuracy isn't as or nearly as high
+
+## model inputs
+data_path= os.getcwd().replace('4_UnsupImageRecog', '1_ImageRecog')+os.sep+"data/tamucc/subset_2class/400"
+
+test_samples_fig = os.getcwd().replace('4_UnsupImageRecog', '1_ImageRecog')+os.sep+'results/tamucc_sample_2class_mv2_model1_est24samples.png'
+
+cm_filename = os.getcwd().replace('4_UnsupImageRecog', '1_ImageRecog')+os.sep+'results/tamucc_sample_2class_mv2_model1_cm_val.png'
+
+sample_data_path= os.getcwd().replace('4_UnsupImageRecog', '1_ImageRecog')+os.sep+"data/tamucc/subset_2class/sample"
+
+filepath = os.getcwd().replace('4_UnsupImageRecog', '1_ImageRecog')+os.sep+'results/tamucc_subset_2class_custom_best_weights_model1.h5'
+
+hist_fig = os.getcwd().replace('4_UnsupImageRecog', '1_ImageRecog')+os.sep+'results/tamucc_sample_2class_custom_model1.png'
+
+
+trainsamples_fig = os.getcwd()+os.sep+'results/tamucc_sample_2class_trainsamples.png'
+valsamples_fig = os.getcwd()+os.sep+'results/tamucc_sample_2class_validationsamples.png'
+
+CLASSES = [b'dev', b'undev']
+patience = 10
+
+TARGET_SIZE = 400
+VALIDATION_SPLIT = 0.4
+ims_per_shard = 200
+BATCH_SIZE = 6
+
+###############################################################
+## EXECUTION
+###############################################################
+filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
+
+nb_images = ims_per_shard * len(filenames)
+print(nb_images)
+
+split = int(len(filenames) * VALIDATION_SPLIT)
+
+training_filenames = filenames[split:]
+validation_filenames = filenames[:split]
+
+validation_steps = int(nb_images // len(filenames) * len(validation_filenames)) // BATCH_SIZE
+steps_per_epoch = int(nb_images // len(filenames) * len(training_filenames)) // BATCH_SIZE
+
+print(steps_per_epoch)
+print(validation_steps)
+
+train_ds = get_training_dataset()
+plt.figure(figsize=(16,16))
+for imgs,lbls in train_ds.take(1):
+  #print(lbls)
+  for count,im in enumerate(imgs):
+     plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
+     plt.imshow(im)
+     plt.title(CLASSES[lbls.numpy()[count]], fontsize=8)
+     plt.axis('off')
+# plt.show()
+plt.savefig(trainsamples_fig, dpi=200, bbox_inches='tight')
+
+
+val_ds = get_validation_dataset()
+plt.figure(figsize=(16,16))
+for imgs,lbls in val_ds.take(1):
+  #print(lbls)
+  for count,im in enumerate(imgs):
+     plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
+     plt.imshow(im)
+     plt.title(CLASSES[lbls.numpy()[count]], fontsize=8)
+     plt.axis('off')
+# plt.show()
+plt.savefig(valsamples_fig, dpi=200, bbox_inches='tight')
+
+
+training_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
+nb_images = ims_per_shard * len(training_filenames)
+print(nb_images)
+
+num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
+print(num_batches)
+
+num_batches = 10
+
+X_train = []
+ytrain = []
+train_ds = get_training_dataset()
+counter=0
+for imgs,lbls in train_ds.take(num_batches):
+  print(counter)
+  counter += 1
+  ytrain.append(lbls.numpy())
+  for im in imgs:
+    X_train.append(im)
+
+X_train = np.array(X_train)
+
+ytrain = np.hstack(ytrain)
+
+
 
 # get x_train, y_train, x_test and y_test  arrays
 
