@@ -1,0 +1,18 @@
+{
+ "0":"coarsegrained_sand_beaches",
+ "1":"exposed_riprap_structures",
+ "2":"exposed_tidal_flats",
+ "3":"exposed_walls_other_structures",
+ "4":"finegrained_sand_beaches",
+ "5":"freshwater_marshes_herbaceous_vegetation",
+ "6":"freshwater_swamps_woody_vegetation" ,
+ "7":"gravel_shell_beaches",
+ "8":"mixed_sand_gravel_shell_beaches" ,
+ "9":"salt_brackish_water_marshes",
+ "10":"scarps_steep_slopes_clay",
+ "11":"scarps_steep_slopes_sand",
+ "12":"sheltered_riprap_structures",
+ "13":"sheltered_scarps",
+ "14":"sheltered_solid_manmade",
+ "15":"sheltered_tidal_flats"
+}
