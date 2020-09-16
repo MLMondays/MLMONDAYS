@@ -71,7 +71,7 @@ def read_tfrecord(example):
     example = tf.io.parse_single_example(example, features)
 
     image = tf.image.decode_jpeg(example['image'], channels=3)
-    image = tf.cast(image, tf.float32) / 255.0
+    image = tf.cast(image, tf.uint8) #float32) / 255.0
     image = tf.reshape(image, [TARGET_SIZE,TARGET_SIZE, 3])
 
     class_label = tf.cast(example['class'], tf.int32)
@@ -162,18 +162,17 @@ print(nb_images)
 num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
 print(num_batches)
 
-num_batches = 10
-
-X_train = []
+X_train = [] #np.zeros((nb_images,TARGET_SIZE, TARGET_SIZE, 3), dtype='uint8')
 ytrain = []
 train_ds = get_training_dataset()
-counter=0
+
+counter = 0
 for imgs,lbls in train_ds.take(num_batches):
-  print(counter)
-  counter += 1
   ytrain.append(lbls.numpy())
   for im in imgs:
     X_train.append(im)
+    #X_train[counter] = im.numpy().astype('uint8')
+    #counter += 1
 
 X_train = np.array(X_train)
 
