@@ -7,42 +7,74 @@ from imports import *
 ###############################################################
 ### FUNCTIONS
 ###############################################################
+
 #-----------------------------------
 def get_training_dataset():
-  return get_batched_dataset(training_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: training_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_batched_dataset(training_filenames)
 
+#-----------------------------------
 def get_validation_dataset():
-  return get_batched_dataset(validation_filenames)
+    """
+    This function will return a batched dataset for model validation
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_batched_dataset(validation_filenames)
 
-
-def return_hist(data):
-  hist, bins = np.histogram(data, bins=np.linspace(0, 1.0, 10))
-
+#-----------------------------------
 def compute_hist(images):
-  """
+    """
     Compute the per channel histogram for a batch
     of images
-    image - batch of shape (N x W x H x C)
-  """
-  images = images/255.
-  mean = np.mean(images, axis=0, dtype=np.float64)
+    INPUTS:
+        * images [ndarray]: batch of shape (N x W x H x 3)
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * hist_r [dict]: histogram frequencies {'hist'} and bins {'bins'} for red channel
+        * hist_g [dict]: histogram frequencies {'hist'} and bins {'bins'} for green channel
+        * hist_b [dict]: histogram frequencies {'hist'} and bins {'bins'} for blue channel
+    """
+    images = images/255.
+    mean = np.mean(images, axis=0, dtype=np.float64)
 
-  mean_r, mean_g, mean_b = mean[:,:,0], mean[:,:,1], mean[:,:,2]
-  mean_r = np.reshape(mean_r, (-1, 1))
-  mean_g = np.reshape(mean_g, (-1, 1))
-  mean_b = np.reshape(mean_b, (-1, 1))
+    mean_r, mean_g, mean_b = mean[:,:,0], mean[:,:,1], mean[:,:,2]
+    mean_r = np.reshape(mean_r, (-1, 1))
+    mean_g = np.reshape(mean_g, (-1, 1))
+    mean_b = np.reshape(mean_b, (-1, 1))
 
-  hist_r_, bins_r = np.histogram(mean_r, bins="auto")
-  hist_g_, bins_g = np.histogram(mean_g, bins="auto")
-  hist_b_, bins_b = np.histogram(mean_b, bins="auto")
+    hist_r_, bins_r = np.histogram(mean_r, bins="auto")
+    hist_g_, bins_g = np.histogram(mean_g, bins="auto")
+    hist_b_, bins_b = np.histogram(mean_b, bins="auto")
 
-  hist_r = {"hist": hist_r_, "bins": bins_r}
-  hist_g = {"hist": hist_g_, "bins": bins_g}
-  hist_b = {"hist": hist_b_, "bins": bins_b}
+    hist_r = {"hist": hist_r_, "bins": bins_r}
+    hist_g = {"hist": hist_g_, "bins": bins_g}
+    hist_b = {"hist": hist_b_, "bins": bins_b}
 
-  return hist_r, hist_g, hist_b
+    return hist_r, hist_g, hist_b
 
-def plot_distribution(images, labels, class_id, type_='kde'):
+#-----------------------------------
+def plot_distribution(images, labels, class_id):
+    """
+    Compute the per channel histogram for a batch
+    of images
+    INPUTS:
+        * images [ndarray]: batch of shape (N x W x H x 3)
+        * labels [ndarray]: batch of shape (N x 1)
+        * class_id [int]: class integer to plot
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: matplotlib figure
+    """
     fig = plt.figure(figsize=(21,7))
     rows, cols = 1, 3
     locs = np.where(labels == class_id)
@@ -51,6 +83,7 @@ def plot_distribution(images, labels, class_id, type_='kde'):
     hist_r, hist_g, hist_b = compute_hist(class_images)
     plt.title("Histogram - Mean Pixel Value:  " + CLASSES[class_id])
     plt.axis('off')
+
     fig.add_subplot(rows, cols, 1)
     hist, bins = hist_r["hist"], hist_r["bins"]
     width = 0.7 * (bins[1] - bins[0])
@@ -58,6 +91,7 @@ def plot_distribution(images, labels, class_id, type_='kde'):
     plt.bar(center, hist, align='center', width=width,color='r')
     plt.xlim((0,1))
     plt.ylim((0, 255))
+
     fig.add_subplot(rows, cols, 2)
     hist, bins = hist_g["hist"], hist_g["bins"]
     width = 0.7 * (bins[1] - bins[0])
@@ -65,6 +99,7 @@ def plot_distribution(images, labels, class_id, type_='kde'):
     plt.bar(center, hist, align='center', width=width,color='g')
     plt.xlim((0,1))
     plt.ylim((0,255))
+
     fig.add_subplot(rows, cols, 3)
     hist, bins = hist_b["hist"], hist_b["bins"]
     width = 0.7 * (bins[1] - bins[0])
@@ -73,60 +108,91 @@ def plot_distribution(images, labels, class_id, type_='kde'):
     plt.xlim((0,1))
     plt.ylim((0, 255))
 
-
+#-----------------------------------
 def plot_one_class(inp_batch, sample_idx, label, batch_size, rows=8, cols=8, size=(20,15)):
-  """
-  Plot "batch_size" images that belong to the class "label"
-  """
-  fig = plt.figure(figsize=size)
-  plt.title(CLASSES[int(label)])
-  plt.axis('off')
-  for n in range(0, batch_size):
-    fig.add_subplot(rows, cols, n + 1)
-    img = inp_batch[n]
-    plt.imshow(img)
-    #plt.title(sample_idx[n])
+    """
+    Plot "batch_size" images that belong to the class "label"
+    INPUTS:
+        * inp_batch
+        * sample_idx
+        * label
+        * batch_size
+    OPTIONAL INPUTS:
+        * rows=8
+        * cols=8
+        * size=(20,15)
+    GLOBAL INPUTS: matplotlib figure
+    """
+    OUTPUTS:
+    fig = plt.figure(figsize=size)
+    plt.title(CLASSES[int(label)])
     plt.axis('off')
-  #title_ = CLASSES[int(label)] + " Images"
+    for n in range(0, batch_size):
+        fig.add_subplot(rows, cols, n + 1)
+        img = inp_batch[n]
+    plt.imshow(img)
+    plt.axis('off')
 
+#-----------------------------------
 def compute_mean_image(images, opt="mean"):
-  """
+    """
     Compute and return mean image given
     a batch of images
-    images - batch of shape (N x W x H x C)
-  """
-  images = images/255.
-  if opt == "mean":
-    return np.mean(images, axis=0, dtype=np.float64)
-  else:
-    return np.median(images, axis=0)
+    INPUTS:
+        * images [ndarray]: batch of shape (N x W x H x 3)
+    OPTIONAL INPUTS:
+        * opt="mean" or "median"
+    GLOBAL INPUTS:
+    OUTPUTS: 2d mean image [ndarray]
+    """
+    images = images/255.
+    if opt == "mean":
+        return np.mean(images, axis=0, dtype=np.float64)
+    else:
+        return np.median(images, axis=0)
 
+#-----------------------------------
 def plot_mean_images(images, labels):
-  fig = plt.figure(figsize=(20,15))
-  rows, cols = 1, 3
-  example_images = []
-  for n in np.arange(len(CLASSES)):
-    fig.add_subplot(rows, cols, n + 1)
-    locs = np.where(labels == n)
-    samples = locs[:][0]
-    class_images = images[samples]
-    img = compute_mean_image(class_images, "median")
-    plt.imshow(img)
-    plt.title(CLASSES[n])
-    plt.axis('off')
+    """
+    Plot the mean image of a set of images
+    INPUTS:
+        * images [ndarray]: batch of shape (N x W x H x 3)
+        * labels [ndarray]: batch of shape (N x 1)
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS: matplotlib figure
+    """
+    fig = plt.figure(figsize=(20,15))
+    rows, cols = 1, 3
+    example_images = []
+    for n in np.arange(len(CLASSES)):
+        fig.add_subplot(rows, cols, n + 1)
+        locs = np.where(labels == n)
+        samples = locs[:][0]
+        class_images = images[samples]
+        img = compute_mean_image(class_images, "median")
+        plt.imshow(img)
+        plt.title(CLASSES[n])
+        plt.axis('off')
 
-
-
-# Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
+#-----------------------------------
 def plot_tsne(tsne_result, label_ids):
-  fig = plt.figure(figsize=(20,20))
-  ax = fig.add_subplot(111,projection='3d')
+    """
+    Plot TSNE loadings and colour code by class
+    Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS: matplotlib figure, matplotlib figure axes object
+    """
+    fig = plt.figure(figsize=(20,20))
+    ax = fig.add_subplot(111,projection='3d')
 
-  plt.grid()
+    plt.grid()
 
-  nb_classes = len(np.unique(label_ids))
+    nb_classes = len(np.unique(label_ids))
 
-  for label_id in np.unique(label_ids):
+    for label_id in np.unique(label_ids):
       ax.scatter(tsne_result[np.where(label_ids == label_id), 0],
                   tsne_result[np.where(label_ids == label_id), 1],
                   tsne_result[np.where(label_ids == label_id), 2],
@@ -134,20 +200,31 @@ def plot_tsne(tsne_result, label_ids):
                   color= plt.cm.Set1(label_id / float(nb_classes)),
                   marker='o',
                   label=CLASSES[label_id])
-  ax.legend(loc='best')
-  ax.axis('tight')
+    ax.legend(loc='best')
+    ax.axis('tight')
 
-  ax.view_init(25, 45)
-  ax.set_xlim(-2.5, 2.5)
-  ax.set_ylim(-2.5, 2.5)
-  ax.set_zlim(-2.5, 2.5)
-  #wandb.log({"t-SNE  of {} samples".format(len(tsne_result)): plt})
-  return fig, ax
+    ax.view_init(25, 45)
+    ax.set_xlim(-2.5, 2.5)
+    ax.set_ylim(-2.5, 2.5)
+    ax.set_zlim(-2.5, 2.5)
+    return fig, ax
 
-
+#-----------------------------------
 # Show images with t-SNE
 # Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
 def visualize_scatter_with_images(X_2d_data, images, figsize=(15,15), image_zoom=1):
+    """
+    Plot TSNE loadings and colour code by class
+    Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
+    INPUTS:
+        * X_2d_data
+        * images
+    OPTIONAL INPUTS:
+        * figsize=(15,15)
+        * image_zoom=1
+    GLOBAL INPUTS:
+    OUTPUTS: matplotlib figure
+    """
     fig, ax = plt.subplots(figsize=figsize)
     artists = []
     for xy, i in zip(X_2d_data, images):
@@ -167,8 +244,6 @@ data_path= os.getcwd()+os.sep+"data/tamucc/subset_2class/400"
 
 training_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
-# CLASSES = ['marsh', 'dev', 'other']
-
 CLASSES = ['undev', 'dev']
 
 nb_images = ims_per_shard * len(training_filenames)
@@ -182,11 +257,10 @@ ytrain = []
 train_ds = get_training_dataset()
 for imgs,lbls in train_ds.take(num_batches):
   n = np.bincount(lbls, minlength=len(CLASSES))
-  ytrain.append(lbls.numpy()) #n)
+  ytrain.append(lbls.numpy())
   for im in imgs:
     X_train.append(im)
 
-# Ntrain = np.sum(ytrain, axis=0)
 
 X_train = np.array(X_train)
 

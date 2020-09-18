@@ -8,18 +8,46 @@ from imports import *
 
 #-----------------------------------
 def get_training_dataset():
-  return get_batched_dataset(training_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: training_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_batched_dataset(training_filenames)
 
-#-----------------------------------
 def get_validation_dataset():
-  return get_batched_dataset(validation_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_batched_dataset(validation_filenames)
 
 def get_validation_eval_dataset():
-  return get_eval_dataset(validation_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_eval_dataset(validation_filenames)
 
 #-----------------------------------
 def get_aug_datasets():
-
+    """
+    This function will create train and validation sets based on a specific
+    data augmentation pipeline consisting of random flipping, small rotations,
+    translations and contrast adjustments
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames, training_filenames
+    OUTPUTS: two batched data set objects, one for training and one for validation
+    """
     data_augmentation = tf.keras.Sequential([
       tf.keras.layers.experimental.preprocessing.RandomFlip('horizontal'),
       tf.keras.layers.experimental.preprocessing.RandomRotation(0.01),
@@ -52,6 +80,7 @@ sample_data_path= os.getcwd()+os.sep+"data/tamucc/subset_2class/sample"
 cm_filename = os.getcwd()+os.sep+'results/tamucc_sample_3class_custom_model_cm_val.png'
 sample_plot_name = os.getcwd()+os.sep+'results/tamucc_sample_3class_custom_model_est24samples.png'
 
+test_samples_fig = os.getcwd()+os.sep+'results/tamucc_full_sample_3class_custom_model_est24samples.png'
 
 patience = 10
 
@@ -97,17 +126,6 @@ for imgs,lbls in val_ds.take(1):
 # plt.show()
 plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_3class_valsamples.png', dpi=200, bbox_inches='tight')
 
-
-
-## data augmentation is typically used
-## the primary purpose is regularization
-#
-# from: https://www.tensorflow.org/tutorials/images/data_augmentation
-# With this approach, you use Dataset.map to create a dataset that yields batches of augmented images. In this case:
-#
-#     Data augmentation will happen asynchronously on the CPU, and is non-blocking. You can overlap the training of your model on the GPU with data preprocessing, using Dataset.prefetch, shown below.
-#     In this case the prepreprocessing layers will not be exported with the model when you call model.save. You will need to attach them to your model before saving it or reimplement them server-side. After training, you can attach the preprocessing layers before export.
-
 ## data augmentation is typically used
 augmented_train_ds, augmented_val_ds = get_aug_datasets()
 
@@ -132,15 +150,14 @@ lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch)
 
 ## smaller model
 numclass = len(CLASSES)
-ID_MAP = dict(zip(np.arange(numclass), [str(k) for k in range(numclass)]))
-
+# ID_MAP = dict(zip(np.arange(numclass), [str(k) for k in range(numclass)]))
 
 # more classes = larger model
 # shallow=False
 
-custom_model = make_cat_model(ID_MAP, denseunits=256, base_filters = 30, dropout=0.5, bn=False, pool=True, shallow=False)
+custom_model = make_cat_model(numclass, denseunits=256, base_filters = 30, dropout=0.5, bn=False, pool=True, shallow=False)
 
-custom_model.summary()
+# custom_model.summary()
 
 custom_model.compile(optimizer=tf.keras.optimizers.Adam(),
           loss='sparse_categorical_crossentropy',
@@ -187,50 +204,13 @@ else:
 loss, accuracy = custom_model.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
 print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
-##76%
-
+##75%
 
 ##########################################################
 ### predict
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
-
-plt.figure(figsize=(16,16))
-
-for counter,f in enumerate(sample_filenames):
-    image, im = file2tensor(f, 'mobilenet')
-    plt.subplot(8,4,counter+1)
-    name = sample_filenames[counter].split(os.sep)[-1].split('_')[0]
-    plt.title(name, fontsize=10)
-    plt.imshow(tf.cast(image, tf.uint8))
-    plt.axis('off')
-
-    scores = custom_model.predict(tf.expand_dims(im, 0) , batch_size=1)
-    n = np.argmax(scores[0])
-    est_name = CLASSES[n].decode()
-    if name==est_name:
-       plt.text(10,50,'prediction: %s' % est_name,
-                color='k', fontsize=12,
-                ha="center", va="center",
-                bbox=dict(boxstyle="round",
-                       ec=(.1, 1., .5),
-                       fc=(.1, 1., .5),
-                       ))
-    else:
-       plt.text(10,50,'prediction: %s' % est_name,
-                color='k', fontsize=12,
-                ha="center", va="center",
-                bbox=dict(boxstyle="round",
-                       ec=(1., 0.5, 0.1),
-                       fc=(1., 0.8, 0.8),
-                       ))
-
-# plt.show()
-plt.savefig(sample_plot_name,
-            dpi=200, bbox_inches='tight')
-plt.close('all')
-
-
+make_sample_plot(custom_model, sample_filenames, test_samples_fig, CLASSES)
 
 
 ##################################################

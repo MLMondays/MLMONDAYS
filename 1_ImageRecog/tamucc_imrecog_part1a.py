@@ -4,20 +4,52 @@
 ###############################################################
 from imports import *
 
+###############################################################
+## FUNCTIONS
+###############################################################
+
 #-----------------------------------
 def get_training_dataset():
-  return get_batched_dataset(training_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: training_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_batched_dataset(training_filenames)
 
-#-----------------------------------
 def get_validation_dataset():
-  return get_batched_dataset(validation_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_batched_dataset(validation_filenames)
 
 def get_validation_eval_dataset():
-  return get_eval_dataset(validation_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_eval_dataset(validation_filenames)
 
 #-----------------------------------
 def get_aug_datasets():
-
+    """
+    This function will create train and validation sets based on a specific
+    data augmentation pipeline consisting of random flipping, small rotations,
+    translations and contrast adjustments
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames, training_filenames
+    OUTPUTS: two batched data set objects, one for training and one for validation
+    """
     data_augmentation = tf.keras.Sequential([
       tf.keras.layers.experimental.preprocessing.RandomFlip('horizontal'),
       tf.keras.layers.experimental.preprocessing.RandomRotation(0.01),
@@ -35,8 +67,6 @@ def get_aug_datasets():
 ###############################################################
 ## VARIABLES
 ###############################################################
-
-#what's the goal? Yo're trying to maximize your validation accuracy. You want your training accuracy to be high too, but not if the validation accuracy isn't as or nearly as high
 
 ## model inputs
 data_path= os.getcwd()+os.sep+"data/tamucc/subset_2class/400"
@@ -122,23 +152,14 @@ for im,l in augmented_train_ds.take(1):
 plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_2class_augtrainsamples.png', dpi=200, bbox_inches='tight')
 
 
-# plt.figure(figsize=(16,16))
-# for im,l in augmented_val_ds.take(1):
-#     for count,im in enumerate(im):
-#        plt.subplot(4,2,count+1)
-#        plt.imshow(im)
-#        plt.axis('off')
-# plt.show()
-
 
 ###+===================================================
 
 ## smaller model
 numclass = len(CLASSES)
-ID_MAP = dict(zip(np.arange(numclass), [str(k) for k in range(numclass)]))
+# ID_MAP = dict(zip(np.arange(numclass), [str(k) for k in range(numclass)]))
 
-# custom_model = make_cat_model(ID_MAP, 0.5)
-custom_model = make_cat_model(ID_MAP, denseunits=256, base_filters = 30, dropout=0.5)
+custom_model = make_cat_model(numclass, denseunits=256, base_filters = 30, dropout=0.5)
 
 custom_model.summary()
 
@@ -193,43 +214,7 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
-
-plt.figure(figsize=(16,16))
-
-for counter,f in enumerate(sample_filenames):
-    image, im = file2tensor(f, 'mobilenet')
-    plt.subplot(6,4,counter+1)
-    name = sample_filenames[counter].split(os.sep)[-1].split('_')[0]
-    plt.title(name, fontsize=10)
-    plt.imshow(tf.cast(image, tf.uint8))
-    plt.axis('off')
-
-    scores = custom_model.predict(tf.expand_dims(im, 0) , batch_size=1)
-    n = np.argmax(scores[0])
-    est_name = CLASSES[n].decode()
-    if name==est_name:
-       plt.text(10,50,'prediction: %s' % est_name,
-                color='k', fontsize=12,
-                ha="center", va="center",
-                bbox=dict(boxstyle="round",
-                       ec=(.1, 1., .5),
-                       fc=(.1, 1., .5),
-                       ))
-    else:
-       plt.text(10,50,'prediction: %s' % est_name,
-                color='k', fontsize=12,
-                ha="center", va="center",
-                bbox=dict(boxstyle="round",
-                       ec=(1., 0.5, 0.1),
-                       fc=(1., 0.8, 0.8),
-                       ))
-
-# plt.show()
-plt.savefig(test_samples_fig,
-            dpi=200, bbox_inches='tight')
-plt.close('all')
-
-
+make_sample_plot(custom_model, sample_filenames, test_samples_fig, CLASSES)
 
 
 ##################################################

@@ -8,18 +8,46 @@ from imports import *
 
 #-----------------------------------
 def get_training_dataset():
-  return get_batched_dataset(training_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: training_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_batched_dataset(training_filenames)
 
-#-----------------------------------
 def get_validation_dataset():
-  return get_batched_dataset(validation_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_batched_dataset(validation_filenames)
 
 def get_validation_eval_dataset():
-  return get_eval_dataset(validation_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_eval_dataset(validation_filenames)
 
 #-----------------------------------
 def get_aug_datasets():
-
+    """
+    This function will create train and validation sets based on a specific
+    data augmentation pipeline consisting of random flipping, small rotations,
+    translations and contrast adjustments
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames, training_filenames
+    OUTPUTS: two batched data set objects, one for training and one for validation
+    """
     data_augmentation = tf.keras.Sequential([
       tf.keras.layers.experimental.preprocessing.RandomFlip('horizontal'),
       tf.keras.layers.experimental.preprocessing.RandomRotation(0.01),
@@ -33,7 +61,6 @@ def get_aug_datasets():
     augmented_val_ds = get_validation_dataset().map(
       lambda x, y: (data_augmentation(x, training=True), y))
     return augmented_train_ds, augmented_val_ds
-
 
 ###############################################################
 
@@ -55,6 +82,8 @@ filepath = os.getcwd()+os.sep+'results/tamucc_subset_3class_mv2_best_weights_mod
 train_hist_fig = os.getcwd()+os.sep+'results/tamucc_sample_3class_mv2_model2.png'
 cm_filename = os.getcwd()+os.sep+'results/tamucc_sample_3class_mv2_model2_cm_val.png'
 sample_plot_name = os.getcwd()+os.sep+'results/tamucc_sample_3class_mv2_model2_est24samples.png'
+
+test_samples_fig = os.getcwd()+os.sep+'results/tamucc_full_sample_3class_mv2_model_est24samples.png'
 
 
 ###############################################################
@@ -194,7 +223,6 @@ else:
     model2.load_weights(filepath)
 
 
-
 ##########################################################
 ### evaluate
 loss, accuracy = model2.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
@@ -206,45 +234,8 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 ### predict
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
+make_sample_plot(model2, sample_filenames, test_samples_fig, CLASSES)
 
-plt.figure(figsize=(16,16))
-
-for counter,f in enumerate(sample_filenames):
-    image, im = file2tensor(f, 'mobilenet')
-    plt.subplot(8,4,counter+1)
-    name = sample_filenames[counter].split(os.sep)[-1].split('_')[0]
-    plt.title(name, fontsize=10)
-    plt.imshow(tf.cast(image, tf.uint8))
-    plt.axis('off')
-
-    scores = model2.predict(tf.expand_dims(im, 0) , batch_size=1)
-    n = np.argmax(scores[0])
-    est_name = CLASSES[n].decode()
-    if name==est_name:
-       plt.text(10,50,'prediction: %s' % est_name,
-                color='k', fontsize=12,
-                ha="center", va="center",
-                bbox=dict(boxstyle="round",
-                       ec=(.1, 1., .5),
-                       fc=(.1, 1., .5),
-                       ))
-    else:
-       plt.text(10,50,'prediction: %s' % est_name,
-                color='k', fontsize=12,
-                ha="center", va="center",
-                bbox=dict(boxstyle="round",
-                       ec=(1., 0.5, 0.1),
-                       fc=(1., 0.8, 0.8),
-                       ))
-
-# plt.show()
-plt.savefig(sample_plot_name,
-            dpi=200, bbox_inches='tight')
-plt.close('all')
-
-
-
-## confusion matrix
 
 ## confusion matrix
 val_ds = get_validation_eval_dataset()

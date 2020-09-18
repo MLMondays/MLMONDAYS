@@ -1,6 +1,6 @@
 
 
-## TAMUCC
+## TAMUCC DATA imports
 from tamucc_imports import *
 
 ##UNCOMMENT BELOW TO USE NWPU DATA
@@ -11,35 +11,38 @@ import os
 os.environ["TF_DETERMINISTIC_OPS"] = "1"
 
 ##calcs
-import tensorflow as tf
-from tensorflow.keras.applications import MobileNetV2
-from tensorflow.keras.applications import VGG16
-from tensorflow.keras.applications import Xception
-import numpy as np
-from sklearn.decomposition import PCA
+import tensorflow as tf #numerical operations on gpu
+from tensorflow.keras.applications import MobileNetV2 #mobilenet v2 model, used for feature extraction
+from tensorflow.keras.applications import VGG16 #vgg model, used for feature extraction
+from tensorflow.keras.applications import Xception #xception model, used for feature extraction
+import numpy as np #numerical operations on cpu
+from sklearn.decomposition import PCA  #for data dimensionality reduction / viz.
 from sklearn.preprocessing import StandardScaler
-from sklearn.manifold import TSNE
+from sklearn.manifold import TSNE #for data dimensionality reduction / viz.
 
 ## plots
-import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
-import seaborn as sns
+import matplotlib.pyplot as plt #for plotting
+from sklearn.metrics import confusion_matrix #compute confusion matrix from vectors of observed and estimated labels
+import seaborn as sns #extended functionality / style to matplotlib plots
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox #for visualizing image thumbnails plotted as markers
 
 ##i/o
-from matplotlib.image import imread
-import pandas as pd
-import json, shutil
+# from matplotlib.image import imread
+import pandas as pd #for data wrangling. We just use it to read csv files
+import json, shutil #json for class file reading, shutil for file copying/moving
 
 ##utils
-from sklearn.utils import class_weight
+from sklearn.utils import class_weight #utility for computinh normalised class weights
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-from tensorflow.keras import backend as K
+from tensorflow.keras import backend as K #access to keras backend functions
 
+# set a seed for reproducibility
 SEED=42
 np.random.seed(SEED)
-AUTO = tf.data.experimental.AUTOTUNE # used in tf.data.Dataset API
-
 tf.random.set_seed(SEED)
+
+#for automatically determining dataset feeding processes based on available hardware
+AUTO = tf.data.experimental.AUTOTUNE # used in tf.data.Dataset API
 
 print("Version: ", tf.__version__)
 print("Eager mode: ", tf.executing_eagerly())
@@ -54,7 +57,12 @@ print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('
 #-----------------------------------
 def resize_and_crop_image(image, label):
     """
-    This function
+    This function crops to square and resizes an image
+    The label passes through unmodified
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
     """
     w = tf.shape(image)[0]
     h = tf.shape(image)[1]
@@ -73,7 +81,13 @@ def resize_and_crop_image(image, label):
 #-----------------------------------
 def recompress_image(image, label):
     """
-    This function
+    This function takes an image encoded as a byte string
+    and recodes as an 8-bit jpeg
+    Label passes through unmodified
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
     """
     image = tf.cast(image, tf.uint8)
     image = tf.image.encode_jpeg(image, optimize_size=True, chroma_downsampling=False)
@@ -81,21 +95,44 @@ def recompress_image(image, label):
 
 #-----------------------------------
 """
-This function
+These functions cast inputs into tf dataset 'feature' classes
+There is one for bytestrings (images), one for floats (not used here) and one for ints (labels)
 """
 def _bytestring_feature(list_of_bytestrings):
-  return tf.train.Feature(bytes_list=tf.train.BytesList(value=list_of_bytestrings))
+    """
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
+    """
+    return tf.train.Feature(bytes_list=tf.train.BytesList(value=list_of_bytestrings))
 
-def _int_feature(list_of_ints): # int64
-  return tf.train.Feature(int64_list=tf.train.Int64List(value=list_of_ints))
+def _int_feature(list_of_ints):
+    """
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
+    """
+    return tf.train.Feature(int64_list=tf.train.Int64List(value=list_of_ints))
 
-def _float_feature(list_of_floats): # float32
-  return tf.train.Feature(float_list=tf.train.FloatList(value=list_of_floats))
+def _float_feature(list_of_floats):
+    """
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
+    """
+    return tf.train.Feature(float_list=tf.train.FloatList(value=list_of_floats))
 
 #-----------------------------------
 def to_tfrecord(img_bytes, label, CLASSES):
     """
     This function
+    INPUTS:
+    OPTIONAL INPUTS:
+    OUTPUTS:
+    GLOBAL INPUTS:
     """
     class_num = np.argmax(np.array(CLASSES)==label)
     feature = {
@@ -108,6 +145,10 @@ def to_tfrecord(img_bytes, label, CLASSES):
 def read_tfrecord(example):
     """
     This function
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
     """
     features = {
         "image": tf.io.FixedLenFeature([], tf.string),  # tf.string = bytestring (not text string)
@@ -128,6 +169,10 @@ def read_tfrecord(example):
 def read_image_and_label(img_path):
     """
     This function
+    INPUTS:
+    OPTIONAL INPUTS:
+    OUTPUTS:
+    GLOBAL INPUTS:
     """
     bits = tf.io.read_file(img_path)
     image = tf.image.decode_jpeg(bits)
@@ -141,6 +186,10 @@ def read_image_and_label(img_path):
 def get_dataset_for_tfrecords(recoded_dir, shared_size):
     """
     This function
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
     """
     tamucc_dataset = tf.data.Dataset.list_files(recoded_dir+os.sep+'*.jpg', seed=10000) # This also shuffles the images
     tamucc_dataset = tamucc_dataset.map(read_image_and_label)
@@ -154,6 +203,10 @@ def get_dataset_for_tfrecords(recoded_dir, shared_size):
 def write_records(tamucc_dataset, tfrecord_dir, CLASSES):
     """
     This function
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
     """
     for shard, (image, label) in enumerate(tamucc_dataset):
       shard_size = image.numpy().shape[0]
@@ -173,6 +226,10 @@ def write_records(tamucc_dataset, tfrecord_dir, CLASSES):
 def plot_history(history, train_hist_fig):
     """
     This function
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
     """
     n = len(history.history['accuracy'])
 
@@ -196,6 +253,10 @@ def plot_history(history, train_hist_fig):
 def get_label_pairs(val_ds, model):
     """
     This function
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
     """
     labs = []
     preds = []
@@ -215,7 +276,13 @@ def get_label_pairs(val_ds, model):
 #-----------------------------------
 def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
     """
-    This function
+    This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
+    using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
+    saving out to the provided filename, cm_filename
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
     """
     cm = confusion_matrix(labs, preds)
 
@@ -232,7 +299,6 @@ def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
     plt.xticks(tick_marks, [c.decode() for c in CLASSES], rotation=45,fontsize=12)
     plt.yticks(tick_marks, [c.decode() for c in CLASSES],rotation=45, fontsize=12)
 
-    # plt.show()
     plt.savefig(cm_filename,
                 dpi=200, bbox_inches='tight')
     plt.close('all')
@@ -241,14 +307,89 @@ def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
 
 
 
+def make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES):
+    """
+    This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
+    using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
+    saving out to the provided filename, cm_filename
+    INPUTS:
+        * model
+        * sample_filenames
+        * test_samples_fig
+        * CLASSES
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: matplotlib figure, printed to file
+    """
+
+    plt.figure(figsize=(16,16))
+
+    for counter,f in enumerate(sample_filenames):
+        image, im = file2tensor(f, 'mobilenet')
+        plt.subplot(6,4,counter+1)
+        name = sample_filenames[counter].split(os.sep)[-1].split('_')[0]
+        plt.title(name, fontsize=10)
+        plt.imshow(tf.cast(image, tf.uint8))
+        plt.axis('off')
+
+        scores = model.predict(tf.expand_dims(im, 0) , batch_size=1)
+        n = np.argmax(scores[0])
+        est_name = CLASSES[n].decode()
+        if name==est_name:
+           plt.text(10,50,'prediction: %s' % est_name,
+                    color='k', fontsize=12,
+                    ha="center", va="center",
+                    bbox=dict(boxstyle="round",
+                           ec=(.1, 1., .5),
+                           fc=(.1, 1., .5),
+                           ))
+        else:
+           plt.text(10,50,'prediction: %s' % est_name,
+                    color='k', fontsize=12,
+                    ha="center", va="center",
+                    bbox=dict(boxstyle="round",
+                           ec=(1., 0.5, 0.1),
+                           fc=(1., 0.8, 0.8),
+                           ))
+
+    # plt.show()
+    plt.savefig(test_samples_fig,
+                dpi=200, bbox_inches='tight')
+    plt.close('all')
+
 ###############################################################
 ### DATASET FUNCTIONS
 ###############################################################
+#-----------------------------------
+def read_classes_from_json(json_file):
+    """
+    This function reads the contents of a json file enumerating classes
+    INPUTS:
+        * json_file [string]: full path to the json file
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * CLASSES [list]: list of classesd as byte strings
+    """
+    with open(json_file) as f:
+        class_dict = json.load(f)
+
+    # string names
+    CLASSES = [class_dict[k] for k in class_dict.keys()]
+    #bytestrings names
+    CLASSES = [c.encode() for c in CLASSES]
+    return CLASSES
 
 #-----------------------------------
 def file2tensor(f, model='mobilenet'):
     """
-    This function
+    This function reads a jpeg image from file into a cropped and resized tensor,
+    for use in prediction with a trained mobilenet or vgg model
+    (the imagery is standardized depedning on target model framework)
+    INPUTS:
+    OPTIONAL INPUTS:
+    OUTPUTS:
+    GLOBAL INPUTS:
     """
     bits = tf.io.read_file(f)
     image = tf.image.decode_jpeg(bits)
@@ -281,10 +422,17 @@ def file2tensor(f, model='mobilenet'):
 #-----------------------------------
 def get_batched_dataset(filenames):
     """
-    This function
+    This function defines a workflow for the model to read data from
+    tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
+    and also formats the imagery properly for model training
+    (assumes mobilenet by using read_tfrecord_mv2)
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
     """
     option_no_order = tf.data.Options()
-    option_no_order.experimental_deterministic = False  ##True?
+    option_no_order.experimental_deterministic = True # False
 
     dataset = tf.data.Dataset.list_files(filenames)
     dataset = dataset.with_options(option_no_order)
@@ -302,10 +450,19 @@ def get_batched_dataset(filenames):
 #-----------------------------------
 def get_eval_dataset(filenames):
     """
-    This function
+    This function defines a workflow for the model to read data from
+    tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
+    and also formats the imagery properly for model training
+    (assumes mobilenet by using read_tfrecord_mv2)
+
+    This evaluation version does not .repeat() because it is not being called repeatedly by a model
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS:
     """
     option_no_order = tf.data.Options()
-    option_no_order.experimental_deterministic = False
+    option_no_order.experimental_deterministic = True #False
 
     dataset = tf.data.Dataset.list_files(filenames)
     dataset = dataset.with_options(option_no_order)
@@ -323,7 +480,15 @@ def get_eval_dataset(filenames):
 #-----------------------------------
 def read_tfrecord_vgg(example):
     """
-    This function
+    This function reads an example record from a tfrecord file
+    and parses into label and image ready for vgg model training
+    INPUTS:
+        * example: an tfrecord 'example' object, containing an image and label
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: TARGET_SIZE
+    OUTPUTS:
+        * image [tensor]: resized and pre-processed for vgg
+        * class_label [tensor] 32-bit integer
     """
     features = {
         "image": tf.io.FixedLenFeature([], tf.string),  # tf.string = bytestring (not text string)
@@ -347,7 +512,15 @@ def read_tfrecord_vgg(example):
 #-----------------------------------
 def read_tfrecord_mv2(example):
     """
-    This function
+    This function reads an example record from a tfrecord file
+    and parses into label and image ready for mobilenet model training
+    INPUTS:
+        * example: an tfrecord 'example' object, containing an image and label
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: TARGET_SIZE
+    OUTPUTS:
+        * image [tensor]: resized and pre-processed for mobilenetv2
+        * class_label [tensor] 32-bit integer
     """
     features = {
         "image": tf.io.FixedLenFeature([], tf.string),  # tf.string = bytestring (not text string)
@@ -367,13 +540,19 @@ def read_tfrecord_mv2(example):
 
     return image, class_label
 
-
-
 ###############################################
 ##### MODEL FUNCTIONS
 ###############################################
 # learning rate function
 def lrfn(epoch):
+    """
+    This function creates a custom piecewise linear-exponential learning rate function
+    for a custom learning rate scheduler. It is linear to a max, then exponentially decays
+    INPUTS: current epoch number
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: start_lr, min_lr, max_lr, rampup_epochs, sustain_epochs, exp_decay
+    OUTPUTS:  the function lr with all arguments passed
+    """
     def lr(epoch, start_lr, min_lr, max_lr, rampup_epochs, sustain_epochs, exp_decay):
         if epoch < rampup_epochs:
             lr = (max_lr - start_lr)/rampup_epochs * epoch + start_lr
@@ -391,6 +570,13 @@ def transfer_learning_model_vgg(num_classes, input_shape, dropout_rate=0.5):
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on vgg, trained using transfer learning
     (initialized using pretrained imagenet weights)
+    INPUTS:
+        * num_classes = number of classes (output nodes on classification layer)
+        * input_shape = size of input layer (i.e. image tensor)
+    OPTIONAL INPUTS:
+        * dropout_rate = proportion of neurons to randomly set to zero, after the pooling layer
+    GLOBAL INPUTS: None
+    OUTPUTS: keras model instance
     """
     EXTRACTOR = VGG16(weights="imagenet", include_top=False,
                         input_shape=input_shape)
@@ -414,6 +600,13 @@ def mobilenet_model(num_classes, input_shape, dropout_rate=0.5):
     """
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on mobilenet, trained from scratch
+    INPUTS:
+        * num_classes = number of classes (output nodes on classification layer)
+        * input_shape = size of input layer (i.e. image tensor)
+    OPTIONAL INPUTS:
+        * dropout_rate = proportion of neurons to randomly set to zero, after the pooling layer
+    GLOBAL INPUTS: None
+    OUTPUTS: keras model instance
     """
     EXTRACTOR = MobileNetV2(weights=None, include_top=False,
                         input_shape=input_shape)
@@ -438,6 +631,13 @@ def transfer_learning_mobilenet_model(num_classes, input_shape, dropout_rate=0.5
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on mobilenet v2, trained using transfer learning
     (initialized using pretrained imagenet weights)
+    INPUTS:
+        * num_classes = number of classes (output nodes on classification layer)
+        * input_shape = size of input layer (i.e. image tensor)
+    OPTIONAL INPUTS:
+        * dropout_rate = proportion of neurons to randomly set to zero, after the pooling layer
+    GLOBAL INPUTS: None
+    OUTPUTS: keras model instance
     """
     EXTRACTOR = MobileNetV2(weights="imagenet", include_top=False,
                         input_shape=input_shape)
@@ -462,6 +662,13 @@ def transfer_learning_xception_model(num_classes, input_shape, dropout_rate=0.25
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on xception, trained using transfer learning
     (initialized using pretrained imagenet weights)
+    INPUTS:
+        * num_classes = number of classes (output nodes on classification layer)
+        * input_shape = size of input layer (i.e. image tensor)
+    OPTIONAL INPUTS:
+        * dropout_rate = proportion of neurons to randomly set to zero, after the pooling layer
+    GLOBAL INPUTS: None
+    OUTPUTS: keras model instance
     """
     EXTRACTOR = Xception(weights="imagenet", include_top=False,
                         input_shape=input_shape)
@@ -485,6 +692,13 @@ def xception_model(num_classes, input_shape, dropout_rate=0.25):
     """
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on xception, trained from scratch
+    INPUTS:
+        * num_classes = number of classes (output nodes on classification layer)
+        * input_shape = size of input layer (i.e. image tensor)
+    OPTIONAL INPUTS:
+        * dropout_rate = proportion of neurons to randomly set to zero, after the pooling layer
+    GLOBAL INPUTS: None
+    OUTPUTS: keras model instance
     """
     EXTRACTOR = Xception(weights=None, include_top=False,
                         input_shape=input_shape)
@@ -504,35 +718,54 @@ def xception_model(num_classes, input_shape, dropout_rate=0.25):
     return model
 
 ###===================================================
-def conv_block(inp, filters=32, bn=True, pool=True): #, drop=True):
-   """
-   This function generates a convolutional block
-   """
-   x = tf.keras.layers.Conv2D(filters=filters, kernel_size=3, activation='relu',
+def conv_block(inp, filters=32, bn=True, pool=True):
+    """
+    This function generates a convolutional block
+    INPUTS:
+        * inp = input layer
+    OPTIONAL INPUTS:
+        * filters = number of convolutional filters to use
+        * bn=False, use batch normalization in each convolutional layer
+        * pool=True, use pooling in each convolutional layer
+        * shallow=True, if False, a larger model with more convolution layers is used
+    GLOBAL INPUTS: None
+    OUTPUTS: keras model layer object
+    """
+    x = tf.keras.layers.Conv2D(filters=filters, kernel_size=3, activation='relu',
               kernel_initializer='he_uniform')(inp)
 
-   # _ = SeparableConv2D(filters=filters, kernel_size=3, activation='relu')(inp) #kernel_initializer='he_uniform'
-   if bn:
+    # _ = SeparableConv2D(filters=filters, kernel_size=3, activation='relu')(inp) #kernel_initializer='he_uniform'
+    if bn:
        x = tf.keras.layers.BatchNormalization()(x)
-   if pool:
+    if pool:
        x = tf.keras.layers.MaxPool2D()(x)
-   # if drop:
-   #     _ = tf.keras.layers.Dropout(0.2)(_)
-   return x
+    # if drop:
+    #     _ = tf.keras.layers.Dropout(0.2)(_)
+    return x
 
 ###===================================================
-def make_cat_model(ID_MAP, dropout, denseunits, base_filters, bn=False, pool=True, drop=False, shallow=True):
+def make_cat_model(num_classes, dropout, denseunits, base_filters, bn=False, pool=True, shallow=True):
     """
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category
+    INPUTS:
+        * num_classes = number of classes (output nodes on classification layer)
+        * dropout = proportion of neurons to randomly set to zero, after the pooling layer
+        * denseunits = number of neurons in the classifying layer
+        * base_filters = number of convolutional filters to use in the first layer
+    OPTIONAL INPUTS:
+        * bn=False, use batch normalization in each convolutional layer
+        * pool=True, use pooling in each convolutional layer
+        * shallow=True, if False, a larger model with more convolution layers is used
+    GLOBAL INPUTS: TARGET_SIZE
+    OUTPUTS: keras model instance
     """
-    #base_filters = 30
     input_layer = tf.keras.layers.Input(shape=(TARGET_SIZE, TARGET_SIZE, 3))
 
-    x = conv_block(input_layer, filters=base_filters, bn=bn, pool=pool)#, drop=drop) #x #
-    x = conv_block(x, filters=base_filters*2, bn=bn, pool=pool)#, drop=drop)
-    x = conv_block(x, filters=base_filters*3, bn=bn, pool=pool)#, drop=drop)
-    x = conv_block(x, filters=base_filters*4, bn=bn, pool=pool)#, drop=drop)
+    x = conv_block(input_layer, filters=base_filters, bn=bn, pool=pool)
+    x = conv_block(x, filters=base_filters*2, bn=bn, pool=pool)
+    x = conv_block(x, filters=base_filters*3, bn=bn, pool=pool)
+    x = conv_block(x, filters=base_filters*4, bn=bn, pool=pool)
 
     if shallow is False:
         x = conv_block(x, filters=base_filters*5, bn=bn, pool=pool)
@@ -542,14 +775,13 @@ def make_cat_model(ID_MAP, dropout, denseunits, base_filters, bn=False, pool=Tru
     bottleneck = tf.keras.layers.Dropout(dropout)(bottleneck)
 
     # for class prediction
-    class_head = tf.keras.layers.Dense(units=denseunits, activation='relu')(bottleneck)  ##128
-    class_head = tf.keras.layers.Dense(units=len(ID_MAP), activation='softmax', name='output')(class_head)
+    class_head = tf.keras.layers.Dense(units=denseunits, activation='relu')(bottleneck)
+    class_head = tf.keras.layers.Dense(units=num_classes, activation='softmax', name='output')(class_head)
 
     model = tf.keras.models.Model(inputs=input_layer, outputs=[class_head])
 
-    model.compile(optimizer='adam', #'adam',
-              loss={'output': 'categorical_crossentropy'}, #
+    model.compile(optimizer='adam',
+              loss={'output': 'categorical_crossentropy'},
               metrics={'output': 'accuracy'})
 
-    #model.summary()
     return model

@@ -4,20 +4,52 @@
 ###############################################################
 from imports import *
 
+###############################################################
+## FUNCTIONS
+###############################################################
+
 #-----------------------------------
 def get_training_dataset():
-  return get_batched_dataset(training_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: training_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_batched_dataset(training_filenames)
 
-#-----------------------------------
 def get_validation_dataset():
-  return get_batched_dataset(validation_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_batched_dataset(validation_filenames)
 
 def get_validation_eval_dataset():
-  return get_eval_dataset(validation_filenames)
+    """
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_eval_dataset(validation_filenames)
 
 #-----------------------------------
 def get_aug_datasets():
-
+    """
+    This function will create train and validation sets based on a specific
+    data augmentation pipeline consisting of random flipping, small rotations,
+    translations and contrast adjustments
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames, training_filenames
+    OUTPUTS: two batched data set objects, one for training and one for validation
+    """
     data_augmentation = tf.keras.Sequential([
       tf.keras.layers.experimental.preprocessing.RandomFlip('horizontal'),
       tf.keras.layers.experimental.preprocessing.RandomRotation(0.01),
@@ -32,6 +64,31 @@ def get_aug_datasets():
       lambda x, y: (data_augmentation(x, training=True), y))
     return augmented_train_ds, augmented_val_ds
 
+def get_all_labels(nb_images, VALIDATION_SPLIT, BATCH_SIZE):
+    """
+    "get_all_labels"
+    This function will obtain the classes of all samples in both train and
+    validation sets. For computing class imbalance on the whole dataset
+    INPUTS:
+        * nb_images [int]: number of total images
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: VALIDATION_SPLIT, BATCH_SIZE
+    OUTPUTS:
+        * l [list]: list of integers representing labels of each image
+    """
+    l = []
+    num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
+    train_ds = get_training_dataset()
+    for _,lbls in train_ds.take(num_batches):
+        l.append(lbls.numpy())
+
+    val_ds = get_validation_dataset()
+    num_batches = int(((VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
+    for _,lbls in val_ds.take(num_batches):
+        l.append(lbls.numpy())
+
+    l = np.asarray(l).flatten()
+    return l
 
 ###############################################################
 ## VARIABLES
@@ -83,18 +140,19 @@ lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch)
 #####################################################################
 ## class weights
 
-l = []
-num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
-train_ds = get_training_dataset()
-for _,lbls in train_ds.take(num_batches):
-    l.append(lbls.numpy())
-
-val_ds = get_validation_dataset()
-num_batches = int(((VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
-for _,lbls in val_ds.take(num_batches):
-    l.append(lbls.numpy())
-
-l = np.asarray(l).flatten()
+# l = []
+# num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
+# train_ds = get_training_dataset()
+# for _,lbls in train_ds.take(num_batches):
+#     l.append(lbls.numpy())
+#
+# val_ds = get_validation_dataset()
+# num_batches = int(((VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
+# for _,lbls in val_ds.take(num_batches):
+#     l.append(lbls.numpy())
+#
+# l = np.asarray(l).flatten()
+l = get_all_labels(nb_images, VALIDATION_SPLIT, BATCH_SIZE)
 
 # class weights will be given by n_samples / (n_classes * np.bincount(y))
 
@@ -105,11 +163,12 @@ class_weights = class_weight.compute_class_weight('balanced',
 class_weights = dict(enumerate(class_weights))
 print(class_weights)
 
+
+##==============================
 numclass = len(CLASSES)
-ID_MAP = dict(zip(np.arange(numclass), [str(k) for k in range(numclass)]))
+# ID_MAP = dict(zip(np.arange(numclass), [str(k) for k in range(numclass)]))
 
-
-custom_model2 = make_cat_model(ID_MAP, denseunits=256, base_filters = 30, dropout=0.5)
+custom_model2 = make_cat_model(numclass, denseunits=256, base_filters = 30, dropout=0.5)
 
 
 custom_model2.compile(optimizer=tf.keras.optimizers.Adam(),
@@ -129,6 +188,8 @@ callbacks = [model_checkpoint, earlystop, lr_callback]
 do_train = False #True
 
 if do_train:
+    K.clear_session()
+
     history = custom_model2.fit(augmented_train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
                           validation_data=augmented_val_ds, validation_steps=validation_steps,
                           callbacks=callbacks, class_weight = class_weights)
@@ -150,53 +211,16 @@ else:
 loss, accuracy = custom_model2.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
 print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
-##86%
-
+##85%
 
 ##########################################################
 ### predict
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
-
-plt.figure(figsize=(16,16))
-
-for counter,f in enumerate(sample_filenames):
-    image, im = file2tensor(f, 'mobilenet')
-    plt.subplot(6,4,counter+1)
-    name = sample_filenames[counter].split(os.sep)[-1].split('_')[0]
-    plt.title(name, fontsize=10)
-    plt.imshow(tf.cast(image, tf.uint8))
-    plt.axis('off')
-
-    scores = custom_model2.predict(tf.expand_dims(im, 0) , batch_size=1)
-    n = np.argmax(scores[0])
-    est_name = CLASSES[n].decode()
-    if name==est_name:
-       plt.text(10,50,'prediction: %s' % est_name,
-                color='k', fontsize=12,
-                ha="center", va="center",
-                bbox=dict(boxstyle="round",
-                       ec=(.1, 1., .5),
-                       fc=(.1, 1., .5),
-                       ))
-    else:
-       plt.text(10,50,'prediction: %s' % est_name,
-                color='k', fontsize=12,
-                ha="center", va="center",
-                bbox=dict(boxstyle="round",
-                       ec=(1., 0.5, 0.1),
-                       fc=(1., 0.8, 0.8),
-                       ))
-
-# plt.show()
-plt.savefig(test_samples_fig,
-            dpi=200, bbox_inches='tight')
-plt.close('all')
-
+make_sample_plot(custom_model2, sample_filenames, test_samples_fig, CLASSES)
 
 ##################################################
-## confusion matrix
 
 ## confusion matrix
 val_ds = get_validation_eval_dataset()
