@@ -167,7 +167,13 @@ cm_fig = os.getcwd()+os.sep+'results/tamucc_subset_12class_cm_test.png'
 
 
 patience = 10
+
+# double the number of embedding dims
+
 num_embed_dim = 16 #8
+
+# triple the maximum training epochs, just in case!
+
 max_epochs = 300
 lr = 1e-4
 
@@ -241,7 +247,7 @@ print(num_batches)
 X_train, ytrain, class_idx_to_train_idxs = get_train_stuff(num_batches)
 
 
-model1 = get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
+model1 = get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
 
 ## use SparseCategoricalCrossentropy because multiclass
 
@@ -250,6 +256,10 @@ model1.compile(
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
      metrics=['accuracy'],
 )
+
+model1.summary()
+
+#393k
 
 earlystop = EarlyStopping(monitor="loss",
                               mode="min", patience=patience)
@@ -344,7 +354,22 @@ sns.heatmap(cm,
     cmap = sns.cubehelix_palette(dark=0, light=1, as_cmap=True))
 
 tick_marks = np.arange(len(CLASSES))+.5
-plt.xticks(tick_marks, [c.decode() for c in CLASSES], rotation=45,fontsize=12)
-plt.yticks(tick_marks, [c.decode() for c in CLASSES],rotation=45, fontsize=12)
+plt.xticks(tick_marks, [c.decode() for c in CLASSES], rotation=90,fontsize=12)
+plt.yticks(tick_marks, [c.decode() for c in CLASSES],rotation=0, fontsize=12)
 
 plt.show()
+
+
+
+
+y_pred = knn1.predict_proba(embeddings_test[:,:num_dim_use])
+
+y_prob = np.max(y_pred, axis=1)
+
+y_pred = np.argmax(y_pred, axis=1)
+
+ind = np.where(y_prob==1)[0]
+
+print(len(ind))
+
+p_confmat(ytest[:touse][ind], y_pred[ind], cm_filename.replace('val', 'val_v2'), CLASSES, thres = 0.1)

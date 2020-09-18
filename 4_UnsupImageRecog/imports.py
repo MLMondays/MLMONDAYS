@@ -1,6 +1,6 @@
 
 TARGET_SIZE = 400
-VALIDATION_SPLIT = 0.6
+VALIDATION_SPLIT = 0.5 #0.6
 ims_per_shard = 200
 BATCH_SIZE = 6
 
@@ -133,6 +133,23 @@ class EmbeddingModel(tf.keras.Model):
 #     confusion_matrix = confusion_matrix.astype('float') / confusion_matrix.sum(axis=1)[:, np.newaxis]
 #     return confusion_matrix
 
+
+def get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim):
+    """
+    This function
+    """
+    inputs = tf.keras.layers.Input(shape=(TARGET_SIZE, TARGET_SIZE, 3))
+    x = tf.keras.layers.Conv2D(filters=16, kernel_size=3, strides=2, activation="relu")(inputs) #
+    x = tf.keras.layers.Conv2D(filters=32, kernel_size=3, strides=2, activation="relu")(inputs) #
+    x = tf.keras.layers.Conv2D(filters=64, kernel_size=3, strides=2, activation="relu")(x) #32
+    x = tf.keras.layers.Conv2D(filters=128, kernel_size=3, strides=2, activation="relu")(x) #64
+    x = tf.keras.layers.Conv2D(filters=256, kernel_size=3, strides=2, activation="relu")(x) #64
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    embeddings = tf.keras.layers.Dense(units = num_embed_dim, activation=None)(x)
+    #embeddings = tf.nn.l2_normalize(embeddings, axis=-1)
+
+    model = EmbeddingModel(inputs, embeddings)
+    return model
 
 def get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim):
     """
