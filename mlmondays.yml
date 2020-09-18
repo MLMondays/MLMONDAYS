@@ -8,8 +8,7 @@ dependencies:
   - pydensecrf #for CRF algorithm (segmentation post-processing)
   - cython #needed for compiling pydensecrf
   - numpy
-  - Pillow #need?
-  - scipy #need?
+  - Pillow #needed for image operations
   - scikit-learn #ML algos and utilities
   - matplotlib ##plots
   - seaborn ##make matplotlib plots nicer!
