@@ -1,10 +1,11 @@
 
-TARGET_SIZE = 400
-VALIDATION_SPLIT = 0.5 #0.6
-ims_per_shard = 200
-BATCH_SIZE = 6
 
-num_classes = 12 #12 # 4 #2
+## TAMUCC
+#from tamucc_imports import *
+
+##UNCOMMENT BELOW TO USE NWPU DATA
+from nwpu_imports import *
+
 
 #see mlmondays blog post:
 import os
@@ -272,6 +273,25 @@ def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
 ###############################################################
 ### DATA FUNCTIONS
 ###############################################################
+#-----------------------------------
+def read_classes_from_json(json_file):
+    """
+    This function reads the contents of a json file enumerating classes
+    INPUTS:
+        * json_file [string]: full path to the json file
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * CLASSES [list]: list of classesd as byte strings
+    """
+    with open(json_file) as f:
+        class_dict = json.load(f)
+
+    # string names
+    CLASSES = [class_dict[k] for k in class_dict.keys()]
+    #bytestrings names
+    CLASSES = [c.encode() for c in CLASSES]
+    return CLASSES
 
 #-----------------------------------
 def read_tfrecord(example):

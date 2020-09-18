@@ -95,67 +95,39 @@ class AnchorPositivePairs(tf.keras.utils.Sequence):
         return x
 
 
-def get_train_stuff(num_batches):
+def get_data_stuff(ds, num_batches):
     """
-    This function
+    "get_data_stuff" - This function extracts lists of images and corresponding labels for training or testing
+    INPUTS:
+        * ds [PrefetchDataset]: either get_training_dataset() or get_validation_dataset()
+        * num_batches [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * X [list]
+        * y [list]
+        * class_idx_to_train_idxs [collections.defaultdict]
     """
-    X_train = [] #np.zeros((nb_images,TARGET_SIZE, TARGET_SIZE, 3), dtype='uint8')
-    ytrain = []
-    train_ds = get_training_dataset()
+    X = []
+    y = []
 
-    counter = 0
-    for imgs,lbls in train_ds.take(num_batches):
-      ytrain.append(lbls.numpy())
+    for imgs,lbls in ds.take(num_batches):
+      y.append(lbls.numpy())
       for im in imgs:
-        X_train.append(im)
-        #X_train[counter] = im.numpy().astype('uint8')
-        #counter += 1
+        X.append(im)
 
-    X_train = np.array(X_train)
-    ytrain = np.hstack(ytrain)
+    X = np.array(X)
+    y = np.hstack(y)
 
     # get X_train, y_train arrays
-    X_train = X_train.astype("float32")
-    ytrain = np.squeeze(ytrain)
+    X = X.astype("float32")
+    y = np.squeeze(y)
 
-    # code repurposed from https://keras.io/examples/vision/metric_learning/
-    class_idx_to_train_idxs = defaultdict(list)
-    for y_train_idx, y in enumerate(ytrain):
-        class_idx_to_train_idxs[y].append(y_train_idx)
+    class_idx_to_idxs = defaultdict(list)
+    for y_train_idx, y in enumerate(y):
+        class_idx_to_idxs[y].append(y)
 
-    return X_train, ytrain, class_idx_to_train_idxs
-
-
-def get_test_stuff(num_batches):
-    """
-    This function
-    """
-    X_test = [] #np.zeros((nb_images,TARGET_SIZE, TARGET_SIZE, 3), dtype='uint8')
-    ytest = []
-    test_ds = get_validation_dataset()
-
-    counter = 0
-    for imgs,lbls in test_ds.take(num_batches):
-      ytest.append(lbls.numpy())
-      for im in imgs:
-        X_test.append(im)
-        #X_test[counter] = im.numpy().astype('uint8')
-        #counter += 1
-
-    X_test = np.array(X_test)
-    ytest = np.hstack(ytest)
-
-    # get X_test, y_test arrays
-    X_test = X_test.astype("float32")
-    ytest = np.squeeze(ytest)
-
-    # code repurposed from https://keras.io/examples/vision/metric_learning/
-    class_idx_to_test_idxs = defaultdict(list)
-    for y_test_idx, y in enumerate(ytest):
-        class_idx_to_test_idxs[y].append(y_test_idx)
-
-    return X_test, ytest, class_idx_to_test_idxs
-
+    return X, y, class_idx_to_idxs
 
 ###############################################################
 ## VARIABLES
@@ -242,7 +214,7 @@ print(nb_images)
 num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
 print(num_batches)
 
-X_train, ytrain, class_idx_to_train_idxs = get_train_stuff(num_batches)
+X_train, ytrain, class_idx_to_train_idxs = get_data_stuff(get_training_dataset(), num_batches)
 
 # num_classes = len(CLASSES)
 
@@ -307,9 +279,9 @@ num_dim_use = num_embed_dim #i.e. 8
 
 knn = fit_knn_to_embeddings(X_train, ytrain, num_dim_use)
 
-del X_train, embeddings, ytrain
+del X_train, ytrain
 
-X_test, ytest, class_idx_to_test_idxs = get_test_stuff(num_batches)
+X_test, ytest, class_idx_to_test_idxs = get_data_stuff(get_validation_dataset(), num_batches)
 
 touse = 1000
 

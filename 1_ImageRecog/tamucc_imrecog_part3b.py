@@ -116,19 +116,8 @@ augmented_train_ds, augmented_val_ds = get_aug_datasets()
 
 #####################################################################
 ## class weights
+l = get_all_labels(nb_images, VALIDATION_SPLIT, BATCH_SIZE)
 
-l = []
-num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
-train_ds = get_training_dataset()
-for _,lbls in train_ds.take(num_batches):
-    l.append(lbls.numpy())
-
-val_ds = get_validation_dataset()
-num_batches = int(((VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
-for _,lbls in val_ds.take(num_batches):
-    l.append(lbls.numpy())
-
-l = np.asarray(l).flatten()
 
 # class weights will be given by n_samples / (n_classes * np.bincount(y))
 

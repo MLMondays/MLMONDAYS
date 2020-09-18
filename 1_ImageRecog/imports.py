@@ -307,6 +307,10 @@ def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
 
 
 
+###############################################################
+### DATA VIZ FUNCTIONS
+###############################################################
+
 def make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES):
     """
     This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
@@ -356,6 +360,218 @@ def make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES):
     plt.savefig(test_samples_fig,
                 dpi=200, bbox_inches='tight')
     plt.close('all')
+
+
+#-----------------------------------
+def compute_hist(images):
+    """
+    Compute the per channel histogram for a batch
+    of images
+    INPUTS:
+        * images [ndarray]: batch of shape (N x W x H x 3)
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * hist_r [dict]: histogram frequencies {'hist'} and bins {'bins'} for red channel
+        * hist_g [dict]: histogram frequencies {'hist'} and bins {'bins'} for green channel
+        * hist_b [dict]: histogram frequencies {'hist'} and bins {'bins'} for blue channel
+    """
+    images = images/255.
+    mean = np.mean(images, axis=0, dtype=np.float64)
+
+    mean_r, mean_g, mean_b = mean[:,:,0], mean[:,:,1], mean[:,:,2]
+    mean_r = np.reshape(mean_r, (-1, 1))
+    mean_g = np.reshape(mean_g, (-1, 1))
+    mean_b = np.reshape(mean_b, (-1, 1))
+
+    hist_r_, bins_r = np.histogram(mean_r, bins="auto")
+    hist_g_, bins_g = np.histogram(mean_g, bins="auto")
+    hist_b_, bins_b = np.histogram(mean_b, bins="auto")
+
+    hist_r = {"hist": hist_r_, "bins": bins_r}
+    hist_g = {"hist": hist_g_, "bins": bins_g}
+    hist_b = {"hist": hist_b_, "bins": bins_b}
+
+    return hist_r, hist_g, hist_b
+
+#-----------------------------------
+def plot_distribution(images, labels, class_id, CLASSES):
+    """
+    Compute the per channel histogram for a batch
+    of images
+    INPUTS:
+        * images [ndarray]: batch of shape (N x W x H x 3)
+        * labels [ndarray]: batch of shape (N x 1)
+        * class_id [int]: class integer to plot
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: matplotlib figure
+    """
+    fig = plt.figure(figsize=(21,7))
+    rows, cols = 1, 3
+    locs = np.where(labels == class_id)
+    samples = locs[:][0]
+    class_images = images[samples]
+    hist_r, hist_g, hist_b = compute_hist(class_images)
+    plt.title("Histogram - Mean Pixel Value:  " + CLASSES[class_id])
+    plt.axis('off')
+
+    fig.add_subplot(rows, cols, 1)
+    hist, bins = hist_r["hist"], hist_r["bins"]
+    width = 0.7 * (bins[1] - bins[0])
+    center = (bins[:-1] + bins[1:]) / 2
+    plt.bar(center, hist, align='center', width=width,color='r')
+    plt.xlim((0,1))
+    plt.ylim((0, 255))
+
+    fig.add_subplot(rows, cols, 2)
+    hist, bins = hist_g["hist"], hist_g["bins"]
+    width = 0.7 * (bins[1] - bins[0])
+    center = (bins[:-1] + bins[1:]) / 2
+    plt.bar(center, hist, align='center', width=width,color='g')
+    plt.xlim((0,1))
+    plt.ylim((0,255))
+
+    fig.add_subplot(rows, cols, 3)
+    hist, bins = hist_b["hist"], hist_b["bins"]
+    width = 0.7 * (bins[1] - bins[0])
+    center = (bins[:-1] + bins[1:]) / 2
+    plt.bar(center, hist, align='center', width=width,color='b')
+    plt.xlim((0,1))
+    plt.ylim((0, 255))
+
+#-----------------------------------
+def plot_one_class(inp_batch, sample_idx, label, batch_size, CLASSES, rows=8, cols=8, size=(20,15)):
+    """
+    Plot "batch_size" images that belong to the class "label"
+    INPUTS:
+        * inp_batch
+        * sample_idx
+        * label
+        * batch_size
+    OPTIONAL INPUTS:
+        * rows=8
+        * cols=8
+        * size=(20,15)
+    GLOBAL INPUTS: matplotlib figure
+    """
+
+    fig = plt.figure(figsize=size)
+    plt.title(CLASSES[int(label)])
+    plt.axis('off')
+    for n in range(0, batch_size):
+        fig.add_subplot(rows, cols, n + 1)
+        img = inp_batch[n]
+        plt.imshow(img)
+        plt.axis('off')
+
+#-----------------------------------
+def compute_mean_image(images, opt="mean"):
+    """
+    Compute and return mean image given
+    a batch of images
+    INPUTS:
+        * images [ndarray]: batch of shape (N x W x H x 3)
+    OPTIONAL INPUTS:
+        * opt="mean" or "median"
+    GLOBAL INPUTS:
+    OUTPUTS: 2d mean image [ndarray]
+    """
+    images = images/255.
+    if opt == "mean":
+        return np.mean(images, axis=0, dtype=np.float64)
+    else:
+        return np.median(images, axis=0)
+
+#-----------------------------------
+def plot_mean_images(images, labels, CLASSES, rows=3, cols = 2):
+    """
+    Plot the mean image of a set of images
+    INPUTS:
+        * images [ndarray]: batch of shape (N x W x H x 3)
+        * labels [ndarray]: batch of shape (N x 1)
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS: matplotlib figure
+    """
+    fig = plt.figure(figsize=(20,15))
+
+    example_images = []
+    for n in np.arange(len(CLASSES)):
+        fig.add_subplot(rows, cols, n + 1)
+        locs = np.where(labels == n)
+        samples = locs[:][0]
+        class_images = images[samples]
+        img = compute_mean_image(class_images, "median")
+        plt.imshow(img)
+        plt.title(CLASSES[n])
+        plt.axis('off')
+
+#-----------------------------------
+def plot_tsne(tsne_result, label_ids, CLASSES):
+    """
+    Plot TSNE loadings and colour code by class
+    Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
+    INPUTS:
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS: matplotlib figure, matplotlib figure axes object
+    """
+    fig = plt.figure(figsize=(20,20))
+    ax = fig.add_subplot(111,projection='3d')
+
+    plt.grid()
+
+    nb_classes = len(np.unique(label_ids))
+
+    for label_id in np.unique(label_ids):
+      ax.scatter(tsne_result[np.where(label_ids == label_id), 0],
+                  tsne_result[np.where(label_ids == label_id), 1],
+                  tsne_result[np.where(label_ids == label_id), 2],
+                  alpha=0.8,
+                  color= plt.cm.Set1(label_id / float(nb_classes)),
+                  marker='o',
+                  label=CLASSES[label_id])
+    ax.legend(loc='best')
+    ax.axis('tight')
+
+    ax.view_init(25, 45)
+    ax.set_xlim(-2.5, 2.5)
+    ax.set_ylim(-2.5, 2.5)
+    ax.set_zlim(-2.5, 2.5)
+    return fig, ax
+
+#-----------------------------------
+# Show images with t-SNE
+# Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
+def visualize_scatter_with_images(X_2d_data, labels, images, figsize=(15,15), image_zoom=1,xlim = (-3,3), ylim=(-3,3)):
+    """
+    Plot TSNE loadings and colour code by class
+    Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
+    INPUTS:
+        * X_2d_data
+        * images
+    OPTIONAL INPUTS:
+        * figsize=(15,15)
+        * image_zoom=1
+    GLOBAL INPUTS:
+    OUTPUTS: matplotlib figure
+    """
+    fig, ax = plt.subplots(figsize=figsize)
+    artists = []
+    for xy, i in zip(X_2d_data, images):
+        x0, y0, _ = xy
+        img = OffsetImage(i, zoom=image_zoom)
+        ab = AnnotationBbox(img, (x0, y0), xycoords='data', frameon=False)
+        artists.append(ax.add_artist(ab))
+    ax.update_datalim(X_2d_data[:,:2])
+    ax.autoscale()
+    ax.axis('tight')
+    ax.scatter(X_2d_data[:,0], X_2d_data[:,1], 20, labels, zorder=10)
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    return fig
+
 
 ###############################################################
 ### DATASET FUNCTIONS
