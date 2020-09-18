@@ -77,7 +77,7 @@ test_samples_fig = os.getcwd()+os.sep+'results/tamucc_full_sample_2class_mv2_mod
 
 cm_filename = os.getcwd()+os.sep+'results/tamucc_full_sample_2class_mv2_model2_cm_val.png'
 
-sample_data_path= os.getcwd()+os.sep+"data/tamucc/full_2class/sample"
+sample_data_path= os.getcwd()+os.sep+"data/tamucc/subset_4class/sample"
 
 hist_fig = os.getcwd()+os.sep+'results/tamucc_full_sample_2class_custom_model2.png'
 
@@ -157,7 +157,7 @@ val_ds = get_validation_eval_dataset()
 loss, accuracy = custom_model3.evaluate(val_ds, batch_size=BATCH_SIZE)
 print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
-##86%
+##94%
 
 ##########################################################
 ### predict
@@ -175,4 +175,4 @@ labs, preds = get_label_pairs(val_ds, custom_model3)
 
 p_confmat(labs, preds, cm_filename, CLASSES)
 
-#80%
+#83%
