@@ -117,7 +117,7 @@ def get_train_stuff(num_batches):
     for imgs,lbls in train_ds.take(num_batches):
       ytrain.append(lbls.numpy())
       for im in imgs:
-        X_train.append(im)
+        X_train.append(im.numpy())
 
     X_train = np.array(X_train)
     ytrain = np.hstack(ytrain)
@@ -155,7 +155,7 @@ def get_test_stuff(num_batches):
     for imgs,lbls in test_ds.take(num_batches):
       ytest.append(lbls.numpy())
       for im in imgs:
-        X_test.append(im)
+        X_test.append(im.numpy())
 
     X_test = np.array(X_test)
     ytest = np.hstack(ytest)
@@ -215,21 +215,20 @@ class AnchorPositivePairs(tf.keras.utils.Sequence):
 json_file = os.getcwd()+os.sep+'data/tamucc/subset_12class/tamucc_subset_12classes.json'
 
 data_path= os.getcwd()+os.sep+"data/tamucc/subset_12class/400"
-test_samples_fig = os.getcwd()+os.sep+'results/tamucc_sample_12class_model1_est36samples.png'
+test_samples_fig = os.getcwd()+os.sep+'results/tamucc_sample_12class_model2_est36samples.png'
 
-cm_filename = os.getcwd()+os.sep+'results/tamucc_sample_12class_model1_cm_val.png'
+cm_filename = os.getcwd()+os.sep+'results/tamucc_sample_12class_model2_cm_val.png'
 
 sample_data_path= os.getcwd()+os.sep+"data/tamucc/subset_12class/sample"
 
-filepath = os.getcwd()+os.sep+'results/tamucc_subset_12class_best_weights_model1.h5'
+filepath = os.getcwd()+os.sep+'results/tamucc_subset_12class_best_weights_model2.h5'
 
-hist_fig = os.getcwd()+os.sep+'results/tamucc_subset_12class_custom_model1.png'
+hist_fig = os.getcwd()+os.sep+'results/tamucc_subset_12class_custom_model2.png'
 
-trainsamples_fig = os.getcwd()+os.sep+'results/tamucc_subset_12class_trainsamples.png'
+cm_fig = os.getcwd()+os.sep+'results/tamucc_subset_12class_cm_test_model2.png'
 
-valsamples_fig = os.getcwd()+os.sep+'results/tamucc_subset_12class_validationsamples.png'
+initial_filepath = os.getcwd()+os.sep+'results/tamucc_subset_12class_best_weights_model1.h5'
 
-cm_fig = os.getcwd()+os.sep+'results/tamucc_subset_12class_cm_test.png'
 
 patience = 10
 
@@ -277,22 +276,78 @@ print(nb_images)
 
 num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
 print(num_batches)
-
-num_batches = 140 #150
+#
+# num_batches = 140 #150
 
 X_train, ytrain, class_idx_to_train_idxs = get_train_stuff(num_batches)
 
-model1 = get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
+model2 = get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
 
-## use SparseCategoricalCrossentropy because multiclass
+# use a smaller learning rate, because we are fine-tuning
+lr = 5e-5
 
-model1.compile(
+patience = 20
+
+model2.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
      metrics=['accuracy'],
 )
 
-model1.load_weights(filepath)
+# load with previous weights
+model2. load_weights(initial_filepath)
+
+earlystop = EarlyStopping(monitor="loss",
+                              mode="min", patience=patience)
+
+# set checkpoint file
+model_checkpoint = ModelCheckpoint(filepath, monitor='loss',
+                                verbose=0, save_best_only=True, mode='min',
+                                save_weights_only = True)
+
+callbacks = [model_checkpoint, earlystop]
+
+
+# class_weights = class_weight.compute_class_weight('balanced',
+#                                                  np.unique(ytrain),
+#                                                  ytrain)
+
+# plt.figure(figsize=(10,10))
+# plt.hist(ytrain, bins=np.arange(len(CLASSES)+1), rwidth=.2)
+# plt.gca().set_xticks(np.arange(len(CLASSES))+0.5)
+# plt.gca().set_xticklabels([c.decode() for c in CLASSES], rotation=90)
+# plt.ylabel('Number of images')
+
+#
+# class_weights = dict(enumerate(class_weights))
+# print(class_weights)
+
+# there is class imbalance, but don't know how to incorporate
+
+
+do_train = False #True
+
+
+if do_train:
+    history1 = model2.fit(AnchorPositivePairs(num_batchs=num_batches), epochs=max_epochs,
+                          callbacks=callbacks)
+
+    plt.figure(figsize = (10,10))
+    plt.subplot(221)
+    plt.plot(history1.history["loss"])
+    plt.xlabel('Model training epoch number')
+    plt.ylabel('Loss (soft cosine distance)')
+
+    plt.subplot(222)
+    plt.plot(history1.history["accuracy"])
+    plt.xlabel('Model training epoch number')
+    plt.ylabel('Accuracy')
+    # plt.show()
+    plt.savefig(hist_fig, dpi=200, bbox_inches='tight')
+    plt.close('all')
+
+else:
+    model2.load_weights(filepath)
 
 
 K.clear_session()
@@ -301,11 +356,11 @@ K.clear_session()
 
 num_dim_use = num_embed_dim #2
 
-knn3 = fit_knn_to_embeddings(model1, X_train, ytrain, num_dim_use, n_neighbors)
+knn3 = fit_knn_to_embeddings(model2, X_train, ytrain, num_dim_use, n_neighbors)
 
-knn5 = fit_knn_to_embeddings(model1, X_train, ytrain, num_dim_use, 5)
+knn5 = fit_knn_to_embeddings(model2, X_train, ytrain, num_dim_use, 5)
 
-knn7 = fit_knn_to_embeddings(model1, X_train, ytrain, num_dim_use, 7)
+knn7 = fit_knn_to_embeddings(model2, X_train, ytrain, num_dim_use, 7)
 
 del X_train, ytrain
 
@@ -318,7 +373,7 @@ touse = len(X_test) #900
 
 # touse = 300
 
-embeddings_test = model1.predict(X_test[:touse])
+embeddings_test = model2.predict(X_test[:touse])
 embeddings_test = tf.nn.l2_normalize(embeddings_test, axis=-1)
 del X_test
 
@@ -330,9 +385,17 @@ y_prob1 = knn3.predict_proba(embeddings_test[:,:num_dim_use])
 y_prob2 = knn5.predict_proba(embeddings_test[:,:num_dim_use])
 y_prob3 = knn7.predict_proba(embeddings_test[:,:num_dim_use])
 
+score1 = knn3.score(embeddings_test[:,:num_dim_use], ytest[:touse])
+score2 = knn5.score(embeddings_test[:,:num_dim_use], ytest[:touse])
+score3 = knn7.score(embeddings_test[:,:num_dim_use], ytest[:touse])
+
+print('3-NN score: %f' % score1)
+print('5-NN score: %f' % score2)
+print('7-NN score: %f' % score3)
+
 mask = np.c_[y_pred1, y_pred2, y_pred3]
 
-use = np.any(mask>.33, axis=1) #only predictions where all probabilities are > 0.33
+use = np.any(mask>.9, axis=1) #only predictions where all probabilities are > 0.9
 mask = mask[use,:]
 
 
@@ -341,8 +404,7 @@ mask = mask[use,:]
 
 y_en = np.median(mask, axis=1)
 
-
 p_confmat(ytest[:touse][use], y_en, cm_filename.replace('val', 'val_v3_ensemble'), CLASSES, thres = 0.1)
 
 
-# 0.53
+# 0.66

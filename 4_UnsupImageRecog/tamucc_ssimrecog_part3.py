@@ -86,8 +86,8 @@ def get_batched_dataset(filenames):
     dataset = dataset.map(read_tfrecord, num_parallel_calls=AUTO)
 
     dataset = dataset.cache() # This dataset fits in RAM
-    #dataset = dataset.repeat()
-    dataset = dataset.shuffle(2048)
+    # dataset = dataset.repeat()
+    # dataset = dataset.shuffle(2048)
     dataset = dataset.batch(BATCH_SIZE, drop_remainder=True) # drop_remainder will be needed on TPU
     dataset = dataset.prefetch(AUTO) #
 
@@ -115,7 +115,7 @@ def get_train_stuff(num_batches):
     for imgs,lbls in train_ds.take(num_batches):
       ytrain.append(lbls.numpy())
       for im in imgs:
-        X_train.append(im)
+        X_train.append(im.numpy())
 
     X_train = np.array(X_train)
     ytrain = np.hstack(ytrain)
@@ -153,7 +153,7 @@ def get_test_stuff(num_batches):
     for imgs,lbls in test_ds.take(num_batches):
       ytest.append(lbls.numpy())
       for im in imgs:
-        X_test.append(im)
+        X_test.append(im.numpy())
 
     X_test = np.array(X_test)
     ytest = np.hstack(ytest)
@@ -300,7 +300,7 @@ print(nb_images)
 num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
 print(num_batches)
 
-num_batches = 140 #150
+# num_batches = 100 #150
 
 X_train, ytrain, class_idx_to_train_idxs = get_train_stuff(num_batches)
 
@@ -364,7 +364,7 @@ knn3 = fit_knn_to_embeddings(model1, X_train, ytrain, num_dim_use, n_neighbors)
 del X_train, ytrain
 
 
-num_batches = 100
+# num_batches = 100
 
 X_test, ytest, class_idx_to_test_idxs = get_test_stuff(num_batches)
 
@@ -378,13 +378,13 @@ del X_test
 
 print('KNN score: %f' % knn3.score(embeddings_test[:,:num_dim_use], ytest[:touse]))
 
-## 0.68
+## 0.78
 
 y_pred = knn3.predict(embeddings_test[:,:num_dim_use])
 
 p_confmat(ytest[:touse], y_pred, cm_filename, CLASSES, thres = 0.1)
 
-# 0.55
+# 0.73
 
 
 y_pred = knn3.predict_proba(embeddings_test[:,:num_dim_use])
@@ -399,10 +399,10 @@ print(len(ind))
 
 p_confmat(ytest[:touse][ind], y_pred[ind], cm_filename.replace('val', 'val_v2'), CLASSES, thres = 0.1)
 
-# 0.61
+# 0.81
 
-
-## apply to image files
+#
+# # apply to image files
 #
 # sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 #
@@ -414,7 +414,7 @@ p_confmat(ytest[:touse][ind], y_pred[ind], cm_filename.replace('val', 'val_v2'),
 #
 #     #knn.predict_proba(embeddings_sample[:,:2])
 #     obs_class = f.split('/')[-1].split('_IMG')[0]
-#     est_class = CLASSES[knn1.predict(embeddings_sample[:,:num_dim_use])[0]].decode()
+#     est_class = CLASSES[knn3.predict(embeddings_sample[:,:num_dim_use])[0]].decode()
 #
 #     print('pred:%s, est:%s' % (obs_class, est_class ) )
 #
@@ -422,7 +422,7 @@ p_confmat(ytest[:touse][ind], y_pred[ind], cm_filename.replace('val', 'val_v2'),
 #
 # # compute confusion matric for all samples
 #
-# cm = conf_mat_filesamples(model1, knn1, sample_filenames, num_classes, num_dim_use, CLASSES)
+# cm = conf_mat_filesamples(model1, knn3, sample_filenames, num_classes, num_dim_use, CLASSES)
 #
 # thres = 0.1
 # cm[cm<thres] = 0
