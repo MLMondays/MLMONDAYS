@@ -1,3 +1,28 @@
+# Written by Dr Daniel Buscombe, Marda Science LLC
+# for "ML Mondays", a course supported by the USGS Community for Data Integration
+# and the USGS Coastal Change Hazards Program
+#
+# MIT License
+#
+# Copyright (c) 2020, Marda Science LLC
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 ###############################################################
 ## IMPORTS
@@ -7,33 +32,53 @@ from imports import *
 ###############################################################
 ### DATA FUNCTIONS
 ###############################################################
-
 #-----------------------------------
 def get_training_dataset():
     """
     This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: training_filenames
+    OUTPUTS: batched data set object
     """
     return get_batched_dataset(training_filenames)
 
 def get_validation_dataset():
     """
-    This function will return a batched dataset for model validation
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
     """
     return get_batched_dataset(validation_filenames)
 
 def get_validation_eval_dataset():
     """
-    This function will return a test batched dataset for model testing
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
     """
     return get_eval_dataset(validation_filenames)
 
 #-----------------------------------
 def get_batched_dataset(filenames):
     """
-    This function
+    "get_batched_dataset"
+    This function defines a workflow for the model to read data from
+    tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
+    and also formats the imagery properly for model training
+    (assumes mobilenet by using read_tfrecord_mv2)
+    INPUTS:
+        * filenames [list]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: BATCH_SIZE, AUTO
+    OUTPUTS: tf.data.Dataset object
     """
     option_no_order = tf.data.Options()
-    option_no_order.experimental_deterministic = True #False  ##True?
+    option_no_order.experimental_deterministic = True
 
     dataset = tf.data.Dataset.list_files(filenames)
     dataset = dataset.with_options(option_no_order)
@@ -48,12 +93,21 @@ def get_batched_dataset(filenames):
 
     return dataset
 
-
+#-----------------------------------
 def get_train_stuff(num_batches):
     """
-    This function
+    "get_train_stuff"
+    This function returns all the images and labels from a tf.data.Dataset
+    INPUTS:
+        * num_batches [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * X_train [list] of ndarray images
+        * y_train [list] of integer labels
+        * class_idx_to_train_idxs [dict] of indices into each class
     """
-    X_train = [] #np.zeros((nb_images,TARGET_SIZE, TARGET_SIZE, 3), dtype='uint8')
+    X_train = []
     ytrain = []
     train_ds = get_training_dataset()
 
@@ -62,8 +116,6 @@ def get_train_stuff(num_batches):
       ytrain.append(lbls.numpy())
       for im in imgs:
         X_train.append(im)
-        #X_train[counter] = im.numpy().astype('uint8')
-        #counter += 1
 
     X_train = np.array(X_train)
     ytrain = np.hstack(ytrain)
@@ -79,12 +131,21 @@ def get_train_stuff(num_batches):
 
     return X_train, ytrain, class_idx_to_train_idxs
 
-
+#-----------------------------------
 def get_test_stuff(num_batches):
     """
-    This function
+    "get_test_stuff"
+    This function returns all the images and labels from a tf.data.Dataset
+    INPUTS:
+        * num_batches [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * X_test [list] of ndarray images
+        * y_test [list] of integer labels
+        * class_idx_to_test_idxs [dict] of indices into each class
     """
-    X_test = [] #np.zeros((nb_images,TARGET_SIZE, TARGET_SIZE, 3), dtype='uint8')
+    X_test = []
     ytest = []
     test_ds = get_validation_dataset()
 
@@ -93,8 +154,6 @@ def get_test_stuff(num_batches):
       ytest.append(lbls.numpy())
       for im in imgs:
         X_test.append(im)
-        #X_test[counter] = im.numpy().astype('uint8')
-        #counter += 1
 
     X_test = np.array(X_test)
     ytest = np.hstack(ytest)
@@ -110,14 +169,20 @@ def get_test_stuff(num_batches):
 
     return X_test, ytest, class_idx_to_test_idxs
 
-
 ###############################################################
 ### MODEL FUNCTIONS
 ###############################################################
 
 class AnchorPositivePairs(tf.keras.utils.Sequence):
     """
-    This function
+    # code modified from https://keras.io/examples/vision/metric_learning/
+    "AnchorPositivePairs"
+    This Class selects an anchor and positive example images from each label class
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * x [ndarray]: a pair of example images of each class, (2, num_classes, TARGET_SIZE, TARGET_SIZE, 3)
     """
     def __init__(self, num_batchs):
         self.num_batchs = num_batchs
@@ -136,7 +201,6 @@ class AnchorPositivePairs(tf.keras.utils.Sequence):
             x[0, class_idx] = X_train[anchor_idx]
             x[1, class_idx] = X_train[positive_idx]
         return x
-
 
 ###############################################################
 ## VARIABLES
@@ -175,6 +239,11 @@ lr = 1e-4
 ###############################################################
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+CLASSES = read_classes_from_json(json_file)
+
+print(CLASSES)
+
+
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
 
@@ -203,15 +272,7 @@ print(num_batches)
 X_train, ytrain, class_idx_to_train_idxs = get_train_stuff(num_batches)
 
 
-with open(json_file) as f:
-    class_dict = json.load(f)
 
-# string names
-CLASSES = [class_dict[k] for k in class_dict.keys()]
-
-
-CLASSES = [c.encode() for c in CLASSES]
-print(CLASSES)
 
 model1 = get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
 

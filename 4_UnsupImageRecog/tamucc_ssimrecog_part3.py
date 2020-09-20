@@ -1,3 +1,28 @@
+# Written by Dr Daniel Buscombe, Marda Science LLC
+# for "ML Mondays", a course supported by the USGS Community for Data Integration
+# and the USGS Coastal Change Hazards Program
+#
+# MIT License
+#
+# Copyright (c) 2020, Marda Science LLC
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 ###############################################################
 ## IMPORTS
@@ -7,33 +32,53 @@ from imports import *
 ###############################################################
 ### DATA FUNCTIONS
 ###############################################################
-
 #-----------------------------------
 def get_training_dataset():
     """
     This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: training_filenames
+    OUTPUTS: batched data set object
     """
     return get_batched_dataset(training_filenames)
 
 def get_validation_dataset():
     """
-    This function will return a batched dataset for model validation
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
     """
     return get_batched_dataset(validation_filenames)
 
 def get_validation_eval_dataset():
     """
-    This function will return a test batched dataset for model testing
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
     """
     return get_eval_dataset(validation_filenames)
 
 #-----------------------------------
 def get_batched_dataset(filenames):
     """
-    This function
+    "get_batched_dataset"
+    This function defines a workflow for the model to read data from
+    tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
+    and also formats the imagery properly for model training
+    (assumes mobilenet by using read_tfrecord_mv2)
+    INPUTS:
+        * filenames [list]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: BATCH_SIZE, AUTO
+    OUTPUTS: tf.data.Dataset object
     """
     option_no_order = tf.data.Options()
-    option_no_order.experimental_deterministic = True #False  ##True?
+    option_no_order.experimental_deterministic = True
 
     dataset = tf.data.Dataset.list_files(filenames)
     dataset = dataset.with_options(option_no_order)
@@ -48,12 +93,21 @@ def get_batched_dataset(filenames):
 
     return dataset
 
-
+#-----------------------------------
 def get_train_stuff(num_batches):
     """
-    This function
+    "get_train_stuff"
+    This function returns all the images and labels from a tf.data.Dataset
+    INPUTS:
+        * num_batches [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * X_train [list] of ndarray images
+        * y_train [list] of integer labels
+        * class_idx_to_train_idxs [dict] of indices into each class
     """
-    X_train = [] #np.zeros((nb_images,TARGET_SIZE, TARGET_SIZE, 3), dtype='uint8')
+    X_train = []
     ytrain = []
     train_ds = get_training_dataset()
 
@@ -62,8 +116,6 @@ def get_train_stuff(num_batches):
       ytrain.append(lbls.numpy())
       for im in imgs:
         X_train.append(im)
-        #X_train[counter] = im.numpy().astype('uint8')
-        #counter += 1
 
     X_train = np.array(X_train)
     ytrain = np.hstack(ytrain)
@@ -79,12 +131,21 @@ def get_train_stuff(num_batches):
 
     return X_train, ytrain, class_idx_to_train_idxs
 
-
+#-----------------------------------
 def get_test_stuff(num_batches):
     """
-    This function
+    "get_test_stuff"
+    This function returns all the images and labels from a tf.data.Dataset
+    INPUTS:
+        * num_batches [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * X_test [list] of ndarray images
+        * y_test [list] of integer labels
+        * class_idx_to_test_idxs [dict] of indices into each class
     """
-    X_test = [] #np.zeros((nb_images,TARGET_SIZE, TARGET_SIZE, 3), dtype='uint8')
+    X_test = []
     ytest = []
     test_ds = get_validation_dataset()
 
@@ -93,8 +154,6 @@ def get_test_stuff(num_batches):
       ytest.append(lbls.numpy())
       for im in imgs:
         X_test.append(im)
-        #X_test[counter] = im.numpy().astype('uint8')
-        #counter += 1
 
     X_test = np.array(X_test)
     ytest = np.hstack(ytest)
@@ -110,14 +169,20 @@ def get_test_stuff(num_batches):
 
     return X_test, ytest, class_idx_to_test_idxs
 
-
 ###############################################################
 ### MODEL FUNCTIONS
 ###############################################################
 
 class AnchorPositivePairs(tf.keras.utils.Sequence):
     """
-    This function
+    # code modified from https://keras.io/examples/vision/metric_learning/
+    "AnchorPositivePairs"
+    This Class selects an anchor and positive example images from each label class
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * x [ndarray]: a pair of example images of each class, (2, num_classes, TARGET_SIZE, TARGET_SIZE, 3)
     """
     def __init__(self, num_batchs):
         self.num_batchs = num_batchs
@@ -164,18 +229,18 @@ valsamples_fig = os.getcwd()+os.sep+'results/tamucc_subset_12class_validationsam
 
 cm_fig = os.getcwd()+os.sep+'results/tamucc_subset_12class_cm_test.png'
 
-
-
 patience = 10
 
 # double the number of embedding dims
 
 num_embed_dim = 16 #8
 
-# triple the maximum training epochs, just in case!
+# more maximum training epochs, just in case!
 
-max_epochs = 300
+max_epochs = 600 #400
 lr = 1e-4
+
+n_neighbors = 3
 
 ###############################################################
 ## EXECUTION
@@ -196,15 +261,8 @@ steps_per_epoch = int(nb_images // len(filenames) * len(training_filenames)) // 
 print(steps_per_epoch)
 print(validation_steps)
 
+CLASSES = read_classes_from_json(json_file)
 
-with open(json_file) as f:
-    class_dict = json.load(f)
-
-# string names
-CLASSES = [class_dict[k] for k in class_dict.keys()]
-
-CLASSES = [c.encode() for c in CLASSES]
-print(CLASSES)
 
 train_ds = get_training_dataset()
 plt.figure(figsize=(16,16))
@@ -234,7 +292,7 @@ plt.savefig(valsamples_fig, dpi=200, bbox_inches='tight')
 plt.close('all')
 
 
-
+#-------------------------------------------------
 training_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 nb_images = ims_per_shard * len(training_filenames)
 print(nb_images)
@@ -242,10 +300,9 @@ print(nb_images)
 num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
 print(num_batches)
 
-# num_batches = 100
+num_batches = 140 #150
 
 X_train, ytrain, class_idx_to_train_idxs = get_train_stuff(num_batches)
-
 
 model1 = get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
 
@@ -302,67 +359,35 @@ K.clear_session()
 
 num_dim_use = num_embed_dim #2
 
-
-knn1 = fit_knn_to_embeddings(model1, X_train, ytrain, num_dim_use)
+knn3 = fit_knn_to_embeddings(model1, X_train, ytrain, num_dim_use, n_neighbors)
 
 del X_train, ytrain
 
+
+num_batches = 100
+
 X_test, ytest, class_idx_to_test_idxs = get_test_stuff(num_batches)
 
-touse = 1000
+touse = len(X_test) #900
+
+# touse = 300
 
 embeddings_test = model1.predict(X_test[:touse])
 embeddings_test = tf.nn.l2_normalize(embeddings_test, axis=-1)
 del X_test
 
-print('KNN score: %f' % knn1.score(embeddings_test[:,:num_dim_use], ytest[:touse]))
+print('KNN score: %f' % knn3.score(embeddings_test[:,:num_dim_use], ytest[:touse]))
 
+## 0.68
 
-y_pred = knn1.predict(embeddings_test[:,:num_dim_use])
+y_pred = knn3.predict(embeddings_test[:,:num_dim_use])
 
 p_confmat(ytest[:touse], y_pred, cm_filename, CLASSES, thres = 0.1)
 
-
-## apply to image files
-
-sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
-
-for f in sample_filenames[:10]:
-    image = file2tensor(f)
-    image = tf.cast(image, np.float32)
-
-    embeddings_sample = model1.predict(tf.expand_dims(image, 0))
-
-    #knn.predict_proba(embeddings_sample[:,:2])
-    obs_class = f.split('/')[-1].split('_IMG')[0]
-    est_class = CLASSES[knn1.predict(embeddings_sample[:,:num_dim_use])[0]].decode()
-
-    print('pred:%s, est:%s' % (obs_class, est_class ) )
+# 0.55
 
 
-
-# compute confusion matric for all samples
-
-cm = conf_mat_filesamples(model1, knn1, sample_filenames, num_classes, num_dim_use, CLASSES)
-
-thres = 0.1
-cm[cm<thres] = 0
-
-plt.figure(figsize=(15,15))
-sns.heatmap(cm,
-    annot=True,
-    cmap = sns.cubehelix_palette(dark=0, light=1, as_cmap=True))
-
-tick_marks = np.arange(len(CLASSES))+.5
-plt.xticks(tick_marks, [c.decode() for c in CLASSES], rotation=90,fontsize=12)
-plt.yticks(tick_marks, [c.decode() for c in CLASSES],rotation=0, fontsize=12)
-
-plt.show()
-
-
-
-
-y_pred = knn1.predict_proba(embeddings_test[:,:num_dim_use])
+y_pred = knn3.predict_proba(embeddings_test[:,:num_dim_use])
 
 y_prob = np.max(y_pred, axis=1)
 
@@ -373,3 +398,43 @@ ind = np.where(y_prob==1)[0]
 print(len(ind))
 
 p_confmat(ytest[:touse][ind], y_pred[ind], cm_filename.replace('val', 'val_v2'), CLASSES, thres = 0.1)
+
+# 0.61
+
+
+## apply to image files
+#
+# sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
+#
+# for f in sample_filenames[:10]:
+#     image = file2tensor(f)
+#     image = tf.cast(image, np.float32)
+#
+#     embeddings_sample = model1.predict(tf.expand_dims(image, 0))
+#
+#     #knn.predict_proba(embeddings_sample[:,:2])
+#     obs_class = f.split('/')[-1].split('_IMG')[0]
+#     est_class = CLASSES[knn1.predict(embeddings_sample[:,:num_dim_use])[0]].decode()
+#
+#     print('pred:%s, est:%s' % (obs_class, est_class ) )
+#
+#
+#
+# # compute confusion matric for all samples
+#
+# cm = conf_mat_filesamples(model1, knn1, sample_filenames, num_classes, num_dim_use, CLASSES)
+#
+# thres = 0.1
+# cm[cm<thres] = 0
+#
+# plt.figure(figsize=(15,15))
+# sns.heatmap(cm,
+#     annot=True,
+#     cmap = sns.cubehelix_palette(dark=0, light=1, as_cmap=True))
+#
+# tick_marks = np.arange(len(CLASSES))+.5
+# plt.xticks(tick_marks, [c.decode() for c in CLASSES], rotation=90,fontsize=12)
+# plt.yticks(tick_marks, [c.decode() for c in CLASSES],rotation=0, fontsize=12)
+#
+# plt.show()
+#

@@ -1,4 +1,28 @@
-
+# Written by Dr Daniel Buscombe, Marda Science LLC
+# for "ML Mondays", a course supported by the USGS Community for Data Integration
+# and the USGS Coastal Change Hazards Program
+#
+# MIT License
+#
+# Copyright (c) 2020, Marda Science LLC
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 ## TAMUCC DATA imports
 from tamucc_imports import *
@@ -17,7 +41,7 @@ from tensorflow.keras.applications import VGG16 #vgg model, used for feature ext
 from tensorflow.keras.applications import Xception #xception model, used for feature extraction
 import numpy as np #numerical operations on cpu
 from sklearn.decomposition import PCA  #for data dimensionality reduction / viz.
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler #data scaling data in PCA and TSNE algorithms
 from sklearn.manifold import TSNE #for data dimensionality reduction / viz.
 
 ## plots
@@ -27,14 +51,15 @@ import seaborn as sns #extended functionality / style to matplotlib plots
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox #for visualizing image thumbnails plotted as markers
 
 ##i/o
-# from matplotlib.image import imread
 import pandas as pd #for data wrangling. We just use it to read csv files
 import json, shutil #json for class file reading, shutil for file copying/moving
 
 ##utils
 from sklearn.utils import class_weight #utility for computinh normalised class weights
+#keras functions for early stopping and model weights saving
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras import backend as K #access to keras backend functions
+from collections import defaultdict
 
 # set a seed for reproducibility
 SEED=42
@@ -57,12 +82,17 @@ print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('
 #-----------------------------------
 def resize_and_crop_image(image, label):
     """
+    "resize_and_crop_image"
     This function crops to square and resizes an image
     The label passes through unmodified
     INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
+        * image [tensor array]
+        * label [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: TARGET_SIZE
     OUTPUTS:
+        * image [tensor array]
+        * label [int]
     """
     w = tf.shape(image)[0]
     h = tf.shape(image)[1]
@@ -81,13 +111,18 @@ def resize_and_crop_image(image, label):
 #-----------------------------------
 def recompress_image(image, label):
     """
+    "recompress_image"
     This function takes an image encoded as a byte string
     and recodes as an 8-bit jpeg
     Label passes through unmodified
     INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
+        * image [tensor array]
+        * label [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
     OUTPUTS:
+        * image [tensor array]
+        * label [int]
     """
     image = tf.cast(image, tf.uint8)
     image = tf.image.encode_jpeg(image, optimize_size=True, chroma_downsampling=False)
@@ -100,39 +135,52 @@ There is one for bytestrings (images), one for floats (not used here) and one fo
 """
 def _bytestring_feature(list_of_bytestrings):
     """
+    "_bytestring_feature"
+    cast inputs into tf dataset 'feature' classes
     INPUTS:
+        * list_of_bytestrings
     OPTIONAL INPUTS:
     GLOBAL INPUTS:
-    OUTPUTS:
+    OUTPUTS: tf.train.Feature example
     """
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=list_of_bytestrings))
 
 def _int_feature(list_of_ints):
     """
+    "_int_feature"
+    cast inputs into tf dataset 'feature' classes
     INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
-    OUTPUTS:
+        * list_of_ints
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: tf.train.Feature example
     """
     return tf.train.Feature(int64_list=tf.train.Int64List(value=list_of_ints))
 
 def _float_feature(list_of_floats):
     """
+    "_float_feature"
+    cast inputs into tf dataset 'feature' classes
     INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
-    OUTPUTS:
+        * list_of_floats
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: tf.train.Feature example
     """
     return tf.train.Feature(float_list=tf.train.FloatList(value=list_of_floats))
 
 #-----------------------------------
 def to_tfrecord(img_bytes, label, CLASSES):
     """
-    This function
+    "to_tfrecord"
+    This function creates a TFRecord example from an image byte string and a label feature
     INPUTS:
-    OPTIONAL INPUTS:
-    OUTPUTS:
-    GLOBAL INPUTS:
+        * img_bytes
+        * label
+        * CLASSES
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: tf.train.Feature example
     """
     class_num = np.argmax(np.array(CLASSES)==label)
     feature = {
@@ -144,11 +192,15 @@ def to_tfrecord(img_bytes, label, CLASSES):
 #-----------------------------------
 def read_tfrecord(example):
     """
-    This function
+    "read_tfrecord"
+    This function reads an example from a TFrecord file into a single image and label
     INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
+        * TFRecord example object
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: TARGET_SIZE
     OUTPUTS:
+        * image [tensor array]
+        * class_label [tensor int]
     """
     features = {
         "image": tf.io.FixedLenFeature([], tf.string),  # tf.string = bytestring (not text string)
@@ -168,11 +220,17 @@ def read_tfrecord(example):
 #-----------------------------------
 def read_image_and_label(img_path):
     """
-    This function
+    "read_image_and_label"
+    This function reads a jpeg image from a provided filepath
+    and extracts the label from the filename (assuming the class name is
+    before "_IMG" in the filename)
     INPUTS:
-    OPTIONAL INPUTS:
+        * img_path [string]: filepath to a jpeg image
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
     OUTPUTS:
-    GLOBAL INPUTS:
+        * image [tensor array]
+        * class_label [tensor int]
     """
     bits = tf.io.read_file(img_path)
     image = tf.image.decode_jpeg(bits)
@@ -185,11 +243,18 @@ def read_image_and_label(img_path):
 #-----------------------------------
 def get_dataset_for_tfrecords(recoded_dir, shared_size):
     """
-    This function
+    "get_dataset_for_tfrecords"
+    This function reads a list of TFREcord shard files,
+    decode the images and label
+    resize and crop the image to TARGET_SIZE
+    and create batches
     INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
+        * recoded_dir
+        * shared_size
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: TARGET_SIZE
     OUTPUTS:
+        * tf.data.Dataset object
     """
     tamucc_dataset = tf.data.Dataset.list_files(recoded_dir+os.sep+'*.jpg', seed=10000) # This also shuffles the images
     tamucc_dataset = tamucc_dataset.map(read_image_and_label)
@@ -202,11 +267,15 @@ def get_dataset_for_tfrecords(recoded_dir, shared_size):
 #-----------------------------------
 def write_records(tamucc_dataset, tfrecord_dir, CLASSES):
     """
-    This function
+    "write_records"
+    This function writes a tf.data.Dataset object to TFRecord shards
     INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
-    OUTPUTS:
+        * tamucc_dataset [tf.data.Dataset]
+        * tfrecord_dir [string] : path to directory where files will be written
+        * CLASSES [list] of class string names
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: None (files written to disk)
     """
     for shard, (image, label) in enumerate(tamucc_dataset):
       shard_size = image.numpy().shape[0]
@@ -225,11 +294,14 @@ def write_records(tamucc_dataset, tfrecord_dir, CLASSES):
 #-----------------------------------
 def plot_history(history, train_hist_fig):
     """
-    This function
+    "plot_history"
+    This function plots the training history of a model
     INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
-    OUTPUTS:
+        * history [dict]: the output dictionary of the model.fit() process, i.e. history = model.fit(...)
+        * train_hist_fig [string]: the filename where the plot will be printed
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: None (figure printed to file)
     """
     n = len(history.history['accuracy'])
 
@@ -252,22 +324,24 @@ def plot_history(history, train_hist_fig):
 #-----------------------------------
 def get_label_pairs(val_ds, model):
     """
-    This function
+    "get_label_pairs"
+    This function gets label observations and model estimates
     INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
+        * val_ds: a batched data set object
+        * model: trained and compiled keras model instance
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
     OUTPUTS:
+        * labs [ndarray]: 1d vector of numeric labels
+        * preds [ndarray]: 1d vector of correspodning model predicted numeric labels
     """
     labs = []
     preds = []
     for img, lab in val_ds.take(-1):
-        #print(lab)
         labs.append(lab.numpy().flatten())
-
-        scores = model.predict(img) # tf.expand_dims(img, 0) , batch_size=1)
+        scores = model.predict(img)
         n = np.argmax(scores, axis=1)
         preds.append(n)
-
 
     labs = np.hstack(labs)
     preds = np.hstack(preds)
@@ -276,13 +350,19 @@ def get_label_pairs(val_ds, model):
 #-----------------------------------
 def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
     """
+    "p_confmat"
     This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
     using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
     saving out to the provided filename, cm_filename
     INPUTS:
+        * labs [ndarray]: 1d vector of labels
+        * preds [ndarray]: 1d vector of model predicted labels
+        * cm_filename [string]: filename to write the figure to
+        * CLASSES [list] of strings: class names
     OPTIONAL INPUTS:
-    GLOBAL INPUTS:
-    OUTPUTS:
+        * thres [float]: threshold controlling what values are displayed
+    GLOBAL INPUTS: None
+    OUTPUTS: None (figure printed to file)
     """
     cm = confusion_matrix(labs, preds)
 
@@ -306,24 +386,24 @@ def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
     print("Average true positive rate across %i classes: %.3f" % (len(CLASSES), np.mean(np.diag(cm))))
 
 
-
 ###############################################################
 ### DATA VIZ FUNCTIONS
 ###############################################################
 
 def make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES):
     """
+    "make_sample_plot"
     This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
     using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
     saving out to the provided filename, cm_filename
     INPUTS:
-        * model
-        * sample_filenames
-        * test_samples_fig
-        * CLASSES
+        * model: trained and compiled keras model
+        * sample_filenames: [list] of strings
+        * test_samples_fig [string]: filename to print figure to
+        * CLASSES [list] os trings: class names
     OPTIONAL INPUTS: None
     GLOBAL INPUTS: None
-    OUTPUTS: matplotlib figure, printed to file
+    OUTPUTS: None (matplotlib figure, printed to file)
     """
 
     plt.figure(figsize=(16,16))
@@ -365,6 +445,7 @@ def make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES):
 #-----------------------------------
 def compute_hist(images):
     """
+    "compute_hist"
     Compute the per channel histogram for a batch
     of images
     INPUTS:
@@ -397,6 +478,7 @@ def compute_hist(images):
 #-----------------------------------
 def plot_distribution(images, labels, class_id, CLASSES):
     """
+    "plot_distribution"
     Compute the per channel histogram for a batch
     of images
     INPUTS:
@@ -443,6 +525,7 @@ def plot_distribution(images, labels, class_id, CLASSES):
 #-----------------------------------
 def plot_one_class(inp_batch, sample_idx, label, batch_size, CLASSES, rows=8, cols=8, size=(20,15)):
     """
+    "plot_one_class"
     Plot "batch_size" images that belong to the class "label"
     INPUTS:
         * inp_batch
@@ -453,7 +536,7 @@ def plot_one_class(inp_batch, sample_idx, label, batch_size, CLASSES, rows=8, co
         * rows=8
         * cols=8
         * size=(20,15)
-    GLOBAL INPUTS: matplotlib figure
+    GLOBAL INPUTS: None (matplotlib figure, printed to file)
     """
 
     fig = plt.figure(figsize=size)
@@ -468,6 +551,7 @@ def plot_one_class(inp_batch, sample_idx, label, batch_size, CLASSES, rows=8, co
 #-----------------------------------
 def compute_mean_image(images, opt="mean"):
     """
+    "compute_mean_image"
     Compute and return mean image given
     a batch of images
     INPUTS:
@@ -486,6 +570,7 @@ def compute_mean_image(images, opt="mean"):
 #-----------------------------------
 def plot_mean_images(images, labels, CLASSES, rows=3, cols = 2):
     """
+    "plot_mean_images"
     Plot the mean image of a set of images
     INPUTS:
         * images [ndarray]: batch of shape (N x W x H x 3)
@@ -510,6 +595,7 @@ def plot_mean_images(images, labels, CLASSES, rows=3, cols = 2):
 #-----------------------------------
 def plot_tsne(tsne_result, label_ids, CLASSES):
     """
+    "plot_tsne"
     Plot TSNE loadings and colour code by class
     Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
     INPUTS:
@@ -542,10 +628,9 @@ def plot_tsne(tsne_result, label_ids, CLASSES):
     return fig, ax
 
 #-----------------------------------
-# Show images with t-SNE
-# Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
 def visualize_scatter_with_images(X_2d_data, labels, images, figsize=(15,15), image_zoom=1,xlim = (-3,3), ylim=(-3,3)):
     """
+    "visualize_scatter_with_images"
     Plot TSNE loadings and colour code by class
     Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
     INPUTS:
@@ -579,6 +664,7 @@ def visualize_scatter_with_images(X_2d_data, labels, images, figsize=(15,15), im
 #-----------------------------------
 def read_classes_from_json(json_file):
     """
+    "read_classes_from_json"
     This function reads the contents of a json file enumerating classes
     INPUTS:
         * json_file [string]: full path to the json file
@@ -599,18 +685,21 @@ def read_classes_from_json(json_file):
 #-----------------------------------
 def file2tensor(f, model='mobilenet'):
     """
+    "file2tensor"
     This function reads a jpeg image from file into a cropped and resized tensor,
     for use in prediction with a trained mobilenet or vgg model
     (the imagery is standardized depedning on target model framework)
     INPUTS:
+        * f [string] file name of jpeg
     OPTIONAL INPUTS:
+        * model = {'mobilenet' | 'vgg'}
     OUTPUTS:
-    GLOBAL INPUTS:
+        * image [tensor array]: unstandardized image
+        * im [tensor array]: standardized image
+    GLOBAL INPUTS: TARGET_SIZE
     """
     bits = tf.io.read_file(f)
     image = tf.image.decode_jpeg(bits)
-
-    # image = tf.image.resize(image, (TARGET_SIZE, TARGET_SIZE))
 
     w = tf.shape(image)[0]
     h = tf.shape(image)[1]
@@ -638,14 +727,16 @@ def file2tensor(f, model='mobilenet'):
 #-----------------------------------
 def get_batched_dataset(filenames):
     """
+    "get_batched_dataset"
     This function defines a workflow for the model to read data from
     tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
     and also formats the imagery properly for model training
     (assumes mobilenet by using read_tfrecord_mv2)
     INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
-    OUTPUTS:
+        * filenames [list]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: BATCH_SIZE, AUTO
+    OUTPUTS: tf.data.Dataset object
     """
     option_no_order = tf.data.Options()
     option_no_order.experimental_deterministic = True # False
@@ -666,6 +757,7 @@ def get_batched_dataset(filenames):
 #-----------------------------------
 def get_eval_dataset(filenames):
     """
+    "get_eval_dataset"
     This function defines a workflow for the model to read data from
     tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
     and also formats the imagery properly for model training
@@ -673,9 +765,10 @@ def get_eval_dataset(filenames):
 
     This evaluation version does not .repeat() because it is not being called repeatedly by a model
     INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
-    OUTPUTS:
+        * filenames [list]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: BATCH_SIZE, AUTO
+    OUTPUTS: tf.data.Dataset object
     """
     option_no_order = tf.data.Options()
     option_no_order.experimental_deterministic = True #False
@@ -696,6 +789,7 @@ def get_eval_dataset(filenames):
 #-----------------------------------
 def read_tfrecord_vgg(example):
     """
+    "read_tfrecord_vgg"
     This function reads an example record from a tfrecord file
     and parses into label and image ready for vgg model training
     INPUTS:
@@ -728,6 +822,7 @@ def read_tfrecord_vgg(example):
 #-----------------------------------
 def read_tfrecord_mv2(example):
     """
+    "read_tfrecord_mv2"
     This function reads an example record from a tfrecord file
     and parses into label and image ready for mobilenet model training
     INPUTS:
@@ -762,6 +857,7 @@ def read_tfrecord_mv2(example):
 # learning rate function
 def lrfn(epoch):
     """
+    "lrfn"
     This function creates a custom piecewise linear-exponential learning rate function
     for a custom learning rate scheduler. It is linear to a max, then exponentially decays
     INPUTS: current epoch number
@@ -783,6 +879,7 @@ def lrfn(epoch):
 #-----------------------------------
 def transfer_learning_model_vgg(num_classes, input_shape, dropout_rate=0.5):
     """
+    "transfer_learning_model_vgg"
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on vgg, trained using transfer learning
     (initialized using pretrained imagenet weights)
@@ -814,6 +911,7 @@ def transfer_learning_model_vgg(num_classes, input_shape, dropout_rate=0.5):
 #-----------------------------------
 def mobilenet_model(num_classes, input_shape, dropout_rate=0.5):
     """
+    "mobilenet_model"
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on mobilenet, trained from scratch
     INPUTS:
@@ -844,6 +942,7 @@ def mobilenet_model(num_classes, input_shape, dropout_rate=0.5):
 #-----------------------------------
 def transfer_learning_mobilenet_model(num_classes, input_shape, dropout_rate=0.5):
     """
+    "transfer_learning_mobilenet_model"
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on mobilenet v2, trained using transfer learning
     (initialized using pretrained imagenet weights)
@@ -875,6 +974,7 @@ def transfer_learning_mobilenet_model(num_classes, input_shape, dropout_rate=0.5
 #-----------------------------------
 def transfer_learning_xception_model(num_classes, input_shape, dropout_rate=0.25):
     """
+    "transfer_learning_xception_model"
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on xception, trained using transfer learning
     (initialized using pretrained imagenet weights)
@@ -906,6 +1006,7 @@ def transfer_learning_xception_model(num_classes, input_shape, dropout_rate=0.25
 #-----------------------------------
 def xception_model(num_classes, input_shape, dropout_rate=0.25):
     """
+    "xception_model"
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on xception, trained from scratch
     INPUTS:
@@ -936,6 +1037,7 @@ def xception_model(num_classes, input_shape, dropout_rate=0.25):
 ###===================================================
 def conv_block(inp, filters=32, bn=True, pool=True):
     """
+    "conv_block"
     This function generates a convolutional block
     INPUTS:
         * inp = input layer
@@ -962,6 +1064,7 @@ def conv_block(inp, filters=32, bn=True, pool=True):
 ###===================================================
 def make_cat_model(num_classes, dropout, denseunits, base_filters, bn=False, pool=True, shallow=True):
     """
+    "make_cat_model"
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category
     INPUTS:

@@ -1,39 +1,67 @@
-
+# Written by Dr Daniel Buscombe, Marda Science LLC
+# for "ML Mondays", a course supported by the USGS Community for Data Integration
+# and the USGS Coastal Change Hazards Program
+#
+# MIT License
+#
+# Copyright (c) 2020, Marda Science LLC
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 ## TAMUCC
-#from tamucc_imports import *
+from tamucc_imports import *
 
 ##UNCOMMENT BELOW TO USE NWPU DATA
-from nwpu_imports import *
-
+# from nwpu_imports import *
 
 #see mlmondays blog post:
 import os
 os.environ["TF_DETERMINISTIC_OPS"] = "1"
 
 ##calcs
-import tensorflow as tf
-import numpy as np
-from sklearn.manifold import TSNE
+import tensorflow as tf #numerical operations on gpu
+import numpy as np #numerical operations on cpu
+from sklearn.manifold import TSNE #for data dimensionality reduction / viz.
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsClassifier
 
-
 ##plots
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt #for plotting
 from sklearn.metrics import ConfusionMatrixDisplay
-from sklearn.metrics import confusion_matrix
-import seaborn as sns
-
+from sklearn.metrics import confusion_matrix #compute confusion matrix from vectors of observed and estimated labels
+import seaborn as sns #extended functionality / style to matplotlib plots
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox #for visualizing image thumbnails plotted as markers
 
 ##utils
 from collections import defaultdict
 from PIL import Image
 from collections import Counter
+#keras functions for early stopping and model weights saving
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-from sklearn.utils import class_weight
-import json, shutil
-import pandas as pd
+from sklearn.utils import class_weight #utility for computinh normalised class weights
+from tensorflow.keras import backend as K #access to keras backend functions
+from collections import defaultdict
+
+##i/o
+import pandas as pd #for data wrangling. We just use it to read csv files
+import json, shutil #json for class file reading, shutil for file copying/moving
+
 
 SEED=42
 np.random.seed(SEED)
@@ -52,11 +80,17 @@ import tensorflow.keras.backend as K
 ### MODEL FUNCTIONS
 ###############################################################
 
-# code repurposed from https://keras.io/examples/vision/metric_learning/
-
 class EmbeddingModel(tf.keras.Model):
     """
-    This function
+    # code modified from https://keras.io/examples/vision/metric_learning/
+    "EmbeddingModel"
+    This class allows an embedding model (an get_embedding_model or get_large_embedding_model instance)
+    to be trainable using the conventional model.fit(), whereby it can be passed another class
+    that provides batches of data examples in the form of anchors, positives, and negatives
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: model training metrics
     """
     def train_step(self, data):
         # Note: Workaround for open issue, to be removed.
@@ -98,46 +132,22 @@ class EmbeddingModel(tf.keras.Model):
         self.compiled_metrics.update_state(sparse_labels, similarities)
         return {m.name: m.result() for m in self.metrics}
 
-
-# def get_gram_matrix(X_test, model):
-#     embeddings = model.predict(X_test)
-#
-#     embeddings = tf.nn.l2_normalize(embeddings, axis=-1)
-#
-#     gram_matrix = np.einsum("ae,be->ab", embeddings, embeddings)
-#     return gram_matrix
-
-
-# def near_neighbours_from_samples(X_train, model, near_neighbours_per_example):
-#     embeddings = model.predict(X_train)
-#
-#     embeddings = tf.nn.l2_normalize(embeddings, axis=-1)
-#
-#     gram_matrix = np.einsum("ae,be->ab", embeddings, embeddings)
-#     near_neighbours = np.argsort(gram_matrix.T)[:, -(near_neighbours_per_example + 1) :]
-#     return near_neighbours
-
-
-# def get_cm_from_near_neighbours(ytrain, num_classes, near_neighbours, near_neighbours_per_example, class_idx_to_idxs):
-#
-#     confusion_matrix = np.zeros((num_classes, num_classes))
-#
-#     # For each class.
-#     for class_idx in range(num_classes):
-#         # Consider "near_neighbours_per_example" examples.
-#         example_idxs = class_idx_to_idxs[class_idx][:near_neighbours_per_example]
-#         for y_train_idx in example_idxs:
-#             # And count the classes of its near neighbours.
-#             for nn_idx in near_neighbours[y_train_idx][:-1]:
-#                 nn_class_idx = ytrain[nn_idx]
-#                 confusion_matrix[class_idx, nn_class_idx] += 1
-#     confusion_matrix = confusion_matrix.astype('float') / confusion_matrix.sum(axis=1)[:, np.newaxis]
-#     return confusion_matrix
-
-
+#---------------------------------------------------
 def get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim):
     """
-    This function
+    # code modified from https://keras.io/examples/vision/metric_learning/
+    "get_large_embedding_model"
+    This function makes an instance of a larger embedding model, which is a keras sequential model
+    consisting of 5 convolutiional blocks, average 2d pooling, and an embedding layer
+    INPUTS:
+        * model [keras model]
+        * X_train [list]
+        * ytrain [list]
+        * num_dim_use [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * knn [sklearn knn model]
     """
     inputs = tf.keras.layers.Input(shape=(TARGET_SIZE, TARGET_SIZE, 3))
     x = tf.keras.layers.Conv2D(filters=16, kernel_size=3, strides=2, activation="relu")(inputs) #
@@ -152,9 +162,22 @@ def get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim):
     model = EmbeddingModel(inputs, embeddings)
     return model
 
+#---------------------------------------------------
 def get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim):
     """
-    This function
+    # code modified from https://keras.io/examples/vision/metric_learning/
+    "get_embedding_model"
+    This function makes an instance of an embedding model, which is a keras sequential model
+    consisting of 3 convolutiional blocks, average 2d pooling, and an embedding layer
+    INPUTS:
+        * model [keras model]
+        * X_train [list]
+        * ytrain [list]
+        * num_dim_use [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * knn [sklearn knn model]
     """
     inputs = tf.keras.layers.Input(shape=(TARGET_SIZE, TARGET_SIZE, 3))
     x = tf.keras.layers.Conv2D(filters=32, kernel_size=3, strides=2, activation="relu")(inputs) #
@@ -162,19 +185,37 @@ def get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim):
     x = tf.keras.layers.Conv2D(filters=128, kernel_size=3, strides=2, activation="relu")(x) #64
     x = tf.keras.layers.GlobalAveragePooling2D()(x)
     embeddings = tf.keras.layers.Dense(units = num_embed_dim, activation=None)(x)
+
+    # according to matt kelcey, normalizing embeddings during training is not optimal
+    # even though this does help for embeddings on test samples. Not sure if that is universally true
+    # so left this commented - treat as a hyperparameter!
     #embeddings = tf.nn.l2_normalize(embeddings, axis=-1)
 
     model = EmbeddingModel(inputs, embeddings)
     return model
 
-def fit_knn_to_embeddings(model, X_train, ytrain, num_dim_use):
+#---------------------------------------------------
+def fit_knn_to_embeddings(model, X_train, ytrain, num_dim_use, n_neighbors):
     """
-    This function
+    "fit_knn_to_embeddings"
+    This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
+    using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
+    saving out to the provided filename, cm_filename
+    INPUTS:
+        * model [keras model]
+        * X_train [list]
+        * ytrain [list]
+        * num_dim_use [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * knn [sklearn knn model]
     """
     embeddings = model.predict(X_train)
+    del X_train
     embeddings = tf.nn.l2_normalize(embeddings, axis=-1)
 
-    knn = KNeighborsClassifier(n_neighbors=3)
+    knn = KNeighborsClassifier(n_neighbors=n_neighbors)
     knn.fit(embeddings.numpy()[:,:num_dim_use], ytrain)
     return knn
 
@@ -183,41 +224,24 @@ def fit_knn_to_embeddings(model, X_train, ytrain, num_dim_use):
 ### PLOT FUNCTIONS
 ###############################################################
 
-# def conf_matrix(y_test, gram_matrix, max_num_near_neighbours, min_num_near_neighbours, num_classes, class_idx_to_idxs):
-#     # code adapted from https://keras.io/examples/vision/metric_learning/
-#
-#     MN = []; MJ = []
-#     for near_neighbours_per_example in np.arange(min_num_near_neighbours,max_num_near_neighbours,1):
-#
-#       near_neighbours = np.argsort(gram_matrix.T)[:, -(near_neighbours_per_example + 1) :]
-#
-#       confusion_matrix = np.zeros((num_classes, num_classes))
-#
-#       # For each class.
-#       for class_idx in range(num_classes):
-#           # Consider 'near_neighbours' examples.
-#           example_idxs = class_idx_to_idxs[class_idx][:near_neighbours_per_example]
-#           for y_test_idx in example_idxs:
-#               # And count the classes of its near neighbours.
-#               for nn_idx in near_neighbours[y_test_idx][:-1]:
-#                   nn_class_idx = y_test[nn_idx]
-#                   #tally that class pairing
-#                   confusion_matrix[class_idx, nn_class_idx] += 1
-#
-#       # normalize by row totals to make the matrix stochastic
-#       confusion_matrix = confusion_matrix.astype('float') / confusion_matrix.sum(axis=1)[:, np.newaxis]
-#
-#       # mean recall as the mean of diagonal elements
-#       MN.append(np.mean(np.diag(confusion_matrix)))
-#       # maximum recall
-#       #MJ.append(np.max(np.diag(confusion_matrix)))
-#     return MN, confusion_matrix
-
-
 #-----------------------------------
 def conf_mat_filesamples(model, knn, sample_filenames, num_classes, num_dim_use, CLASSES):
     """
-    This function
+    "conf_mat_filesamples"
+    This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
+    using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
+    saving out to the provided filename, cm_filename
+    INPUTS:
+        * model [keras model]
+        * knn [sklearn knn model]
+        * sample_filenames [list] of strings
+        * num_classes [int]
+        * num_dim_use [int]
+        * CLASSES [list] of strings: class names
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * cm [ndarray]: confusion matrix
     """
     ## compute confusion matric for all samples
     cm = np.zeros((num_classes, num_classes))
@@ -245,7 +269,19 @@ def conf_mat_filesamples(model, knn, sample_filenames, num_classes, num_dim_use,
 #-----------------------------------
 def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
     """
-    This function
+    "p_confmat"
+    This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
+    using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
+    saving out to the provided filename, cm_filename
+    INPUTS:
+        * labs [ndarray]: 1d vector of labels
+        * preds [ndarray]: 1d vector of model predicted labels
+        * cm_filename [string]: filename to write the figure to
+        * CLASSES [list] of strings: class names
+    OPTIONAL INPUTS:
+        * thres [float]: threshold controlling what values are displayed
+    GLOBAL INPUTS: None
+    OUTPUTS: None (figure printed to file)
     """
     cm = confusion_matrix(labs, preds)
 
@@ -259,8 +295,8 @@ def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
         cmap = sns.cubehelix_palette(dark=0, light=1, as_cmap=True))
 
     tick_marks = np.arange(len(CLASSES))+.5
-    plt.xticks(tick_marks, [c.decode() for c in CLASSES], rotation=45,fontsize=12)
-    plt.yticks(tick_marks, [c.decode() for c in CLASSES],rotation=45, fontsize=12)
+    plt.xticks(tick_marks, [c.decode() for c in CLASSES], rotation=90,fontsize=12)
+    plt.yticks(tick_marks, [c.decode() for c in CLASSES],rotation=0, fontsize=12)
 
     # plt.show()
     plt.savefig(cm_filename,
@@ -276,6 +312,7 @@ def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
 #-----------------------------------
 def read_classes_from_json(json_file):
     """
+    "read_classes_from_json"
     This function reads the contents of a json file enumerating classes
     INPUTS:
         * json_file [string]: full path to the json file
@@ -293,33 +330,22 @@ def read_classes_from_json(json_file):
     CLASSES = [c.encode() for c in CLASSES]
     return CLASSES
 
-#-----------------------------------
-def read_tfrecord(example):
-    """
-    This function
-    """
-    features = {
-        "image": tf.io.FixedLenFeature([], tf.string),  # tf.string = bytestring (not text string)
-        "class": tf.io.FixedLenFeature([], tf.int64),   # shape [] means scalar
-    }
-    # decode the TFRecord
-    example = tf.io.parse_single_example(example, features)
-
-    image = tf.image.decode_jpeg(example['image'], channels=3)
-    image = tf.cast(image, tf.uint8) #float32) / 255.0
-    image = tf.reshape(image, [TARGET_SIZE,TARGET_SIZE, 3])
-
-    class_label = tf.cast(example['class'], tf.int32)
-
-    return image, class_label
-
 
 ## test using imgae read from file
 #-----------------------------------
 def file2tensor(f):
     """
+    "file2tensor"
     This function reads a jpeg image from file into a cropped and resized tensor,
-    for use in prediction with a trained model
+    for use in prediction with a trained mobilenet or vgg model
+    (the imagery is standardized depedning on target model framework)
+    INPUTS:
+        * f [string] file name of jpeg
+    OPTIONAL INPUTS: None
+    OUTPUTS:
+        * image [tensor array]: unstandardized image
+        * im [tensor array]: standardized image
+    GLOBAL INPUTS: TARGET_SIZE
     """
     bits = tf.io.read_file(f)
     image = tf.image.decode_jpeg(bits)
@@ -346,43 +372,19 @@ def file2tensor(f):
 ###############################################################
 
 #-----------------------------------
-def recompress_image(image, label):
-    """
-    This function
-    """
-    image = tf.cast(image, tf.uint8)
-    image = tf.image.encode_jpeg(image, optimize_size=True, chroma_downsampling=False)
-    return image, label
-
-#-----------------------------------
-"""
-This function
-"""
-def _bytestring_feature(list_of_bytestrings):
-  return tf.train.Feature(bytes_list=tf.train.BytesList(value=list_of_bytestrings))
-
-def _int_feature(list_of_ints): # int64
-  return tf.train.Feature(int64_list=tf.train.Int64List(value=list_of_ints))
-
-def _float_feature(list_of_floats): # float32
-  return tf.train.Feature(float_list=tf.train.FloatList(value=list_of_floats))
-
-#-----------------------------------
-def to_tfrecord(img_bytes, label, CLASSES):
-    """
-    This function
-    """
-    class_num = np.argmax(np.array(CLASSES)==label)
-    feature = {
-      "image": _bytestring_feature([img_bytes]), # one image in the list
-      "class": _int_feature([class_num]),        # one class in the list
-              }
-    return tf.train.Example(features=tf.train.Features(feature=feature))
-
-#-----------------------------------
 def resize_and_crop_image(image, label):
     """
-    This function
+    "resize_and_crop_image"
+    This function crops to square and resizes an image
+    The label passes through unmodified
+    INPUTS:
+        * image [tensor array]
+        * label [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: TARGET_SIZE
+    OUTPUTS:
+        * image [tensor array]
+        * label [int]
     """
     w = tf.shape(image)[0]
     h = tf.shape(image)[1]
@@ -397,10 +399,130 @@ def resize_and_crop_image(image, label):
     nh = tf.shape(image)[1]
     image = tf.image.crop_to_bounding_box(image, (nw - tw) // 2, (nh - th) // 2, tw, th)
     return image, label
+
+#-----------------------------------
+def recompress_image(image, label):
+    """
+    "recompress_image"
+    This function takes an image encoded as a byte string
+    and recodes as an 8-bit jpeg
+    Label passes through unmodified
+    INPUTS:
+        * image [tensor array]
+        * label [int]
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * image [tensor array]
+        * label [int]
+    """
+    image = tf.cast(image, tf.uint8)
+    image = tf.image.encode_jpeg(image, optimize_size=True, chroma_downsampling=False)
+    return image, label
+
+#-----------------------------------
+"""
+These functions cast inputs into tf dataset 'feature' classes
+There is one for bytestrings (images), one for floats (not used here) and one for ints (labels)
+"""
+def _bytestring_feature(list_of_bytestrings):
+    """
+    "_bytestring_feature"
+    cast inputs into tf dataset 'feature' classes
+    INPUTS:
+        * list_of_bytestrings
+    OPTIONAL INPUTS:
+    GLOBAL INPUTS:
+    OUTPUTS: tf.train.Feature example
+    """
+    return tf.train.Feature(bytes_list=tf.train.BytesList(value=list_of_bytestrings))
+
+def _int_feature(list_of_ints):
+    """
+    "_int_feature"
+    cast inputs into tf dataset 'feature' classes
+    INPUTS:
+        * list_of_ints
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: tf.train.Feature example
+    """
+    return tf.train.Feature(int64_list=tf.train.Int64List(value=list_of_ints))
+
+def _float_feature(list_of_floats):
+    """
+    "_float_feature"
+    cast inputs into tf dataset 'feature' classes
+    INPUTS:
+        * list_of_floats
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: tf.train.Feature example
+    """
+    return tf.train.Feature(float_list=tf.train.FloatList(value=list_of_floats))
+
+#-----------------------------------
+def to_tfrecord(img_bytes, label, CLASSES):
+    """
+    "to_tfrecord"
+    This function creates a TFRecord example from an image byte string and a label feature
+    INPUTS:
+        * img_bytes
+        * label
+        * CLASSES
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: tf.train.Feature example
+    """
+    class_num = np.argmax(np.array(CLASSES)==label)
+    feature = {
+      "image": _bytestring_feature([img_bytes]), # one image in the list
+      "class": _int_feature([class_num]),        # one class in the list
+              }
+    return tf.train.Example(features=tf.train.Features(feature=feature))
+
+#-----------------------------------
+def read_tfrecord(example):
+    """
+    "read_tfrecord"
+    This function reads an example from a TFrecord file into a single image and label
+    INPUTS:
+        * TFRecord example object
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: TARGET_SIZE
+    OUTPUTS:
+        * image [tensor array]
+        * class_label [tensor int]
+    """
+    features = {
+        "image": tf.io.FixedLenFeature([], tf.string),  # tf.string = bytestring (not text string)
+        "class": tf.io.FixedLenFeature([], tf.int64),   # shape [] means scalar
+    }
+    # decode the TFRecord
+    example = tf.io.parse_single_example(example, features)
+
+    image = tf.image.decode_jpeg(example['image'], channels=3)
+    image = tf.cast(image, tf.float32)/ 255.0
+    image = tf.reshape(image, [TARGET_SIZE,TARGET_SIZE, 3])
+
+    class_label = tf.cast(example['class'], tf.int32)
+
+    return image, class_label
+
 #-----------------------------------
 def read_image_and_label(img_path):
     """
-    This function
+    "read_image_and_label"
+    This function reads a jpeg image from a provided filepath
+    and extracts the label from the filename (assuming the class name is
+    before "_IMG" in the filename)
+    INPUTS:
+        * img_path [string]: filepath to a jpeg image
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * image [tensor array]
+        * class_label [tensor int]
     """
     bits = tf.io.read_file(img_path)
     image = tf.image.decode_jpeg(bits)
@@ -410,11 +532,21 @@ def read_image_and_label(img_path):
 
     return image,label[0]
 
-
 #-----------------------------------
 def get_dataset_for_tfrecords(recoded_dir, shared_size):
     """
-    This function
+    "get_dataset_for_tfrecords"
+    This function reads a list of TFREcord shard files,
+    decode the images and label
+    resize and crop the image to TARGET_SIZE
+    and create batches
+    INPUTS:
+        * recoded_dir
+        * shared_size
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: TARGET_SIZE
+    OUTPUTS:
+        * tf.data.Dataset object
     """
     tamucc_dataset = tf.data.Dataset.list_files(recoded_dir+os.sep+'*.jpg', seed=10000) # This also shuffles the images
     tamucc_dataset = tamucc_dataset.map(read_image_and_label)
@@ -427,7 +559,15 @@ def get_dataset_for_tfrecords(recoded_dir, shared_size):
 #-----------------------------------
 def write_records(tamucc_dataset, tfrecord_dir, CLASSES):
     """
-    This function
+    "write_records"
+    This function writes a tf.data.Dataset object to TFRecord shards
+    INPUTS:
+        * tamucc_dataset [tf.data.Dataset]
+        * tfrecord_dir [string] : path to directory where files will be written
+        * CLASSES [list] of class string names
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: None (files written to disk)
     """
     for shard, (image, label) in enumerate(tamucc_dataset):
       shard_size = image.numpy().shape[0]
@@ -445,7 +585,14 @@ def write_records(tamucc_dataset, tfrecord_dir, CLASSES):
 
 def weighted_binary_crossentropy(zero_weight, one_weight):
     """
+    "weighted_binary_crossentropy"
     This function computes weighted binary crossentropy loss
+    INPUTS:
+        * zero_weight [float]: weight for the zero class
+        * one_weight [float]: weight for the one class
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:  the function wbce with all arguments passed
     """
     def wbce(y_true, y_pred):
 
@@ -461,11 +608,17 @@ def weighted_binary_crossentropy(zero_weight, one_weight):
 
     return wbce
 
+#---------------------------------------------------
 # learning rate function
 def lrfn(epoch):
     """
+    "lrfn"
     This function creates a custom piecewise linear-exponential learning rate function
     for a custom learning rate scheduler. It is linear to a max, then exponentially decays
+    INPUTS: current epoch number
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: start_lr, min_lr, max_lr, rampup_epochs, sustain_epochs, exp_decay
+    OUTPUTS:  the function lr with all arguments passed
     """
     def lr(epoch, start_lr, min_lr, max_lr, rampup_epochs, sustain_epochs, exp_decay):
         if epoch < rampup_epochs:
