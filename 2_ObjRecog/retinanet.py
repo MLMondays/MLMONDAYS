@@ -51,7 +51,7 @@ model_dir = "retinanet/"
 label_encoder = LabelEncoder()
 
 num_classes = 80
-batch_size = 1
+# batch_size = 1
 
 learning_rates = [2.5e-06, 0.000625, 0.00125, 0.0025, 0.00025, 2.5e-05]
 learning_rate_boundaries = [125, 250, 500, 240000, 360000]
@@ -70,6 +70,11 @@ model = RetinaNet(num_classes, resnet50_backbone)
 optimizer = tf.optimizers.SGD(learning_rate=learning_rate_fn, momentum=0.9)
 model.compile(loss=loss_fn, optimizer=optimizer)
 
+
+weights_dir = "data/coco"
+latest_checkpoint = tf.train.latest_checkpoint(weights_dir)
+model.load_weights(latest_checkpoint)
+
 """
 ## Setting up callbacks
 """
@@ -77,8 +82,8 @@ model.compile(loss=loss_fn, optimizer=optimizer)
 callbacks_list = [
     tf.keras.callbacks.ModelCheckpoint(
         filepath=os.path.join(model_dir, "weights" + "_epoch_{epoch}"),
-        monitor="loss",
-        save_best_only=False,
+        monitor="val_loss",
+        save_best_only=True,
         save_weights_only=True,
         verbose=1,
     )
@@ -121,7 +126,7 @@ train_dataset = train_dataset.prefetch(AUTO)
 
 val_dataset = val_dataset.map(preprocess_data, num_parallel_calls=AUTO)
 val_dataset = val_dataset.padded_batch(
-    BATCH_SIZE=1, padding_values=(0.0, 1e-8, -1), drop_remainder=True
+    batch_size = BATCH_SIZE, padding_values=(0.0, 1e-8, -1), drop_remainder=True
 )
 val_dataset = val_dataset.map(label_encoder.encode_batch, num_parallel_calls=AUTO)
 val_dataset = val_dataset.apply(tf.data.experimental.ignore_errors())
@@ -157,7 +162,9 @@ model.fit(
 """
 
 # Change this to `model_dir` when not using the downloaded weights
-weights_dir = "data"
+# weights_dir = "data"
+
+weights_dir = model_dir
 
 latest_checkpoint = tf.train.latest_checkpoint(weights_dir)
 model.load_weights(latest_checkpoint)

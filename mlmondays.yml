@@ -15,5 +15,7 @@ dependencies:
   - ipython #optional - for running code in ipython
   - jupyter #for accessing and executing jupyter notebooks
   - pandas  #data wrangling
-  - pip #to install packages not available in conda
   - tensorflow-gpu  #for deep learning
+  #to install packages not available in conda
+  - pip
+    - object-detection

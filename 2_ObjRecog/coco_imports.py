@@ -35,7 +35,7 @@ VALIDATION_SPLIT = 0.6
 ims_per_shard = 200
 BATCH_SIZE = 1 #6
 
-MAX_EPOCHS = 100
+MAX_EPOCHS = 10
 
 start_lr = 1e-5 #0.00001
 min_lr = start_lr
