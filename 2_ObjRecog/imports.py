@@ -35,7 +35,6 @@ from coco_imports import *
 import os
 os.environ["TF_DETERMINISTIC_OPS"] = "1"
 
-
 ##calcs
 import numpy as np
 import tensorflow as tf
@@ -46,6 +45,11 @@ import matplotlib.pyplot as plt
 
 #io
 import tensorflow_datasets as tfds
+from PIL import Image
+# from object_detection.utils import dataset_util
+from collections import namedtuple, OrderedDict
+import io
+import pandas as pd
 
 #utils
 #keras functions for early stopping and model weights saving
@@ -62,6 +66,113 @@ print("Version: ", tf.__version__)
 print("Eager mode: ", tf.executing_eagerly())
 print('GPU name: ', tf.config.experimental.list_physical_devices('GPU'))
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+
+###############################################################
+## TFRECORDS
+###############################################################
+
+#-----------------------------------
+def file2tensor(f):
+    """
+    "file2tensor"
+    This function reads a jpeg image from file into a cropped and resized tensor,
+    for use in prediction with a trained mobilenet or vgg model
+    (the imagery is standardized depedning on target model framework)
+    INPUTS:
+        * f [string] file name of jpeg
+    OPTIONAL INPUTS:
+        * model = {'mobilenet' | 'vgg'}
+    OUTPUTS:
+        * image [tensor array]: unstandardized image
+        * im [tensor array]: standardized image
+    GLOBAL INPUTS: TARGET_SIZE
+    """
+    bits = tf.io.read_file(f)
+    image = tf.image.decode_jpeg(bits)
+
+    return image
+
+
+def write_tfrecords(output_path, image_dir, csv_input):
+    writer = tf.io.TFRecordWriter(output_path)
+
+    path = os.path.join(os.getcwd(),image_dir)
+
+    examples = pd.read_csv(csv_input)
+    print(len(examples))
+    grouped = split(examples, 'filename')
+
+    for group in grouped:
+        tf_example = create_tf_example(group, path)
+        writer.write(tf_example.SerializeToString())
+
+    writer.close()
+    output_path = os.path.join(os.getcwd(), output_path)
+    print('Successfully created the TFRecords: {}'.format(output_path))
+
+
+def int64_feature(value):
+  return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
+
+def int64_list_feature(value):
+  return tf.train.Feature(int64_list=tf.train.Int64List(value=value))
+
+def bytes_feature(value):
+  return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
+
+def bytes_list_feature(value):
+  return tf.train.Feature(bytes_list=tf.train.BytesList(value=value))
+
+def float_list_feature(value):
+  return tf.train.Feature(float_list=tf.train.FloatList(value=value))
+
+# TO-DO replace this with label map
+def class_text_to_int(row_label):
+    if row_label == 'person':
+        return 1
+    else:
+        None
+
+def split(df, group):
+    data = namedtuple('data', ['filename', 'object'])
+    gb = df.groupby(group)
+    return [data(filename, gb.get_group(x)) for filename, x in zip(gb.groups.keys(), gb.groups)]
+
+def create_tf_example(group, path):
+    with tf.io.gfile.GFile(os.path.join(path, '{}'.format(group.filename)), 'rb') as fid:
+        encoded_jpg = fid.read()
+    encoded_jpg_io = io.BytesIO(encoded_jpg)
+    image = Image.open(encoded_jpg_io)
+    width, height = image.size
+
+    filename = group.filename.encode('utf8')
+    image_format = b'jpg'
+
+    xs = []; ys = []
+    ws = []; hs = []; classes = []
+
+    for index, row in group.object.iterrows():
+        # classes_text.append(row['class'].encode('utf8'))
+        classes.append(class_text_to_int(row['class']))
+        xs.append((row['xmax']+row['xmin'])/2)
+        ys.append((row['ymax']+row['ymin'])/2)
+        ws.append(row['xmax']-row['xmin'])
+        hs.append(row['ymax']-row['ymin'])
+
+    tf_example = tf.train.Example(features=tf.train.Features(feature={
+        'height': int64_feature(height),
+        'width': int64_feature(width),
+        'filename': bytes_feature(filename),
+        'id': bytes_feature(filename),
+        'image': bytes_feature(encoded_jpg),
+        'format': bytes_feature(image_format),
+        'objects/bbox/xs': float_list_feature(xs),
+        'objects/bbox/ys': float_list_feature(ys),
+        'objects/bbox/ws': float_list_feature(ws),
+        'objects/bbox/hs': float_list_feature(hs), #replace with a N, 4 matrix as bbox
+        'objects/class/label': int64_list_feature(classes),
+    }))
+    return tf_example
 
 
 """
@@ -237,7 +348,7 @@ def resize_and_pad_image(
     return image, image_shape, ratio
 
 
-def preprocess_data(sample):
+def preprocess_coco_data(sample):
     """Applies preprocessing step to a single sample
     Arguments:
       sample: A dict representing a single training sample.
@@ -268,6 +379,54 @@ def preprocess_data(sample):
     return image, bbox, class_id
 
 
+
+
+def preprocess_secoora_data(example):
+    """Applies preprocessing step to a single sample
+    Arguments:
+      sample: A dict representing a single training sample.
+    Returns:
+      image: Resized and padded image with random horizontal flipping applied.
+      bbox: Bounding boxes with the shape `(num_objects, 4)` where each box is
+        of the format `[x, y, width, height]`.
+      class_id: An tensor representing the class id of the objects, having
+        shape `(num_objects,)`.
+    """
+    image = tf.image.decode_jpeg(example['image'], channels=3)
+    image = tf.cast(image, tf.float32)
+
+    # encoded_jpg_io = io.BytesIO(example['image'])
+    # image = Image.open(encoded_jpg_io)
+    #image = tf.cast(image, tf.uint8)/ 255
+    image = tf.image.per_image_standardization(image)
+
+    image, image_shape, _ = resize_and_pad_image(image)
+
+    xs=tf.cast(example['objects/bbox/xs'], tf.int32)
+    ys=tf.cast(example['objects/bbox/ys'], tf.int32)
+    ws=tf.cast(example['objects/bbox/ws'], tf.int32)
+    hs=tf.cast(example['objects/bbox/hs'], tf.int32)
+
+    bbox = tf.reshape(tf.concat((xs,ys,ws,hs), axis=0), (-1,4))
+
+    bbox = tf.cast(bbox, tf.float32)
+
+    bbox = tf.stack(
+        [
+            bbox[:, 0] * image_shape[1],
+            bbox[:, 1] * image_shape[0],
+            bbox[:, 2] * image_shape[1],
+            bbox[:, 3] * image_shape[0],
+        ],
+        axis=-1,
+    )
+    
+    class_id = tf.cast(example["objects/class/label"], dtype=tf.int32)
+
+    return tuple([image, bbox, class_id])
+
+
+
 """
 ## Encoding labels
 The raw labels, consisting of bounding boxes and class ids need to be
@@ -279,6 +438,108 @@ the following steps:
 background class or ignored depending on the IOU
 - Generating the classification and regression targets using anchor boxes
 """
+
+
+class LabelEncoderCoco:
+    """Transforms the raw labels into targets for training.
+    This class has operations to generate targets for a batch of samples which
+    is made up of the input images, bounding boxes for the objects present and
+    their class ids.
+    Attributes:
+      anchor_box: Anchor box generator to encode the bounding boxes.
+      box_variance: The scaling factors used to scale the bounding box targets.
+    """
+
+    def __init__(self):
+        self._anchor_box = AnchorBox()
+        self._box_variance = tf.convert_to_tensor(
+            [0.1, 0.1, 0.2, 0.2], dtype=tf.float32
+        )
+
+    def _match_anchor_boxes(
+        self, anchor_boxes, gt_boxes, match_iou=0.5, ignore_iou=0.4
+    ):
+        """Matches ground truth boxes to anchor boxes based on IOU.
+        1. Calculates the pairwise IOU for the M `anchor_boxes` and N `gt_boxes`
+          to get a `(M, N)` shaped matrix.
+        2. The ground truth box with the maximum IOU in each row is assigned to
+          the anchor box provided the IOU is greater than `match_iou`.
+        3. If the maximum IOU in a row is less than `ignore_iou`, the anchor
+          box is assigned with the background class.
+        4. The remaining anchor boxes that do not have any class assigned are
+          ignored during training.
+        Arguments:
+          anchor_boxes: A float tensor with the shape `(total_anchors, 4)`
+            representing all the anchor boxes for a given input image shape,
+            where each anchor box is of the format `[x, y, width, height]`.
+          gt_boxes: A float tensor with shape `(num_objects, 4)` representing
+            the ground truth boxes, where each box is of the format
+            `[x, y, width, height]`.
+          match_iou: A float value representing the minimum IOU threshold for
+            determining if a ground truth box can be assigned to an anchor box.
+          ignore_iou: A float value representing the IOU threshold under which
+            an anchor box is assigned to the background class.
+        Returns:
+          matched_gt_idx: Index of the matched object
+          positive_mask: A mask for anchor boxes that have been assigned ground
+            truth boxes.
+          ignore_mask: A mask for anchor boxes that need to by ignored during
+            training
+        """
+        iou_matrix = compute_iou(anchor_boxes, gt_boxes)
+        max_iou = tf.reduce_max(iou_matrix, axis=1)
+        matched_gt_idx = tf.argmax(iou_matrix, axis=1)
+        positive_mask = tf.greater_equal(max_iou, match_iou)
+        negative_mask = tf.less(max_iou, ignore_iou)
+        ignore_mask = tf.logical_not(tf.logical_or(positive_mask, negative_mask))
+        return (
+            matched_gt_idx,
+            tf.cast(positive_mask, dtype=tf.float32),
+            tf.cast(ignore_mask, dtype=tf.float32),
+        )
+
+    def _compute_box_target(self, anchor_boxes, matched_gt_boxes):
+        """Transforms the ground truth boxes into targets for training"""
+        box_target = tf.concat(
+            [
+                (matched_gt_boxes[:, :2] - anchor_boxes[:, :2]) / anchor_boxes[:, 2:],
+                tf.math.log(matched_gt_boxes[:, 2:] / anchor_boxes[:, 2:]),
+            ],
+            axis=-1,
+        )
+        box_target = box_target / self._box_variance
+        return box_target
+
+    def _encode_sample(self, image_shape, gt_boxes, cls_ids):
+        """Creates box and classification targets for a single sample"""
+        anchor_boxes = self._anchor_box.get_anchors(image_shape[1], image_shape[2])
+        cls_ids = tf.cast(cls_ids, dtype=tf.float32)
+        matched_gt_idx, positive_mask, ignore_mask = self._match_anchor_boxes(
+            anchor_boxes, gt_boxes
+        )
+        matched_gt_boxes = tf.gather(gt_boxes, matched_gt_idx)
+        box_target = self._compute_box_target(anchor_boxes, matched_gt_boxes)
+        matched_gt_cls_ids = tf.gather(cls_ids, matched_gt_idx)
+        cls_target = tf.where(
+            tf.not_equal(positive_mask, 1.0), -1.0, matched_gt_cls_ids
+        )
+        cls_target = tf.where(tf.equal(ignore_mask, 1.0), -2.0, cls_target)
+        cls_target = tf.expand_dims(cls_target, axis=-1)
+        label = tf.concat([box_target, cls_target], axis=-1)
+        return label
+
+    def encode_batch(self, batch_images, gt_boxes, cls_ids):
+        """Creates box and classification targets for a batch"""
+        images_shape = tf.shape(batch_images)
+        batch_size = images_shape[0]
+
+        labels = tf.TensorArray(dtype=tf.float32, size=batch_size, dynamic_size=True)
+        for i in range(batch_size):
+            label = self._encode_sample(images_shape, gt_boxes[i], cls_ids[i])
+            labels = labels.write(i, label)
+        batch_images = tf.keras.applications.resnet.preprocess_input(batch_images)
+        return batch_images, labels.stack()
+
 
 
 class LabelEncoder:
@@ -378,7 +639,7 @@ class LabelEncoder:
         for i in range(batch_size):
             label = self._encode_sample(images_shape, gt_boxes[i], cls_ids[i])
             labels = labels.write(i, label)
-        batch_images = tf.keras.applications.resnet.preprocess_input(batch_images)
+        # batch_images = tf.keras.applications.resnet.preprocess_input(batch_images)
         return batch_images, labels.stack()
 
 

@@ -27,7 +27,6 @@
 ###############################################################
 ## IMPORTS
 ###############################################################
-
 from imports import *
 
 #-----------------------------------
@@ -97,8 +96,6 @@ sample_data_path= os.getcwd()+os.sep+"data/tamucc/subset_3class/sample"
 
 CLASSES = [b'marsh', b'dev', b'other']
 
-#smaller learning rate because fine tuning
-
 #largeer patience
 patience = 30
 
@@ -140,8 +137,6 @@ augmented_train_ds, augmented_val_ds = get_aug_datasets()
 #### fine-tuning
 
 ### use smaller learning rate when fine tuning, and use more patience
-
-
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=True)
 
 rng = [i for i in range(MAX_EPOCHS)]
@@ -172,7 +167,6 @@ for layer in model3.layers[:fine_tune_at]:
 # check this: which layers are frozen?
 for i,layer in enumerate(model3.layers):
     print('layer %i: %s' % (i, ['trainable' if layer.trainable else 'frozen'][0]))
-
 
 
 model3.compile(optimizer=tf.keras.optimizers.Adam(), #1e-4),
@@ -208,7 +202,6 @@ else:
     model3.load_weights(filepath)
 
 
-
 ##########################################################
 ### evaluate
 loss, accuracy = model3.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
@@ -228,6 +221,5 @@ val_ds = get_validation_eval_dataset()
 labs, preds = get_label_pairs(val_ds, model3)
 
 p_confmat(labs, preds, cm_filename, CLASSES)
-
 
 #73%

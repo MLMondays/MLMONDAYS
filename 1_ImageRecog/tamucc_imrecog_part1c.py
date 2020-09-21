@@ -139,15 +139,12 @@ train_ds = get_training_dataset()
 val_ds = get_validation_dataset()
 
 numclass = len(CLASSES)
-# ID_MAP = dict(zip(np.arange(numclass), [str(k) for k in range(numclass)]))
 
 custom_model3 = make_cat_model(numclass, denseunits=128, base_filters = 30, dropout=0.5) #256
-
 
 custom_model3.compile(optimizer=tf.keras.optimizers.Adam(),
           loss='sparse_categorical_crossentropy',
           metrics=['accuracy'])
-
 
 earlystop = EarlyStopping(monitor="val_loss",
                               mode="min", patience=patience)

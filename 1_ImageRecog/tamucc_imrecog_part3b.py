@@ -28,6 +28,7 @@
 ## IMPORTS
 ###############################################################
 from imports import *
+
 #-----------------------------------
 def get_training_dataset():
     """
@@ -85,11 +86,9 @@ def get_aug_datasets():
     return augmented_train_ds, augmented_val_ds
 
 
-
 ###############################################################
 ## VARIABLES
 ###############################################################
-
 
 data_path= os.getcwd()+os.sep+"data/tamucc/subset_4class/400"
 
@@ -137,12 +136,9 @@ val_ds = get_validation_dataset()
 
 augmented_train_ds, augmented_val_ds = get_aug_datasets()
 
-
-
 #####################################################################
 ## class weights
 l = get_all_labels(nb_images, VALIDATION_SPLIT, BATCH_SIZE)
-
 
 # class weights will be given by n_samples / (n_classes * np.bincount(y))
 
@@ -152,7 +148,6 @@ class_weights = class_weight.compute_class_weight('balanced',
 
 class_weights = dict(enumerate(class_weights))
 print(class_weights)
-
 
 ##=========
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=True)
@@ -194,7 +189,6 @@ if do_train:
 else:
     model2.load_weights(filepath)
 
-
 ##########################################################
 ### evaluate
 loss, accuracy = model2.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
@@ -204,14 +198,12 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
 ##########################################################
 ### predict
-
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
 make_sample_plot(model2, sample_filenames, test_samples_fig, CLASSES)
 
 
 ##################################################
-
 ## confusion matrix
 val_ds = get_validation_eval_dataset()
 

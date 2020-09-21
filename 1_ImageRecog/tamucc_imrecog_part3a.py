@@ -28,6 +28,7 @@
 ## IMPORTS
 ###############################################################
 from imports import *
+
 #-----------------------------------
 def get_training_dataset():
     """
@@ -168,8 +169,6 @@ for im,l in augmented_train_ds.take(1):
 # plt.show()
 plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_4class_augtrainsamples.png', dpi=200, bbox_inches='tight')
 
-
-
 ##=========
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=True)
 
@@ -222,7 +221,6 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES)
-
 
 ##################################################
 

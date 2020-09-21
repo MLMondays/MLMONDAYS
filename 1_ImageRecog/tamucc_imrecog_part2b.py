@@ -87,9 +87,6 @@ def get_aug_datasets():
     return augmented_train_ds, augmented_val_ds
 
 ###############################################################
-
-
-###############################################################
 ## VARIABLES
 ###############################################################
 
@@ -109,13 +106,11 @@ sample_plot_name = os.getcwd()+os.sep+'results/tamucc_sample_3class_mv2_model2_e
 
 test_samples_fig = os.getcwd()+os.sep+'results/tamucc_full_sample_3class_mv2_model_est24samples.png'
 
-
 ###############################################################
 ## EXECUTION
 ###############################################################
 
 #images already shuffled
-
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
 nb_images = ims_per_shard * len(filenames)
@@ -134,7 +129,6 @@ print(validation_steps)
 
 ## data augmentation is typically used
 augmented_train_ds, augmented_val_ds = get_aug_datasets()
-
 
 ###==============================================================================
 ## class imbalance
@@ -183,9 +177,8 @@ plt.text(Ntrain[outlier]/np.sum(Ntrain), Nval[outlier]/np.sum(Nval), CLASSES[out
 
 # plt.show()
 plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_3class_prop_per_class.png', dpi=200, bbox_inches='tight')
-
-
 plt.close('all')
+
 
 
 N = Ntrain + Nval
@@ -198,7 +191,6 @@ plt.xticks(rotation=90, fontsize=7)
 plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_3class_imbalance.png', dpi=200, bbox_inches='tight')
 
 plt.close('all')
-
 
 ########### transfer learning
 
@@ -259,7 +251,6 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
 make_sample_plot(model2, sample_filenames, test_samples_fig, CLASSES)
-
 
 ## confusion matrix
 val_ds = get_validation_eval_dataset()

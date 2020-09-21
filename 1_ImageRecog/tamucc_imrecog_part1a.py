@@ -131,7 +131,6 @@ print(validation_steps)
 train_ds = get_training_dataset()
 plt.figure(figsize=(16,16))
 for imgs,lbls in train_ds.take(1):
-  #print(lbls)
   for count,im in enumerate(imgs):
      plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
      plt.imshow(im)
@@ -144,7 +143,6 @@ plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_2class_trainsamples.png', 
 val_ds = get_validation_dataset()
 plt.figure(figsize=(16,16))
 for imgs,lbls in val_ds.take(1):
-  #print(lbls)
   for count,im in enumerate(imgs):
      plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
      plt.imshow(im)
@@ -176,13 +174,9 @@ for im,l in augmented_train_ds.take(1):
 # plt.show()
 plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_2class_augtrainsamples.png', dpi=200, bbox_inches='tight')
 
-
-
 ###+===================================================
-
 ## smaller model
 numclass = len(CLASSES)
-# ID_MAP = dict(zip(np.arange(numclass), [str(k) for k in range(numclass)]))
 
 custom_model = make_cat_model(numclass, denseunits=256, base_filters = 30, dropout=0.5)
 
@@ -240,7 +234,6 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
 make_sample_plot(custom_model, sample_filenames, test_samples_fig, CLASSES)
-
 
 ##################################################
 

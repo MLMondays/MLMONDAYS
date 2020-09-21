@@ -30,47 +30,22 @@ from imports import *
 ###############################################################
 ## VARIABLES
 ###############################################################
+root = 'data/secoora'+os.sep
 
-imdir = '/media/marda/TWOTB/USGS/DATA/OysterNet/1kx1k_dataset/all_images'
+output_path = root+'secoora-train.tfrecord'
 
-# Convert folder of pngs into jpegs
-# for file in *.png
-# > do
-# > convert $file $"${file%.png}.jpg"
-# > done
+image_dir = root+'train'
 
-lab_path = '/media/marda/TWOTB/USGS/DATA/OysterNet/1kx1k_dataset/all_labels'
+csv_input = root+'train_labels.csv'
 
-tfrecord_dir = '/media/marda/TWOTB/USGS/SOFTWARE/DL-CDI2020/3_ImageSeg/data/oysternet'
-
-images = tf.io.gfile.glob(imdir+os.sep+'*.jpg')
-
-images = tf.io.gfile.glob(lab_path+os.sep+'*.jpg')
+write_tfrecords(output_path, image_dir, csv_input)
 
 
-###############################################################
-## EXECUTION
-###############################################################
-nb_images=len(tf.io.gfile.glob(imdir+os.sep+'*.jpg'))
+##================
+output_path = root+'secoora-validation.tfrecord'
 
-SHARDS = int(nb_images / ims_per_shard) + (1 if nb_images % ims_per_shard != 0 else 0)
+image_dir = root+'validation'
 
-shared_size = int(np.ceil(1.0 * nb_images / SHARDS))
+csv_input = root+'validation_labels.csv'
 
-dataset = get_seg_dataset_for_tfrecords(imdir, lab_path, shared_size)
-
-## view a batch
-# for imgs,lbls in dataset.take(1):
-#   imgs = imgs[:BATCH_SIZE]
-#   lbls = lbls[:BATCH_SIZE]
-#   for count,(im,lab) in enumerate(zip(imgs,lbls)):
-#      plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
-#      plt.imshow(tf.image.decode_jpeg(im, channels=3))
-#      plt.imshow(tf.image.decode_jpeg(lab, channels=1), alpha=0.5, cmap='gray')
-#      plt.axis('off')
-# plt.show()
-
-
-write_seg_records(dataset, tfrecord_dir)
-
-#
+write_tfrecords(output_path, image_dir, csv_input)

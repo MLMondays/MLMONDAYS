@@ -135,7 +135,6 @@ filepath = os.getcwd()+os.sep+'results/tamucc_subset_2class_custom_best_weights_
 CLASSES = [b'dev', b'undev']
 patience = 10
 
-
 ###############################################################
 ## EXECUTION
 ###############################################################
@@ -153,30 +152,15 @@ validation_filenames = filenames[:split]
 validation_steps = int(nb_images // len(filenames) * len(validation_filenames)) // BATCH_SIZE
 steps_per_epoch = int(nb_images // len(filenames) * len(training_filenames)) // BATCH_SIZE
 
-
 ## data augmentation is typically used
 augmented_train_ds, augmented_val_ds = get_aug_datasets()
 
 
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=True)
 
-##smaller min learning rate (starting from scratch)
-
 #####################################################################
 ## class weights
 
-# l = []
-# num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
-# train_ds = get_training_dataset()
-# for _,lbls in train_ds.take(num_batches):
-#     l.append(lbls.numpy())
-#
-# val_ds = get_validation_dataset()
-# num_batches = int(((VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
-# for _,lbls in val_ds.take(num_batches):
-#     l.append(lbls.numpy())
-#
-# l = np.asarray(l).flatten()
 l = get_all_labels(nb_images, VALIDATION_SPLIT, BATCH_SIZE)
 
 # class weights will be given by n_samples / (n_classes * np.bincount(y))
@@ -188,10 +172,8 @@ class_weights = class_weight.compute_class_weight('balanced',
 class_weights = dict(enumerate(class_weights))
 print(class_weights)
 
-
 ##==============================
 numclass = len(CLASSES)
-# ID_MAP = dict(zip(np.arange(numclass), [str(k) for k in range(numclass)]))
 
 custom_model2 = make_cat_model(numclass, denseunits=256, base_filters = 30, dropout=0.5)
 

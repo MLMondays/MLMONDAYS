@@ -27,7 +27,6 @@
 ###############################################################
 ## IMPORTS
 ###############################################################
-
 from imports import *
 
 #-----------------------------------
@@ -87,12 +86,8 @@ def get_aug_datasets():
     return augmented_train_ds, augmented_val_ds
 
 ###############################################################
-
-
-###############################################################
 ## VARIABLES
 ###############################################################
-
 data_path= os.getcwd()+os.sep+"data/tamucc/subset_3class/400"
 
 CLASSES = [b'marsh', b'dev', b'other']
@@ -129,7 +124,6 @@ print(validation_steps)
 
 train_ds = get_training_dataset()
 for imgs,lbls in train_ds.take(1):
-  #print(lbls)
   for count,im in enumerate(imgs):
      plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
      plt.imshow(im)
@@ -141,7 +135,6 @@ plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_3class_trainsamples.png', 
 
 val_ds = get_validation_dataset()
 for imgs,lbls in val_ds.take(1):
-  #print(lbls)
   for count,im in enumerate(imgs):
      plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
      plt.imshow(im)
@@ -153,7 +146,6 @@ plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_3class_valsamples.png', dp
 ## data augmentation is typically used
 augmented_train_ds, augmented_val_ds = get_aug_datasets()
 
-
 plt.figure(figsize=(16,16))
 for im,l in augmented_train_ds.take(1):
     for count,im in enumerate(im):
@@ -164,17 +156,11 @@ for im,l in augmented_train_ds.take(1):
 # plt.show()
 plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_3class_augsamples.png', dpi=200, bbox_inches='tight')
 
-
-
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=True)
 
-##smaller min learning rate (starting from scratch)
-
 ###+===================================================
-
-## smaller model
+## larger model
 numclass = len(CLASSES)
-# ID_MAP = dict(zip(np.arange(numclass), [str(k) for k in range(numclass)]))
 
 # more classes = larger model
 # shallow=False
@@ -222,7 +208,6 @@ if do_train:
 else:
     custom_model.load_weights(filepath)
 
-
 ##########################################################
 ### evaluate
 loss, accuracy = custom_model.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
@@ -236,9 +221,7 @@ sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
 make_sample_plot(custom_model, sample_filenames, test_samples_fig, CLASSES)
 
-
 ##################################################
-
 ## confusion matrix
 val_ds = get_validation_eval_dataset()
 

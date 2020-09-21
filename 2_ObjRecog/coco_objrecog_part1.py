@@ -48,7 +48,7 @@ from imports import *
 """
 
 model_dir = "retinanet/"
-label_encoder = LabelEncoder()
+label_encoder = LabelEncoderCoco()
 
 num_classes = 80
 # batch_size = 1
@@ -109,11 +109,11 @@ consists for the following major processing steps:
 have different dimensions, and can also have different number of
 objects, we use `padded_batch` to the add the necessary padding to create
 rectangular tensors
-- Create targets for each sample in the batch using `LabelEncoder`
+- Create targets for each sample in the batch using `LabelEncoderCoco`
 """
 
 # autotune = tf.data.experimental.AUTOTUNE
-train_dataset = train_dataset.map(preprocess_data, num_parallel_calls=AUTO)
+train_dataset = train_dataset.map(preprocess_coco_data, num_parallel_calls=AUTO)
 train_dataset = train_dataset.shuffle(8 * BATCH_SIZE)
 train_dataset = train_dataset.padded_batch(
     batch_size = BATCH_SIZE, padding_values=(0.0, 1e-8, -1), drop_remainder=True
@@ -124,7 +124,10 @@ train_dataset = train_dataset.map(
 train_dataset = train_dataset.apply(tf.data.experimental.ignore_errors())
 train_dataset = train_dataset.prefetch(AUTO)
 
-val_dataset = val_dataset.map(preprocess_data, num_parallel_calls=AUTO)
+# for a, b in train_dataset.take(1):
+#     print(a)
+
+val_dataset = val_dataset.map(preprocess_coco_data, num_parallel_calls=AUTO)
 val_dataset = val_dataset.padded_batch(
     batch_size = BATCH_SIZE, padding_values=(0.0, 1e-8, -1), drop_remainder=True
 )
@@ -149,22 +152,22 @@ val_dataset = val_dataset.prefetch(AUTO)
 # Running 100 training and 50 validation steps,
 # remove `.take` when training on the full dataset
 
-model.fit(
-    train_dataset.take(50),
-    validation_data=val_dataset.take(50),
-    epochs=MAX_EPOCHS,
-    callbacks=callbacks_list,
-    verbose=1,
-)
+# model.fit(
+#     train_dataset.take(50),
+#     validation_data=val_dataset.take(50),
+#     epochs=MAX_EPOCHS,
+#     callbacks=callbacks_list,
+#     verbose=1,
+# )
 
 """
 ## Loading weights
 """
 
 # Change this to `model_dir` when not using the downloaded weights
-# weights_dir = "data"
+weights_dir = "data/coco"
 
-weights_dir = model_dir
+# weights_dir = model_dir
 
 latest_checkpoint = tf.train.latest_checkpoint(weights_dir)
 model.load_weights(latest_checkpoint)
@@ -174,8 +177,20 @@ model.load_weights(latest_checkpoint)
 """
 
 image = tf.keras.Input(shape=[None, None, 3], name="image")
+# Out[8]: <tf.Tensor 'image:0' shape=(None, None, None, 3) dtype=float32>
+
+
 predictions = model(image, training=False)
+# Out[4]: <tf.Tensor 'RetinaNet/Identity:0' shape=(None, None, 84) dtype=float32>
+
+
 detections = DecodePredictions(confidence_threshold=0.5)(image, predictions)
+# CombinedNonMaxSuppression(nmsed_boxes=<tf.Tensor 'decode_predictions/Identity:0' shape=(None, 100, 4) dtype=float32>,
+# nmsed_scores=<tf.Tensor 'decode_predictions/Identity_1:0' shape=(None, 100) dtype=float32>,
+# nmsed_classes=<tf.Tensor 'decode_predictions/Identity_2:0' shape=(None, 100) dtype=float32>,
+# valid_detections=<tf.Tensor 'decode_predictions/Identity_3:0' shape=(None,) dtype=int32>)
+
+
 inference_model = tf.keras.Model(inputs=image, outputs=detections)
 
 """
@@ -199,3 +214,99 @@ for sample in val_dataset.take(2):
         class_names,
         detections.nmsed_scores[0][:num_detections],
     )
+
+
+
+boxes = detections.nmsed_boxes[0][:num_detections] / ratio
+scores = detections.nmsed_scores[0][:num_detections]
+classes = []
+image = np.array(image, dtype=np.uint8)
+linewidth=1
+color=[0, 0, 1]
+
+
+plt.figure(figsize=(7, 7))
+plt.axis("off")
+plt.imshow(image)
+ax = plt.gca()
+for box, _cls, score in zip(boxes.numpy(), classes, scores):
+    text = "{}: {:.2f}".format(_cls, score)
+    x1, y1, x2, y2 = box
+    w, h = x2 - x1, y2 - y1
+    patch = plt.Rectangle(
+        [x1, y1], w, h, fill=False, edgecolor=color, linewidth=linewidth
+    )
+    ax.add_patch(patch)
+    ax.text(
+        x1,
+        y1,
+        text,
+        bbox={"facecolor": color, "alpha": 0.4},
+        clip_box=ax.clipbox,
+        clip_on=True,
+    )
+plt.show()
+
+
+##read image from secoora sample directory
+
+sample_data_path = 'data/secoora/sample'
+
+sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
+
+
+plt.figure(figsize=(16,16))
+
+for counter,f in enumerate(sample_filenames):
+    image = file2tensor(f)
+
+    image = tf.cast(image, dtype=tf.float32)
+    input_image, ratio = prepare_image(image)
+    detections = inference_model.predict(input_image)
+    num_detections = detections.valid_detections[0]
+    class_names = [
+        int2str(int(x)) for x in detections.nmsed_classes[0][:num_detections]
+    ]
+    visualize_detections(
+        image,
+        detections.nmsed_boxes[0][:num_detections] / ratio,
+        class_names,
+        detections.nmsed_scores[0][:num_detections],
+    )
+
+# evaluation
+# iou
+# viz - examples of classes (small tiles)
+
+
+    #
+    #     plt.subplot(6,4,counter+1)
+    #     name = sample_filenames[counter].split(os.sep)[-1].split('_')[0]
+    #     plt.title(name, fontsize=10)
+    #     plt.imshow(tf.cast(image, tf.uint8))
+    #     plt.axis('off')
+    #
+    #     scores = model.predict(tf.expand_dims(im, 0) , batch_size=1)
+    #     n = np.argmax(scores[0])
+    #     est_name = CLASSES[n].decode()
+    #     if name==est_name:
+    #        plt.text(10,50,'prediction: %s' % est_name,
+    #                 color='k', fontsize=12,
+    #                 ha="center", va="center",
+    #                 bbox=dict(boxstyle="round",
+    #                        ec=(.1, 1., .5),
+    #                        fc=(.1, 1., .5),
+    #                        ))
+    #     else:
+    #        plt.text(10,50,'prediction: %s' % est_name,
+    #                 color='k', fontsize=12,
+    #                 ha="center", va="center",
+    #                 bbox=dict(boxstyle="round",
+    #                        ec=(1., 0.5, 0.1),
+    #                        fc=(1., 0.8, 0.8),
+    #                        ))
+    #
+    # # plt.show()
+    # plt.savefig(test_samples_fig,
+    #             dpi=200, bbox_inches='tight')
+    # plt.close('all')
