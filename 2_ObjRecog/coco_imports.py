@@ -30,8 +30,6 @@
 
 # coco_imports
 
-VALIDATION_SPLIT = 0.6
-# TARGET_SIZE = 768 # 512
 ims_per_shard = 200
 BATCH_SIZE = 1 #6
 

@@ -27,7 +27,6 @@
 
 from imports import *
 
-
 """
 ## Setting up training parameters
 """
@@ -35,13 +34,18 @@ from imports import *
 model_dir = "retinanet/"
 
 num_classes = 80
-# batch_size = 1
+BATCH_SIZE = 1
 
 learning_rates = [2.5e-06, 0.000625, 0.00125, 0.0025, 0.00025, 2.5e-05]
 learning_rate_boundaries = [125, 250, 500, 240000, 360000]
 learning_rate_fn = tf.optimizers.schedules.PiecewiseConstantDecay(
     boundaries=learning_rate_boundaries, values=learning_rates
 )
+
+data_path = "/media/marda/TWOTB/USGS/SOFTWARE/DL-CDI2020/2_ObjRecog/data/secoora"
+
+AUTO = tf.data.experimental.AUTOTUNE # used in tf.data.Dataset API
+
 
 """
 ## Initializing and compiling model
@@ -63,6 +67,20 @@ model.load_weights(latest_checkpoint)
 ## Setting up callbacks
 """
 
+# earlystop = EarlyStopping(monitor="val_loss",
+#                               mode="min", patience=patience)
+#
+# # set checkpoint file
+# model_checkpoint = ModelCheckpoint(filepath, monitor='val_loss',
+#                                 verbose=0, save_best_only=True, mode='min',
+#                                 save_weights_only = True)
+#
+# callbacks = [model_checkpoint, earlystop, lr_callback]
+#
+# do_train = False #True
+#
+# if do_train:
+
 callbacks_list = [
     tf.keras.callbacks.ModelCheckpoint(
         filepath=os.path.join(model_dir, "weights" + "_epoch_{epoch}"),
@@ -75,27 +93,23 @@ callbacks_list = [
 
 """
 ## Load the Secoora dataset
+
 """
 
 
-
-data_path = "/media/marda/TWOTB/USGS/SOFTWARE/DL-CDI2020/2_ObjRecog/data/secoora"
-
-AUTO = tf.data.experimental.AUTOTUNE # used in tf.data.Dataset API
-
 features = {
-    'height': tf.io.FixedLenFeature([], tf.int64, default_value=0),
-    'width': tf.io.FixedLenFeature([], tf.int64, default_value=0),
-    'filename': tf.io.FixedLenFeature([], tf.string, default_value=''),
-    'id': tf.io.FixedLenFeature([], tf.string, default_value=''),
+    # 'filename': tf.io.FixedLenFeature([], tf.string, default_value=''),
+    # 'id': tf.io.FixedLenFeature([], tf.string, default_value=''),
     'image': tf.io.FixedLenFeature([], tf.string, default_value=''),
-    'format': tf.io.FixedLenFeature([], tf.string, default_value=''),
-    'objects/bbox/xs': tf.io.FixedLenSequenceFeature([], tf.float32, allow_missing=True),
-    'objects/bbox/ys': tf.io.FixedLenSequenceFeature([], tf.float32,allow_missing=True),
-    'objects/bbox/ws': tf.io.FixedLenSequenceFeature([], tf.float32,allow_missing=True),
-    'objects/bbox/hs': tf.io.FixedLenSequenceFeature([], tf.float32,allow_missing=True),
-    'objects/class/id': tf.io.FixedLenSequenceFeature([], tf.string,allow_missing=True),
-    'objects/class/label': tf.io.FixedLenSequenceFeature([], tf.int64,allow_missing=True),
+    # 'objects/bbox': tf.io.FixedLenSequenceFeature([], tf.int64, allow_missing=True),
+    'objects/xmin': tf.io.FixedLenSequenceFeature([], tf.float32, allow_missing=True),
+    'objects/ymin': tf.io.FixedLenSequenceFeature([], tf.float32,allow_missing=True),
+    'objects/xmax': tf.io.FixedLenSequenceFeature([], tf.float32,allow_missing=True),
+    'objects/ymax': tf.io.FixedLenSequenceFeature([], tf.float32,allow_missing=True),
+    # 'objects/iscrowd': tf.io.FixedLenSequenceFeature([], tf.int64,allow_missing=True),
+    # 'objects/area': tf.io.FixedLenSequenceFeature([], tf.float32,allow_missing=True),
+    # 'objects/id': tf.io.FixedLenSequenceFeature([], tf.int64,allow_missing=True),
+    'objects/label': tf.io.FixedLenSequenceFeature([], tf.int64,allow_missing=True),
 }
 
 def _parse_function(example_proto):
@@ -103,36 +117,40 @@ def _parse_function(example_proto):
   return tf.io.parse_single_example(example_proto, features)
 
 
-BATCH_SIZE = 1
-
 
 train_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*train*.tfrecord'))
 train_dataset = tf.data.TFRecordDataset(train_filenames)
 train_dataset = train_dataset.map(_parse_function)
+
 train_dataset = train_dataset.map(preprocess_secoora_data, num_parallel_calls=AUTO)
 
 # for a in train_dataset.take(1):
 #     print(a)
 
 
+shapes = (tf.TensorShape([None,None,3]),tf.TensorShape([None,4]),tf.TensorShape([None,]))
+
 # this is necessary because there are unequal numbers of labels in every image
 train_dataset = train_dataset.padded_batch(
-    batch_size = BATCH_SIZE, drop_remainder=True, padding_values=(0.0, 1e-8, -1),
+    batch_size = BATCH_SIZE, drop_remainder=True, padding_values=(0.0, 1e-8, -1), padded_shapes=shapes,
 )
 
-# for a in train_dataset.take(1):
-#     print(a)
+# i dont understand this!!
+label_encoder = LabelEncoderCoco()
 
-label_encoder = LabelEncoder()
-
+# train_dataset = train_dataset.shuffle(8 * BATCH_SIZE)
 train_dataset = train_dataset.map(
     label_encoder.encode_batch, num_parallel_calls=AUTO
 )
+
+# for a, b in train_dataset.take(1):
+#     print(b)
+
 train_dataset = train_dataset.apply(tf.data.experimental.ignore_errors())
 train_dataset = train_dataset.prefetch(AUTO)
 
-# for a, b in train_dataset.take(1):
-#     print(a)
+# for a in train_dataset.take(1):
+#     print(a[0])
 
 
 val_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*val*.tfrecord'))
@@ -141,7 +159,7 @@ val_dataset = val_dataset.map(_parse_function)
 val_dataset = val_dataset.map(preprocess_secoora_data, num_parallel_calls=AUTO)
 
 val_dataset = val_dataset.padded_batch(
-    batch_size = BATCH_SIZE, padding_values=(0.0, 1e-8, -1), drop_remainder=True
+    batch_size = BATCH_SIZE, padding_values=(0.0, 1e-8, -1), drop_remainder=True, padded_shapes=shapes,
 )
 
 val_dataset = val_dataset.map(
@@ -149,42 +167,72 @@ val_dataset = val_dataset.map(
 )
 val_dataset = val_dataset.apply(tf.data.experimental.ignore_errors())
 val_dataset = val_dataset.prefetch(AUTO)
-
-
-## vizualize images and biounding boxes1
+#
+# for a in val_dataset.take(1):
+#     print(a[0])
 
 
 """
 ## Training the model
 """
 
-# Uncomment the following lines, when training on full dataset
-# train_steps_per_epoch = dataset_info.splits["train"].num_examples // BATCH_SIZE
-# val_steps_per_epoch = \
-#     dataset_info.splits["validation"].num_examples // BATCH_SIZE
+#load coco weights and build on top
 
-# train_steps = 4 * 100000
-# epochs = train_steps // train_steps_per_epoch
+# run for a few epochs and a subset of the take to check the losses are going in the right direction
+epochs = 10
 
-# epochs = 1
+model.fit(
+    train_dataset.take(50),
+    validation_data=val_dataset.take(50),
+    epochs=epochs,
+    callbacks=callbacks_list,
+    verbose=1,
+)
 
-# Running 100 training and 50 validation steps,
-# remove `.take` when training on the full dataset
+## looks good. now we'll train on the full dataset, and for longer
+epochs = 100
 
-# model.fit(
-#     train_dataset.take(50),
-#     validation_data=val_dataset.take(50),
-#     epochs=MAX_EPOCHS,
-#     callbacks=callbacks_list,
-#     verbose=1,
-# )
+model.fit(
+    train_dataset,
+    validation_data=val_dataset,
+    epochs=epochs,
+    callbacks=callbacks_list,
+    verbose=1,
+)
 
-weights_dir = "data/coco"
 
+
+
+
+
+
+
+#under-estimates number of people, and low confidence in predictions
+
+# dataviz to show this?
+
+
+
+
+
+
+# ## vizualize images and biounding boxes1
+
+#
+# ## resnet50_backbone = get_backbone()
+# loss_fn = RetinaNetLoss(num_classes)
+# model = RetinaNet(num_classes, resnet50_backbone)
+#
+# optimizer = tf.optimizers.SGD(learning_rate=learning_rate_fn, momentum=0.9)
+# model.compile(loss=loss_fn, optimizer=optimizer)
+#
+#
+# # weights_dir = "data/coco"
+# #
 # weights_dir = model_dir
-
-latest_checkpoint = tf.train.latest_checkpoint(weights_dir)
-model.load_weights(latest_checkpoint)
+# #
+# # latest_checkpoint = tf.train.latest_checkpoint(weights_dir)
+# model.load_weights(latest_checkpoint)
 
 
 """
@@ -198,7 +246,9 @@ predictions = model(image, training=False)
 # Out[12]: <tf.Tensor 'RetinaNet_1/Identity:0' shape=(None, None, 84) dtype=float32>
 
 
-detections = DecodePredictions(confidence_threshold=0.5)(image, predictions)
+threshold = 0.33
+
+detections = DecodePredictions(confidence_threshold=threshold)(image, predictions)
 inference_model = tf.keras.Model(inputs=image, outputs=detections)
 
 """
@@ -222,42 +272,34 @@ for sample in val_dataset.take(2):
     #detections = inference_model.predict(tf.squeeze(input_image))
     detections = inference_model.predict(input_image)
     num_detections = detections.valid_detections[0]
-    # class_names = [
-    #     int2str(int(x)) for x in detections.nmsed_classes[0][:num_detections]
-    # ]
-    visualize_detections(
-        image,
-        detections.nmsed_boxes[0][:num_detections] / ratio,
-        [],
-        detections.nmsed_scores[0][:num_detections],
-    )
 
+    boxes = detections.nmsed_boxes[0][:num_detections] / ratio
+    scores = detections.nmsed_scores[0][:num_detections]
 
-boxes = detections.nmsed_boxes[0][:num_detections] / ratio
-scores = detections.nmsed_scores[0][:num_detections]
-image = np.array(image, dtype=np.uint8)
-plt.figure(figsize=(7, 7))
-plt.axis("off")
-plt.imshow(image)
-ax = plt.gca()
-for box, _cls, score in zip(boxes, classes, scores):
-    text = "{}: {:.2f}".format(_cls, score)
-    x1, y1, x2, y2 = box
-    w, h = x2 - x1, y2 - y1
-    patch = plt.Rectangle(
-        [x1, y1], w, h, fill=False, edgecolor=color, linewidth=linewidth
-    )
-    ax.add_patch(patch)
-    ax.text(
-        x1,
-        y1,
-        text,
-        bbox={"facecolor": color, "alpha": 0.4},
-        clip_box=ax.clipbox,
-        clip_on=True,
-    )
-plt.show()
+    classes = ['person' for k in boxes]
 
+    image = np.array(image, dtype=np.uint8)
+    plt.figure(figsize=(7, 7))
+    plt.axis("off")
+    plt.imshow(image)
+    ax = plt.gca()
+    for box, _cls, score in zip(boxes, classes, scores):
+        text = "{}: {:.2f}".format(_cls, score)
+        x1, y1, x2, y2 = box
+        w, h = x2 - x1, y2 - y1
+        patch = plt.Rectangle(
+            [x1, y1], w, h, fill=False, edgecolor=[1,0,0], linewidth=2
+        )
+        ax.add_patch(patch)
+        ax.text(
+            x1,
+            y1,
+            text,
+            bbox={"facecolor": [0,1,0], "alpha": 0.4},
+            clip_box=ax.clipbox,
+            clip_on=True,
+        )
+    plt.show()
 
 
 ##read image from secoora sample directory
@@ -276,12 +318,31 @@ for counter,f in enumerate(sample_filenames):
     input_image, ratio = prepare_image(image)
     detections = inference_model.predict(input_image)
     num_detections = detections.valid_detections[0]
-    class_names = [
-        int2str(int(x)) for x in detections.nmsed_classes[0][:num_detections]
-    ]
-    visualize_detections(
-        image,
-        detections.nmsed_boxes[0][:num_detections] / ratio,
-        class_names,
-        detections.nmsed_scores[0][:num_detections],
-    )
+
+    boxes = detections.nmsed_boxes[0][:num_detections] / ratio
+    scores = detections.nmsed_scores[0][:num_detections]
+
+    classes = ['person' for k in boxes]
+
+    image = np.array(image, dtype=np.uint8)
+    plt.figure(figsize=(7, 7))
+    plt.axis("off")
+    plt.imshow(image)
+    ax = plt.gca()
+    for box, _cls, score in zip(boxes, classes, scores):
+        text = "{}: {:.2f}".format(_cls, score)
+        x1, y1, x2, y2 = box
+        w, h = x2 - x1, y2 - y1
+        patch = plt.Rectangle(
+            [x1, y1], w, h, fill=False, edgecolor=[1,0,0], linewidth=2
+        )
+        ax.add_patch(patch)
+        ax.text(
+            x1,
+            y1,
+            text,
+            bbox={"facecolor": [0,1,0], "alpha": 0.4},
+            clip_box=ax.clipbox,
+            clip_on=True,
+        )
+    plt.show()

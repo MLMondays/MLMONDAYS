@@ -103,7 +103,7 @@ def write_tfrecords(output_path, image_dir, csv_input):
     grouped = split(examples, 'filename')
 
     for group in grouped:
-        tf_example = create_tf_example(group, path)
+        tf_example = create_tf_example_coco(group, path)
         writer.write(tf_example.SerializeToString())
 
     writer.close()
@@ -138,41 +138,47 @@ def split(df, group):
     gb = df.groupby(group)
     return [data(filename, gb.get_group(x)) for filename, x in zip(gb.groups.keys(), gb.groups)]
 
-def create_tf_example(group, path):
+
+def create_tf_example_coco(group, path):
     with tf.io.gfile.GFile(os.path.join(path, '{}'.format(group.filename)), 'rb') as fid:
         encoded_jpg = fid.read()
     encoded_jpg_io = io.BytesIO(encoded_jpg)
-    image = Image.open(encoded_jpg_io)
-    width, height = image.size
 
     filename = group.filename.encode('utf8')
-    image_format = b'jpg'
+    # image_format = b'jpg'
 
-    xs = []; ys = []
-    ws = []; hs = []; classes = []
+    ids = []
+    areas = []
+    xmins = [] ; xmaxs = []; ymins = []; ymaxs = []
+    labels = []
+    is_crowds = []
 
     for index, row in group.object.iterrows():
-        # classes_text.append(row['class'].encode('utf8'))
-        classes.append(class_text_to_int(row['class']))
-        xs.append((row['xmax']+row['xmin'])/2)
-        ys.append((row['ymax']+row['ymin'])/2)
-        ws.append(row['xmax']-row['xmin'])
-        hs.append(row['ymax']-row['ymin'])
+        labels.append(class_text_to_int(row['class']))
+        ids.append(index)
+        xmins.append(row['xmin'])
+        ymins.append(row['ymin'])
+        xmaxs.append(row['xmax'])
+        ymaxs.append(row['ymax'])
+        areas.append((row['xmax']-row['xmin'])*(row['ymax']-row['ymin']))
+        is_crowds.append(False)
 
     tf_example = tf.train.Example(features=tf.train.Features(feature={
-        'height': int64_feature(height),
-        'width': int64_feature(width),
-        'filename': bytes_feature(filename),
-        'id': bytes_feature(filename),
+        'objects/is_crowd': int64_list_feature(is_crowds),
+        'image/filename': bytes_feature(filename),
+        'image/id': int64_list_feature(ids),
         'image': bytes_feature(encoded_jpg),
-        'format': bytes_feature(image_format),
-        'objects/bbox/xs': float_list_feature(xs),
-        'objects/bbox/ys': float_list_feature(ys),
-        'objects/bbox/ws': float_list_feature(ws),
-        'objects/bbox/hs': float_list_feature(hs), #replace with a N, 4 matrix as bbox
-        'objects/class/label': int64_list_feature(classes),
+        'objects/xmin': float_list_feature(xmins), #xs
+        'objects/xmax': float_list_feature(xmaxs), #xs
+        'objects/ymin': float_list_feature(ymins), #xs
+        'objects/ymax': float_list_feature(ymaxs), #xs
+        'objects/area': float_list_feature(areas), #ys
+        'objects/id': int64_list_feature(ids), #ys
+        'objects/label': int64_list_feature(labels),
     }))
+
     return tf_example
+
 
 
 """
@@ -379,52 +385,97 @@ def preprocess_coco_data(sample):
     return image, bbox, class_id
 
 
-
-
 def preprocess_secoora_data(example):
-    """Applies preprocessing step to a single sample
-    Arguments:
-      sample: A dict representing a single training sample.
-    Returns:
-      image: Resized and padded image with random horizontal flipping applied.
-      bbox: Bounding boxes with the shape `(num_objects, 4)` where each box is
-        of the format `[x, y, width, height]`.
-      class_id: An tensor representing the class id of the objects, having
-        shape `(num_objects,)`.
-    """
+
     image = tf.image.decode_jpeg(example['image'], channels=3)
     image = tf.cast(image, tf.float32)
+    #image = tf.image.per_image_standardization(image)
 
-    # encoded_jpg_io = io.BytesIO(example['image'])
-    # image = Image.open(encoded_jpg_io)
-    #image = tf.cast(image, tf.uint8)/ 255
-    image = tf.image.per_image_standardization(image)
+    bbox = tf.numpy_function(np.array,[[example["objects/xmin"], example["objects/ymin"], example["objects/xmax"], example["objects/ymax"]]], tf.float32)
+    bbox = tf.transpose(bbox)
 
-    image, image_shape, _ = resize_and_pad_image(image)
+    class_id = tf.cast(example["objects/label"], dtype=tf.int32)
 
-    xs=tf.cast(example['objects/bbox/xs'], tf.int32)
-    ys=tf.cast(example['objects/bbox/ys'], tf.int32)
-    ws=tf.cast(example['objects/bbox/ws'], tf.int32)
-    hs=tf.cast(example['objects/bbox/hs'], tf.int32)
+    # image, bbox = random_flip_horizontal(image, bbox)
+    image, image_shape, ratio = resize_and_pad_image(image)
 
-    bbox = tf.reshape(tf.concat((xs,ys,ws,hs), axis=0), (-1,4))
-
-    bbox = tf.cast(bbox, tf.float32)
-
-    bbox = tf.stack(
+    bbox3 = tf.stack(
         [
-            bbox[:, 0] * image_shape[1],
-            bbox[:, 1] * image_shape[0],
-            bbox[:, 2] * image_shape[1],
-            bbox[:, 3] * image_shape[0],
+            bbox[:, 0] * ratio, # image_shape[1],
+            bbox[:, 1] * ratio, #image_shape[0],
+            bbox[:, 2] * ratio, #image_shape[1],
+            bbox[:, 3] * ratio, #image_shape[0],
         ],
         axis=-1,
     )
-    
-    class_id = tf.cast(example["objects/class/label"], dtype=tf.int32)
+    bbox = convert_to_xywh(tf.cast(bbox3, tf.float32))
 
-    return tuple([image, bbox, class_id])
+    return image, bbox, class_id
 
+
+#
+# def preprocess_secoora_data(example):
+#     """Applies preprocessing step to a single sample
+#     Arguments:
+#       sample: A dict representing a single training sample.
+#     Returns:
+#       image: Resized and padded image with random horizontal flipping applied.
+#       bbox: Bounding boxes with the shape `(num_objects, 4)` where each box is
+#         of the format `[x, y, width, height]`.
+#       class_id: An tensor representing the class id of the objects, having
+#         shape `(num_objects,)`.
+#     """
+#     image = tf.image.decode_jpeg(example['image'], channels=3)
+#     image = tf.cast(image, tf.float32)
+#
+#     # encoded_jpg_io = io.BytesIO(example['image'])
+#     # image = Image.open(encoded_jpg_io)
+#     #image = tf.cast(image, tf.uint8)/ 255
+#     image = tf.image.per_image_standardization(image)
+#
+#     #orig_shape = tf.shape(image) #image.numpy().shape
+#
+#     image, image_shape, ratio = resize_and_pad_image(image)
+#
+#     #new_shape = tf.shape(image) #image.numpy().shape
+#
+#     # xs=tf.cast(example['objects/bbox/xmin'], tf.int32)
+#     # ys=tf.cast(example['objects/bbox/ymin'], tf.int32)
+#     # ws=tf.cast(example['objects/bbox/xmax'], tf.int32)
+#     # hs=tf.cast(example['objects/bbox/ymax'], tf.int32)
+#
+#     xs=tf.cast(example['objects/bbox/xs'], tf.int32)
+#     ys=tf.cast(example['objects/bbox/ys'], tf.int32)
+#     ws=tf.cast(example['objects/bbox/ws'], tf.int32)
+#     hs=tf.cast(example['objects/bbox/hs'], tf.int32)
+#
+#     bbox = tf.reshape(tf.concat((xs,ys,ws,hs), axis=0), (-1,4))
+#
+#     bbox = tf.cast(bbox, tf.float32)
+#
+#     bbox = tf.stack(
+#         [
+#             bbox[:, 0] * image_shape[1],
+#             bbox[:, 1] * image_shape[0],
+#             bbox[:, 2] * image_shape[1],
+#             bbox[:, 3] * image_shape[0],
+#         ],
+#         axis=-1,
+#     )
+#     # bbox = tf.stack(
+#     #     [
+#     #         bbox[:, 0] *  ratio[1],
+#     #         bbox[:, 1] *  ratio[0],
+#     #         bbox[:, 2] *  ratio[1],
+#     #         bbox[:, 3] *  ratio[0],
+#     #     ],
+#     #     axis=-1,
+#     # )
+#     class_id = tf.cast(example["objects/class/label"], dtype=tf.int32)
+#     # bbox = convert_to_xywh(bbox)
+#
+#     return tuple([image, bbox, class_id])
+#
 
 
 """
@@ -540,107 +591,6 @@ class LabelEncoderCoco:
         batch_images = tf.keras.applications.resnet.preprocess_input(batch_images)
         return batch_images, labels.stack()
 
-
-
-class LabelEncoder:
-    """Transforms the raw labels into targets for training.
-    This class has operations to generate targets for a batch of samples which
-    is made up of the input images, bounding boxes for the objects present and
-    their class ids.
-    Attributes:
-      anchor_box: Anchor box generator to encode the bounding boxes.
-      box_variance: The scaling factors used to scale the bounding box targets.
-    """
-
-    def __init__(self):
-        self._anchor_box = AnchorBox()
-        self._box_variance = tf.convert_to_tensor(
-            [0.1, 0.1, 0.2, 0.2], dtype=tf.float32
-        )
-
-    def _match_anchor_boxes(
-        self, anchor_boxes, gt_boxes, match_iou=0.5, ignore_iou=0.4
-    ):
-        """Matches ground truth boxes to anchor boxes based on IOU.
-        1. Calculates the pairwise IOU for the M `anchor_boxes` and N `gt_boxes`
-          to get a `(M, N)` shaped matrix.
-        2. The ground truth box with the maximum IOU in each row is assigned to
-          the anchor box provided the IOU is greater than `match_iou`.
-        3. If the maximum IOU in a row is less than `ignore_iou`, the anchor
-          box is assigned with the background class.
-        4. The remaining anchor boxes that do not have any class assigned are
-          ignored during training.
-        Arguments:
-          anchor_boxes: A float tensor with the shape `(total_anchors, 4)`
-            representing all the anchor boxes for a given input image shape,
-            where each anchor box is of the format `[x, y, width, height]`.
-          gt_boxes: A float tensor with shape `(num_objects, 4)` representing
-            the ground truth boxes, where each box is of the format
-            `[x, y, width, height]`.
-          match_iou: A float value representing the minimum IOU threshold for
-            determining if a ground truth box can be assigned to an anchor box.
-          ignore_iou: A float value representing the IOU threshold under which
-            an anchor box is assigned to the background class.
-        Returns:
-          matched_gt_idx: Index of the matched object
-          positive_mask: A mask for anchor boxes that have been assigned ground
-            truth boxes.
-          ignore_mask: A mask for anchor boxes that need to by ignored during
-            training
-        """
-        iou_matrix = compute_iou(anchor_boxes, gt_boxes)
-        max_iou = tf.reduce_max(iou_matrix, axis=1)
-        matched_gt_idx = tf.argmax(iou_matrix, axis=1)
-        positive_mask = tf.greater_equal(max_iou, match_iou)
-        negative_mask = tf.less(max_iou, ignore_iou)
-        ignore_mask = tf.logical_not(tf.logical_or(positive_mask, negative_mask))
-        return (
-            matched_gt_idx,
-            tf.cast(positive_mask, dtype=tf.float32),
-            tf.cast(ignore_mask, dtype=tf.float32),
-        )
-
-    def _compute_box_target(self, anchor_boxes, matched_gt_boxes):
-        """Transforms the ground truth boxes into targets for training"""
-        box_target = tf.concat(
-            [
-                (matched_gt_boxes[:, :2] - anchor_boxes[:, :2]) / anchor_boxes[:, 2:],
-                tf.math.log(matched_gt_boxes[:, 2:] / anchor_boxes[:, 2:]),
-            ],
-            axis=-1,
-        )
-        box_target = box_target / self._box_variance
-        return box_target
-
-    def _encode_sample(self, image_shape, gt_boxes, cls_ids):
-        """Creates box and classification targets for a single sample"""
-        anchor_boxes = self._anchor_box.get_anchors(image_shape[1], image_shape[2])
-        cls_ids = tf.cast(cls_ids, dtype=tf.float32)
-        matched_gt_idx, positive_mask, ignore_mask = self._match_anchor_boxes(
-            anchor_boxes, gt_boxes
-        )
-        matched_gt_boxes = tf.gather(gt_boxes, matched_gt_idx)
-        box_target = self._compute_box_target(anchor_boxes, matched_gt_boxes)
-        matched_gt_cls_ids = tf.gather(cls_ids, matched_gt_idx)
-        cls_target = tf.where(
-            tf.not_equal(positive_mask, 1.0), -1.0, matched_gt_cls_ids
-        )
-        cls_target = tf.where(tf.equal(ignore_mask, 1.0), -2.0, cls_target)
-        cls_target = tf.expand_dims(cls_target, axis=-1)
-        label = tf.concat([box_target, cls_target], axis=-1)
-        return label
-
-    def encode_batch(self, batch_images, gt_boxes, cls_ids):
-        """Creates box and classification targets for a batch"""
-        images_shape = tf.shape(batch_images)
-        batch_size = images_shape[0]
-
-        labels = tf.TensorArray(dtype=tf.float32, size=batch_size, dynamic_size=True)
-        for i in range(batch_size):
-            label = self._encode_sample(images_shape, gt_boxes[i], cls_ids[i])
-            labels = labels.write(i, label)
-        # batch_images = tf.keras.applications.resnet.preprocess_input(batch_images)
-        return batch_images, labels.stack()
 
 
 
