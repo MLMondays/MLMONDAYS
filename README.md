@@ -130,7 +130,7 @@ There are also `colab` versions of both notebooks that you can save to your own 
 Get the data by running the download script. Only download the data you wish to use
 
 ```
-cd 1_ImageRecog
+cd 4_ImageRecog
 python download_data.py
 ```
 
