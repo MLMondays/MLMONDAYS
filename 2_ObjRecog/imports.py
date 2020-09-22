@@ -46,7 +46,6 @@ import matplotlib.pyplot as plt
 #io
 import tensorflow_datasets as tfds
 from PIL import Image
-# from object_detection.utils import dataset_util
 from collections import namedtuple, OrderedDict
 import io
 import pandas as pd
@@ -180,6 +179,9 @@ def create_tf_example_coco(group, path):
     return tf_example
 
 
+###############################################################
+## DATA PROCESSING
+###############################################################
 
 """
 ## Implementing Anchor generator
@@ -413,71 +415,6 @@ def preprocess_secoora_data(example):
     return image, bbox, class_id
 
 
-#
-# def preprocess_secoora_data(example):
-#     """Applies preprocessing step to a single sample
-#     Arguments:
-#       sample: A dict representing a single training sample.
-#     Returns:
-#       image: Resized and padded image with random horizontal flipping applied.
-#       bbox: Bounding boxes with the shape `(num_objects, 4)` where each box is
-#         of the format `[x, y, width, height]`.
-#       class_id: An tensor representing the class id of the objects, having
-#         shape `(num_objects,)`.
-#     """
-#     image = tf.image.decode_jpeg(example['image'], channels=3)
-#     image = tf.cast(image, tf.float32)
-#
-#     # encoded_jpg_io = io.BytesIO(example['image'])
-#     # image = Image.open(encoded_jpg_io)
-#     #image = tf.cast(image, tf.uint8)/ 255
-#     image = tf.image.per_image_standardization(image)
-#
-#     #orig_shape = tf.shape(image) #image.numpy().shape
-#
-#     image, image_shape, ratio = resize_and_pad_image(image)
-#
-#     #new_shape = tf.shape(image) #image.numpy().shape
-#
-#     # xs=tf.cast(example['objects/bbox/xmin'], tf.int32)
-#     # ys=tf.cast(example['objects/bbox/ymin'], tf.int32)
-#     # ws=tf.cast(example['objects/bbox/xmax'], tf.int32)
-#     # hs=tf.cast(example['objects/bbox/ymax'], tf.int32)
-#
-#     xs=tf.cast(example['objects/bbox/xs'], tf.int32)
-#     ys=tf.cast(example['objects/bbox/ys'], tf.int32)
-#     ws=tf.cast(example['objects/bbox/ws'], tf.int32)
-#     hs=tf.cast(example['objects/bbox/hs'], tf.int32)
-#
-#     bbox = tf.reshape(tf.concat((xs,ys,ws,hs), axis=0), (-1,4))
-#
-#     bbox = tf.cast(bbox, tf.float32)
-#
-#     bbox = tf.stack(
-#         [
-#             bbox[:, 0] * image_shape[1],
-#             bbox[:, 1] * image_shape[0],
-#             bbox[:, 2] * image_shape[1],
-#             bbox[:, 3] * image_shape[0],
-#         ],
-#         axis=-1,
-#     )
-#     # bbox = tf.stack(
-#     #     [
-#     #         bbox[:, 0] *  ratio[1],
-#     #         bbox[:, 1] *  ratio[0],
-#     #         bbox[:, 2] *  ratio[1],
-#     #         bbox[:, 3] *  ratio[0],
-#     #     ],
-#     #     axis=-1,
-#     # )
-#     class_id = tf.cast(example["objects/class/label"], dtype=tf.int32)
-#     # bbox = convert_to_xywh(bbox)
-#
-#     return tuple([image, bbox, class_id])
-#
-
-
 """
 ## Encoding labels
 The raw labels, consisting of bounding boxes and class ids need to be
@@ -593,6 +530,9 @@ class LabelEncoderCoco:
 
 
 
+###############################################################
+## MODEL BUILDING
+###############################################################
 
 """
 ## Building the ResNet50 backbone
@@ -803,6 +743,11 @@ class DecodePredictions(tf.keras.layers.Layer):
         )
 
 
+###############################################################
+## MODEL TRAINING
+###############################################################
+
+
 """
 ## Implementing Smooth L1 loss and Focal Loss as keras custom losses
 """
@@ -926,6 +871,11 @@ def compute_iou(boxes1, boxes2):
     return tf.clip_by_value(intersection_area / union_area, 0.0, 1.0)
 
 
+###############################################################
+## PLOTTING
+###############################################################
+
+
 def visualize_detections(
     image, boxes, classes, scores, figsize=(7, 7), linewidth=1, color=[0, 0, 1]
 ):
@@ -953,6 +903,11 @@ def visualize_detections(
         )
     plt.show()
     return ax
+
+
+###############################################################
+## DATA UTILITIES
+###############################################################
 
 
 """

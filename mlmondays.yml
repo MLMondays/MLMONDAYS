@@ -18,4 +18,3 @@ dependencies:
   - tensorflow-gpu  #for deep learning
   #to install packages not available in conda
   - pip
-    - object-detection
