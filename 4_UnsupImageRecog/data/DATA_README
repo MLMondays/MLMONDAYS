@@ -1,1 +1,29 @@
-description of the datasets
+TAMUCC
+
+Publicly available imagery of coastal environments in Texas, provided by the Harte Research Institute at TAMUCC (Texas A&M University - Corpus Christi), funded by the Texas General Land Office (GLO).
+
+Images such as the example above are oblique, taken from a low-altitude aircraft with approximate positions. In total, there are over 10,000 images covering the whole Texas coastline, each categorized by one of the following dominant classes ("developed" classes are in bold):
+
+    Exposed walls and other structures made of concrete, wood, or metal
+    Scarps and steep slopes in clay
+    Wave-cut clay platforms
+    Fine-grained sand beaches
+    Scarps and steep slopes in sand
+    Coarse-grained sand beaches
+    Mixed sand and gravel (shell) beaches
+    Gravel (shell) beaches
+    Exposed riprap structures
+    Exposed tidal flats
+    Sheltered solid man-made structures, such as bulkheads and docks
+    Sheltered riprap structures
+    Sheltered scarps
+    Sheltered tidal flats
+    Salt- and brackish-water marshes
+    Fresh-water marshes (herbaceous vegetation)
+    Fresh-water swamps (woody vegetation)
+    Mangroves
+
+The dataset is described further here. The dataset will be provided during the course, and is also available on Google Cloud Storage bucket gs://aju-demos-coastline-images/coastline
+
+    Acknowledgements: This dataset is courtesy of Texas A&M University (See https://storage.googleapis.com/tamucc_coastline/GooglePermissionForImages_20170119.pdf for details). Philippe Tissot, Associate Director, Conrad Blucher Institute for Surveying and Science, Texas A&M University - Corpus Christi; James Gibeaut, Endowed Chair for Coastal and Marine Geospatial Sciences, Harte Research Institute, Texas A&M University - Corpus Christi; and Valliappa Lakshmanan, Tech Lead, Google Big Data and Machine Learning Professional Services
+

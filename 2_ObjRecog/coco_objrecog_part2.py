@@ -194,7 +194,7 @@ model.fit(
 ## looks good. now we'll train on the full dataset, for longer
 epochs = 15
 
-model.fit(
+history = model.fit(
     train_dataset,
     validation_data=val_dataset,
     epochs=epochs,
@@ -204,6 +204,9 @@ model.fit(
 
 K.clear_session()
 
+
+# Plot training history
+plot_history(history, train_hist_fig)
 
 
 

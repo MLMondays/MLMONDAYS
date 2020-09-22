@@ -747,6 +747,26 @@ class DecodePredictions(tf.keras.layers.Layer):
 ## MODEL TRAINING
 ###############################################################
 
+def lrfn(epoch):
+    """
+    "lrfn"
+    This function creates a custom piecewise linear-exponential learning rate function
+    for a custom learning rate scheduler. It is linear to a max, then exponentially decays
+    INPUTS: current epoch number
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: start_lr, min_lr, max_lr, rampup_epochs, sustain_epochs, exp_decay
+    OUTPUTS:  the function lr with all arguments passed
+    """
+    def lr(epoch, start_lr, min_lr, max_lr, rampup_epochs, sustain_epochs, exp_decay):
+        if epoch < rampup_epochs:
+            lr = (max_lr - start_lr)/rampup_epochs * epoch + start_lr
+        elif epoch < rampup_epochs + sustain_epochs:
+            lr = max_lr
+        else:
+            lr = (max_lr - min_lr) * exp_decay**(epoch-rampup_epochs-sustain_epochs) + min_lr
+        return lr
+    return lr(epoch, start_lr, min_lr, max_lr, rampup_epochs, sustain_epochs, exp_decay)
+
 
 """
 ## Implementing Smooth L1 loss and Focal Loss as keras custom losses
@@ -874,6 +894,31 @@ def compute_iou(boxes1, boxes2):
 ###############################################################
 ## PLOTTING
 ###############################################################
+
+#-----------------------------------
+def plot_history(history, train_hist_fig):
+    """
+    "plot_history"
+    This function plots the training history of a model
+    INPUTS:
+        * history [dict]: the output dictionary of the model.fit() process, i.e. history = model.fit(...)
+        * train_hist_fig [string]: the filename where the plot will be printed
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: None (figure printed to file)
+    """
+    n = len(history.history['loss'])
+
+    plt.figure(figsize=(10,10))
+    plt.subplot(121)
+    plt.plot(np.arange(1,n+1), history.history['loss'], 'b', label='train loss')
+    plt.plot(np.arange(1,n+1), history.history['val_loss'], 'k', label='validation loss')
+    plt.xlabel('Epoch number', fontsize=10); plt.ylabel('Loss', fontsize=10)
+    plt.legend(fontsize=10)
+
+    # plt.show()
+    plt.savefig(train_hist_fig, dpi=200, bbox_inches='tight')
+
 
 
 def visualize_detections(

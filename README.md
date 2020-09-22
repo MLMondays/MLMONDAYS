@@ -80,6 +80,13 @@ Colab provide free GPU access to run these computational notebooks. If you save 
 
 ### Week 1: Image recognition
 
+Get the data by running the download script. Only download the data you wish to use
+
+```
+cd 1_ImageRecog
+python download_data.py
+```
+
 ### notebook lessons (these are the 'live' components of ML-Mondays)
 * notebooks/MLMondays_week1_live_partA.ipynb: TAMUCC 4-class data visualization
 * notebooks/MLMondays_week1_live_partB.ipynb: TAMUCC 4-class model building and evaluation
@@ -119,6 +126,13 @@ There are also `colab` versions of both notebooks that you can save to your own 
 
 
 ### Week 4: Self-supervised Image recognition
+
+Get the data by running the download script. Only download the data you wish to use
+
+```
+cd 1_ImageRecog
+python download_data.py
+```
 
 ### notebook lessons (these are the 'live' components of ML-Mondays)
 * notebooks/MLMondays_week1_live.ipynb: TAMUCC 4-class model building and evaluation
