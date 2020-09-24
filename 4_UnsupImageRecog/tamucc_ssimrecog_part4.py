@@ -55,122 +55,6 @@ def get_validation_dataset():
     """
     return get_batched_dataset(validation_filenames)
 
-def get_validation_eval_dataset():
-    """
-    This function will return a batched dataset for model training
-    INPUTS: None
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: validation_filenames
-    OUTPUTS: batched data set object
-    """
-    return get_eval_dataset(validation_filenames)
-
-#-----------------------------------
-def get_batched_dataset(filenames):
-    """
-    "get_batched_dataset"
-    This function defines a workflow for the model to read data from
-    tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
-    and also formats the imagery properly for model training
-    (assumes mobilenet by using read_tfrecord_mv2)
-    INPUTS:
-        * filenames [list]
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: BATCH_SIZE, AUTO
-    OUTPUTS: tf.data.Dataset object
-    """
-    option_no_order = tf.data.Options()
-    option_no_order.experimental_deterministic = True
-
-    dataset = tf.data.Dataset.list_files(filenames)
-    dataset = dataset.with_options(option_no_order)
-    dataset = dataset.interleave(tf.data.TFRecordDataset, cycle_length=16, num_parallel_calls=AUTO)
-    dataset = dataset.map(read_tfrecord, num_parallel_calls=AUTO)
-
-    dataset = dataset.cache() # This dataset fits in RAM
-    #dataset = dataset.repeat()
-    dataset = dataset.shuffle(2048)
-    dataset = dataset.batch(BATCH_SIZE, drop_remainder=True) # drop_remainder will be needed on TPU
-    dataset = dataset.prefetch(AUTO) #
-
-    return dataset
-
-#-----------------------------------
-def get_train_stuff(num_batches):
-    """
-    "get_train_stuff"
-    This function returns all the images and labels from a tf.data.Dataset
-    INPUTS:
-        * num_batches [int]
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: None
-    OUTPUTS:
-        * X_train [list] of ndarray images
-        * y_train [list] of integer labels
-        * class_idx_to_train_idxs [dict] of indices into each class
-    """
-    X_train = []
-    ytrain = []
-    train_ds = get_training_dataset()
-
-    counter = 0
-    for imgs,lbls in train_ds.take(num_batches):
-      ytrain.append(lbls.numpy())
-      for im in imgs:
-        X_train.append(im.numpy())
-
-    X_train = np.array(X_train)
-    ytrain = np.hstack(ytrain)
-
-    # get X_train, y_train arrays
-    X_train = X_train.astype("float32")
-    ytrain = np.squeeze(ytrain)
-
-    # code repurposed from https://keras.io/examples/vision/metric_learning/
-    class_idx_to_train_idxs = defaultdict(list)
-    for y_train_idx, y in enumerate(ytrain):
-        class_idx_to_train_idxs[y].append(y_train_idx)
-
-    return X_train, ytrain, class_idx_to_train_idxs
-
-#-----------------------------------
-def get_test_stuff(num_batches):
-    """
-    "get_test_stuff"
-    This function returns all the images and labels from a tf.data.Dataset
-    INPUTS:
-        * num_batches [int]
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: None
-    OUTPUTS:
-        * X_test [list] of ndarray images
-        * y_test [list] of integer labels
-        * class_idx_to_test_idxs [dict] of indices into each class
-    """
-    X_test = []
-    ytest = []
-    test_ds = get_validation_dataset()
-
-    counter = 0
-    for imgs,lbls in test_ds.take(num_batches):
-      ytest.append(lbls.numpy())
-      for im in imgs:
-        X_test.append(im.numpy())
-
-    X_test = np.array(X_test)
-    ytest = np.hstack(ytest)
-
-    # get X_test, y_test arrays
-    X_test = X_test.astype("float32")
-    ytest = np.squeeze(ytest)
-
-    # code repurposed from https://keras.io/examples/vision/metric_learning/
-    class_idx_to_test_idxs = defaultdict(list)
-    for y_test_idx, y in enumerate(ytest):
-        class_idx_to_test_idxs[y].append(y_test_idx)
-
-    return X_test, ytest, class_idx_to_test_idxs
-
 ###############################################################
 ### MODEL FUNCTIONS
 ###############################################################
@@ -276,10 +160,11 @@ print(nb_images)
 
 num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
 print(num_batches)
-#
-# num_batches = 140 #150
 
-X_train, ytrain, class_idx_to_train_idxs = get_train_stuff(num_batches)
+# num_batches = 200
+
+X_train, ytrain, class_idx_to_train_idxs  = get_data_stuff(train_ds, num_batches)
+
 
 model2 = get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
 
@@ -356,18 +241,20 @@ K.clear_session()
 
 num_dim_use = num_embed_dim #2
 
-knn3 = fit_knn_to_embeddings(model2, X_train, ytrain, num_dim_use, n_neighbors)
+knn3 = fit_knn_to_embeddings(model2, X_train, ytrain, n_neighbors)
 
-knn5 = fit_knn_to_embeddings(model2, X_train, ytrain, num_dim_use, 5)
+knn5 = fit_knn_to_embeddings(model2, X_train, ytrain, 5)
 
-knn7 = fit_knn_to_embeddings(model2, X_train, ytrain, num_dim_use, 7)
+knn7 = fit_knn_to_embeddings(model2, X_train, ytrain, 7)
 
 del X_train, ytrain
 
 
 ## ensemble model
 
-X_test, ytest, class_idx_to_test_idxs = get_test_stuff(num_batches)
+num_batches = 100
+
+X_test, ytest, class_idx_to_test_idxs = get_data_stuff(val_ds, num_batches)
 
 touse = len(X_test) #900
 

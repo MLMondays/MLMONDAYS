@@ -54,64 +54,64 @@ def get_validation_dataset():
     """
     return get_batched_dataset(validation_filenames)
 
-def get_validation_eval_dataset():
-    """
-    This function will return a test batched dataset for model testing
-    INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
-    OUTPUTS:
-    """
-    return get_eval_dataset(validation_filenames)
-
-#-----------------------------------
-def read_tfrecord(example):
-    """
-    This function
-    INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
-    OUTPUTS:
-    """
-    features = {
-        "image": tf.io.FixedLenFeature([], tf.string),  # tf.string = bytestring (not text string)
-        "class": tf.io.FixedLenFeature([], tf.int64),   # shape [] means scalar
-    }
-    # decode the TFRecord
-    example = tf.io.parse_single_example(example, features)
-
-    image = tf.image.decode_jpeg(example['image'], channels=3)
-    image = tf.cast(image, tf.uint8) #float32) / 255.0
-    image = tf.reshape(image, [TARGET_SIZE,TARGET_SIZE, 3])
-
-    class_label = tf.cast(example['class'], tf.int32)
-
-    return image, class_label
-
-#-----------------------------------
-def get_batched_dataset(filenames):
-    """
-    This function
-    INPUTS:
-    OPTIONAL INPUTS:
-    GLOBAL INPUTS:
-    OUTPUTS: batched dataset object
-    """
-    option_no_order = tf.data.Options()
-    option_no_order.experimental_deterministic = True
-
-    dataset = tf.data.Dataset.list_files(filenames)
-    dataset = dataset.with_options(option_no_order)
-    dataset = dataset.interleave(tf.data.TFRecordDataset, cycle_length=16, num_parallel_calls=AUTO)
-    dataset = dataset.map(read_tfrecord, num_parallel_calls=AUTO)
-
-    dataset = dataset.cache() # This dataset fits in RAM
-    dataset = dataset.repeat()
-    dataset = dataset.shuffle(2048)
-    dataset = dataset.batch(BATCH_SIZE, drop_remainder=True) # drop_remainder will be needed on TPU
-    dataset = dataset.prefetch(AUTO) #
-
-    return dataset
+# def get_validation_eval_dataset():
+#     """
+#     This function will return a test batched dataset for model testing
+#     INPUTS:
+#     OPTIONAL INPUTS:
+#     GLOBAL INPUTS:
+#     OUTPUTS:
+#     """
+#     return get_eval_dataset(validation_filenames)
+# #
+# #-----------------------------------
+# def read_tfrecord(example):
+#     """
+#     This function
+#     INPUTS:
+#     OPTIONAL INPUTS:
+#     GLOBAL INPUTS:
+#     OUTPUTS:
+#     """
+#     features = {
+#         "image": tf.io.FixedLenFeature([], tf.string),  # tf.string = bytestring (not text string)
+#         "class": tf.io.FixedLenFeature([], tf.int64),   # shape [] means scalar
+#     }
+#     # decode the TFRecord
+#     example = tf.io.parse_single_example(example, features)
+#
+#     image = tf.image.decode_jpeg(example['image'], channels=3)
+#     image = tf.cast(image, tf.uint8) #float32) / 255.0
+#     image = tf.reshape(image, [TARGET_SIZE,TARGET_SIZE, 3])
+#
+#     class_label = tf.cast(example['class'], tf.int32)
+#
+#     return image, class_label
+#
+# #-----------------------------------
+# def get_batched_dataset(filenames):
+#     """
+#     This function
+#     INPUTS:
+#     OPTIONAL INPUTS:
+#     GLOBAL INPUTS:
+#     OUTPUTS: batched dataset object
+#     """
+#     option_no_order = tf.data.Options()
+#     option_no_order.experimental_deterministic = True
+#
+#     dataset = tf.data.Dataset.list_files(filenames)
+#     dataset = dataset.with_options(option_no_order)
+#     dataset = dataset.interleave(tf.data.TFRecordDataset, cycle_length=16, num_parallel_calls=AUTO)
+#     dataset = dataset.map(read_tfrecord, num_parallel_calls=AUTO)
+#
+#     dataset = dataset.cache() # This dataset fits in RAM
+#     dataset = dataset.repeat()
+#     dataset = dataset.shuffle(2048)
+#     dataset = dataset.batch(BATCH_SIZE, drop_remainder=True) # drop_remainder will be needed on TPU
+#     dataset = dataset.prefetch(AUTO) #
+#
+#     return dataset
 
 ###############################################################
 ### DATA FUNCTIONS
@@ -143,40 +143,40 @@ class AnchorPositivePairs(tf.keras.utils.Sequence):
             x[1, class_idx] = X_train[positive_idx]
         return x
 
-
-def get_data_stuff(ds, num_batches):
-    """
-    "get_data_stuff" - This function extracts lists of images and corresponding labels for training or testing
-    INPUTS:
-        * ds [PrefetchDataset]: either get_training_dataset() or get_validation_dataset()
-        * num_batches [int]
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: None
-    OUTPUTS:
-        * X [list]
-        * y [list]
-        * class_idx_to_train_idxs [collections.defaultdict]
-    """
-    X = []
-    y = []
-
-    for imgs,lbls in ds.take(num_batches):
-      y.append(lbls.numpy())
-      for im in imgs:
-        X.append(im)
-
-    X = np.array(X)
-    y = np.hstack(y)
-
-    # get X_train, y_train arrays
-    X = X.astype("float32")
-    y = np.squeeze(y)
-
-    class_idx_to_idxs = defaultdict(list)
-    for y_train_idx, y in enumerate(y):
-        class_idx_to_idxs[y].append(y)
-
-    return X, y, class_idx_to_idxs
+#
+# def get_data_stuff(ds, num_batches):
+#     """
+#     "get_data_stuff" - This function extracts lists of images and corresponding labels for training or testing
+#     INPUTS:
+#         * ds [PrefetchDataset]: either get_training_dataset() or get_validation_dataset()
+#         * num_batches [int]
+#     OPTIONAL INPUTS: None
+#     GLOBAL INPUTS: None
+#     OUTPUTS:
+#         * X [list]
+#         * y [list]
+#         * class_idx_to_train_idxs [collections.defaultdict]
+#     """
+#     X = []
+#     y = []
+#
+#     for imgs,lbls in ds.take(num_batches):
+#       y.append(lbls.numpy())
+#       for im in imgs:
+#         X.append(im)
+#
+#     X = np.array(X)
+#     y = np.hstack(y)
+#
+#     # get X_train, y_train arrays
+#     X = X.astype("float32")
+#     y = np.squeeze(y)
+#
+#     class_idx_to_idxs = defaultdict(list)
+#     for y_train_idx, y in enumerate(y):
+#         class_idx_to_idxs[y].append(y)
+#
+#     return X, y, class_idx_to_idxs
 
 
 ###############################################################
@@ -234,6 +234,8 @@ train_ds = get_training_dataset()
 plt.figure(figsize=(16,16))
 for imgs,lbls in train_ds.take(1):
   #print(lbls)
+  imgs = imgs[:BATCH_SIZE]
+  lbls = lbls[:BATCH_SIZE]
   for count,im in enumerate(imgs):
      plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
      plt.imshow(im)
@@ -248,6 +250,8 @@ val_ds = get_validation_dataset()
 plt.figure(figsize=(16,16))
 for imgs,lbls in val_ds.take(1):
   #print(lbls)
+  imgs = imgs[:BATCH_SIZE]
+  lbls = lbls[:BATCH_SIZE]
   for count,im in enumerate(imgs):
      plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
      plt.imshow(im)
@@ -264,6 +268,8 @@ print(nb_images)
 
 num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
 print(num_batches)
+
+num_batches = 200
 
 X_train, ytrain, class_idx_to_train_idxs = get_data_stuff(get_training_dataset(), num_batches)
 

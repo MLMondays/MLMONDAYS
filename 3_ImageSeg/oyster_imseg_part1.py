@@ -38,7 +38,7 @@ def get_training_dataset():
     GLOBAL INPUTS: training_filenames
     OUTPUTS: batched data set object
     """
-    return get_batched_dataset(training_filenames)
+    return get_batched_dataset_oysternet(training_filenames)
 
 def get_validation_dataset():
     """
@@ -48,83 +48,14 @@ def get_validation_dataset():
     GLOBAL INPUTS: validation_filenames
     OUTPUTS: batched data set object
     """
-    return get_batched_dataset(validation_filenames)
-
-def get_validation_eval_dataset():
-    """
-    This function will return a batched dataset for model training
-    INPUTS: None
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: validation_filenames
-    OUTPUTS: batched data set object
-    """
-    return get_eval_dataset(validation_filenames)
-
-#-----------------------------------
-def get_batched_dataset(filenames):
-    """
-    "get_batched_dataset"
-    This function defines a workflow for the model to read data from
-    tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
-    and also formats the imagery properly for model training
-    (assumes mobilenet by using read_tfrecord_mv2)
-    INPUTS:
-        * filenames [list]
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: BATCH_SIZE, AUTO
-    OUTPUTS: tf.data.Dataset object
-    """
-    option_no_order = tf.data.Options()
-    option_no_order.experimental_deterministic = True
-
-    dataset = tf.data.Dataset.list_files(filenames)
-    dataset = dataset.with_options(option_no_order)
-    dataset = dataset.interleave(tf.data.TFRecordDataset, cycle_length=16, num_parallel_calls=AUTO)
-    dataset = dataset.map(read_seg_tfrecord, num_parallel_calls=AUTO)
-
-    dataset = dataset.cache() # This dataset fits in RAM
-    dataset = dataset.repeat()
-    dataset = dataset.shuffle(2048)
-    dataset = dataset.batch(BATCH_SIZE, drop_remainder=True) # drop_remainder will be needed on TPU
-    dataset = dataset.prefetch(AUTO) #
-
-    return dataset
-
-#-----------------------------------
-def get_eval_dataset(filenames):
-    """
-    "get_eval_dataset"
-    This function defines a workflow for the model to read data from
-    tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
-    and also formats the imagery properly for model training
-    (assumes mobilenet by using read_tfrecord_mv2)
-    INPUTS:
-        * filenames [list]
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: BATCH_SIZE, AUTO
-    OUTPUTS: tf.data.Dataset object
-    """
-    option_no_order = tf.data.Options()
-    option_no_order.experimental_deterministic = True
-
-    dataset = tf.data.Dataset.list_files(filenames)
-    dataset = dataset.with_options(option_no_order)
-    dataset = dataset.interleave(tf.data.TFRecordDataset, cycle_length=16, num_parallel_calls=AUTO)
-    dataset = dataset.map(read_seg_tfrecord, num_parallel_calls=AUTO)
-
-    dataset = dataset.cache() # This dataset fits in RAM
-    dataset = dataset.shuffle(2048)
-    dataset = dataset.batch(BATCH_SIZE, drop_remainder=True) # drop_remainder will be needed on TPU
-    dataset = dataset.prefetch(AUTO) #
-
-    return dataset
+    return get_batched_dataset_oysternet(validation_filenames)
 
 
 ###############################################################
 ## VARIABLES
 ###############################################################
 
-data_path= os.getcwd()+os.sep+"data/oysternet/512"
+data_path= os.getcwd()+os.sep+"data/oysternet/"+str(TARGET_SIZE)
 
 sample_data_path = os.getcwd()+os.sep+"data/oysternet/sample"
 
@@ -133,16 +64,11 @@ valsamples_fig = os.getcwd()+os.sep+'results/oysternet_sample_2class_valsamples.
 
 augsamples_fig = os.getcwd()+os.sep+'results/oysternet_sample_2class_augtrainsamples.png'
 
-filepath = os.getcwd()+os.sep+'results/oysternet_subset_2class_custom_best_weights_model1.h5'
+filepath =  os.getcwd()+os.sep+'results/oysternet_subset_2class_custom_best_weights_model768.h5'
 
 hist_fig = os.getcwd()+os.sep+'results/oysternet_sample_2class_custom_model1.png'
 
 test_samples_fig = os.getcwd()+os.sep+'results/oysternet_sample_2class_custom_model1_est24samples.png'
-
-# maximum learning rate (lambda)
-max_lr = 1e-4
-
-max_epochs = 200
 
 patience = 20
 
@@ -151,18 +77,17 @@ patience = 20
 ###############################################################
 
 #-------------------------------------------------
-filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
+training_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*train*.tfrec'))
 
-nb_images = ims_per_shard * len(filenames)
+validation_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*val*.tfrec'))
+
+num_files =  (len(training_filenames)+len(validation_filenames))
+
+nb_images = ims_per_shard * num_files
 print(nb_images)
 
-split = int(len(filenames) * VALIDATION_SPLIT)
-
-training_filenames = filenames[split:]
-validation_filenames = filenames[:split]
-
-validation_steps = int(nb_images // len(filenames) * len(validation_filenames)) // BATCH_SIZE
-steps_per_epoch = int(nb_images // len(filenames) * len(training_filenames)) // BATCH_SIZE
+validation_steps = int(nb_images // num_files * len(validation_filenames)) // BATCH_SIZE
+steps_per_epoch = int(nb_images // num_files * len(training_filenames)) // BATCH_SIZE
 
 print(steps_per_epoch)
 print(validation_steps)
@@ -183,6 +108,8 @@ for imgs,lbls in train_ds.take(1):
 plt.savefig(trainsamples_fig, dpi=200, bbox_inches='tight')
 plt.close('all')
 
+del imgs, lbls, im, lab
+
 plt.figure(figsize=(16,16))
 for imgs,lbls in val_ds.take(1):
   #print(lbls)
@@ -194,6 +121,8 @@ for imgs,lbls in val_ds.take(1):
 # plt.show()
 plt.savefig(valsamples_fig, dpi=200, bbox_inches='tight')
 plt.close('all')
+
+del imgs, lbls, im, lab
 
 
 # augmented_train_ds, augmented_val_ds = get_aug_datasets()
@@ -208,12 +137,10 @@ plt.close('all')
 # # plt.show()
 # plt.savefig(augsamples_fig, dpi=200, bbox_inches='tight')
 
-
-
-
-#
-model = res_unet((TARGET_SIZE, TARGET_SIZE, 3), BATCH_SIZE)
+nclass=1
+model = res_unet((TARGET_SIZE, TARGET_SIZE, 3), BATCH_SIZE, 'binary', nclass)
 model.compile(optimizer = 'adam', loss = dice_coef_loss, metrics = [dice_coef])
+# model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = [mean_iou])
 
 # model.summary()
 
@@ -225,8 +152,6 @@ model_checkpoint = ModelCheckpoint(filepath, monitor='val_loss',
                                 verbose=0, save_best_only=True, mode='min',
                                 save_weights_only = True)
 
-
-# models are sensitive to specification of learning rate. How do you decide? Answer: you don't. Use a learning rate scheduler
 
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=True)
 
@@ -252,8 +177,12 @@ else:
 
 ##########################################################
 ### evaluate
-loss, accuracy = model.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
-print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
+# loss, accuracy = model.evaluate(get_validation_eval_dataset("binary"), batch_size=BATCH_SIZE)
+# print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
+
+scores = model.evaluate(val_ds, steps=validation_steps)
+
+print('loss={loss:0.4f}, Mean Dice={dice_coef:0.4f}'.format(loss=scores[0], dice_coef=scores[1]))
 
 ##73%
 

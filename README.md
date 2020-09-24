@@ -40,6 +40,8 @@ A. Test 1: does your Tensorflow installation see your GPU?
 
 `python -c "import tensorflow as tf; print('Num GPUs Available: ', len(tf.config.experimental.list_physical_devices('GPU')))"`
 
+
+
 You should see a bunch of output from tensorflow, and then this line at the bottom
 
 `Num GPUs Available:  1`
@@ -123,6 +125,79 @@ There are also `colab` versions of both notebooks that you can save to your own 
 * tamucc_make_tfrecords_sample_2class.py
 * tamucc_make_tfrecords.py
 
+
+
+### Week 2: Object recognition
+
+Get the data by running the download script. Only download the data you wish to use
+
+```
+cd 2_ObjRecog
+python download_data.py
+```
+
+
+### notebook lessons (these are the 'live' components of ML-Mondays)
+* notebooks/
+* notebooks/
+
+There are also `colab` versions of both notebooks that you can save to your own google drive, then launch in google colab
+
+#### data viz. scripts
+* seccora_dataviz.py
+
+#### model training and evaluation scripts
+* coco_objrecog_part1.py
+* secoora_objrecog_part1.py
+
+#### functions - this is where most of the code is!
+* imports.py
+
+#### dataset-specific imports
+* coco_imports.py
+
+#### file creation
+* secoora_make_tfrecords.py
+
+
+
+### Week 3: Image segmentation
+
+Get the data by running the download script. Only download the data you wish to use
+
+```
+cd 3_ImSeg
+python download_data.py
+```
+
+### notebook lessons (these are the 'live' components of ML-Mondays)
+* notebooks/
+* notebooks/
+
+There are also `colab` versions of both notebooks that you can save to your own google drive, then launch in google colab
+
+#### data viz. scripts
+* ?
+
+#### model training and evaluation scripts
+* obx_imseg_part1.py
+* obx_imseg_part2.py
+* obx_imseg_part2b.py
+* oyster_imseg_part1.py
+* oyster_imseg_part2.py
+
+#### functions - this is where most of the code is!
+* imports.py
+* model_funcs.py
+* plot_funcs.py
+* tfrecords_funcs.py
+
+#### dataset-specific imports
+* oyster_imports.py
+
+#### file creation
+* oysternet_make_tfrecords.py
+* obx_make_tfrecords.py
 
 
 ### Week 4: Self-supervised Image recognition

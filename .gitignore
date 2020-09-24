@@ -11,28 +11,26 @@ website/yarn.lock
 website/node_modules
 website/i18n/*
 
-2_ObjRecog/data/*
-2_ObjRecog/data/coco/*
-2_ObjRecog/data/coco/2017/*
-2_ObjRecog/data/coco/2017/1.1.0/*
-
-2_ObjRecog/data/*
-2_ObjRecog/data/secoora/*
-2_ObjRecog/data/secoora/train/*
-2_ObjRecog/data/secoora/test/*
-2_ObjRecog/data/secoora/validation/*
-
-2_ObjRecog/retinanet/*
-
-3_ImageSeg/data/*
-3_ImageSeg/data/oysternet/*
-
-
 1_UnsupImageSeg/*.zip
 1_ImageSeg/data/*
 1_ImageSeg/data/tamucc/*
 1_ImageSeg/data/nwpu/*
 
+2_ObjRecog/data/*.zip
+2_ObjRecog/data/*
+2_ObjRecog/data/coco/*
+2_ObjRecog/data/coco/2017/*
+2_ObjRecog/data/coco/2017/1.1.0/*
+2_ObjRecog/data/secoora/*
+2_ObjRecog/data/secoora/train/*
+2_ObjRecog/data/secoora/test/*
+2_ObjRecog/data/secoora/validation/*
+2_ObjRecog/retinanet/*
+
+3_ImageSeg/data/*.zip
+3_ImageSeg/data/*
+3_ImageSeg/data/oysternet/*
+3_ImageSeg/data/obx/*
 
 4_UnsupImageSeg/*.zip
 4_UnsupImageSeg/data/*

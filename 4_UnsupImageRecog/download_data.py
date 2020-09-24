@@ -17,6 +17,6 @@ with zipfile.ZipFile(file, "r") as z_fp:
     z_fp.extractall("./"+folder)
 
 try:
-    os.remove(files_to_download)
+    os.remove(file)
 except:
     pass

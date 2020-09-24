@@ -29,15 +29,17 @@
 ###############################################################
 
 # coco_imports
-
 ims_per_shard = 200
-BATCH_SIZE = 1 #6
+BATCH_SIZE = 1 #>2 =OOM on coco on 11gb gpu
 
 MAX_EPOCHS = 10
 
-start_lr = 1e-5 #0.00001
+num_classes = 80
+
+start_lr = 1e-6 #0.00001
 min_lr = start_lr
 max_lr = 1e-3
 rampup_epochs = 5
 sustain_epochs = 0
 exp_decay = .9
+patience = 10

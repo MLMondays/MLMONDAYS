@@ -50,16 +50,6 @@ def get_validation_dataset():
     """
     return get_batched_dataset(validation_filenames)
 
-def get_validation_eval_dataset():
-    """
-    This function will return a batched dataset for model training
-    INPUTS: None
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: validation_filenames
-    OUTPUTS: batched data set object
-    """
-    return get_eval_dataset(validation_filenames)
-
 #-----------------------------------
 def get_aug_datasets():
     """
@@ -85,6 +75,32 @@ def get_aug_datasets():
       lambda x, y: (data_augmentation(x, training=True), y))
     return augmented_train_ds, augmented_val_ds
 
+#-----------------------------------
+def get_all_labels(nb_images, VALIDATION_SPLIT, BATCH_SIZE):
+    """
+    "get_all_labels"
+    This function will obtain the classes of all samples in both train and
+    validation sets. For computing class imbalance on the whole dataset
+    INPUTS:
+        * nb_images [int]: number of total images
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: VALIDATION_SPLIT, BATCH_SIZE
+    OUTPUTS:
+        * l [list]: list of integers representing labels of each image
+    """
+    l = []
+    num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
+    train_ds = get_training_dataset()
+    for _,lbls in train_ds.take(num_batches):
+        l.append(lbls.numpy())
+
+    val_ds = get_validation_dataset()
+    num_batches = int(((VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
+    for _,lbls in val_ds.take(num_batches):
+        l.append(lbls.numpy())
+
+    l = np.asarray(l).flatten()
+    return l
 
 ###############################################################
 ## VARIABLES
@@ -191,7 +207,9 @@ else:
 
 ##########################################################
 ### evaluate
-loss, accuracy = model2.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
+# loss, accuracy = model2.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
+loss, accuracy = model2.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)
+
 print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
 ##89%
@@ -205,7 +223,7 @@ make_sample_plot(model2, sample_filenames, test_samples_fig, CLASSES)
 
 ##################################################
 ## confusion matrix
-val_ds = get_validation_eval_dataset()
+val_ds = get_validation_dataset().take(50)
 
 labs, preds = get_label_pairs(val_ds, model2)
 

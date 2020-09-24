@@ -42,37 +42,9 @@ from imports import *
 # with zipfile.ZipFile("data.zip", "r") as z_fp:
 #     z_fp.extractall("./")
 
-#----------------------------------------------
-def prepare_coco_datasets_for_training(train_dataset, val_dataset):
-
-    train_dataset = train_dataset.map(preprocess_coco_data, num_parallel_calls=AUTO)
-
-    train_dataset = train_dataset.shuffle(8 * BATCH_SIZE)
-    train_dataset = train_dataset.padded_batch(
-        batch_size = BATCH_SIZE, padding_values=(0.0, 1e-8, -1), drop_remainder=True
-    )
-
-    # for a in train_dataset.take(1):
-    #     print(a)
-
-    train_dataset = train_dataset.map(
-        label_encoder.encode_batch, num_parallel_calls=AUTO
-    )
-    train_dataset = train_dataset.apply(tf.data.experimental.ignore_errors())
-    train_dataset = train_dataset.prefetch(AUTO)
-
-
-    val_dataset = val_dataset.map(preprocess_coco_data, num_parallel_calls=AUTO)
-    val_dataset = val_dataset.padded_batch(
-        batch_size = BATCH_SIZE, padding_values=(0.0, 1e-8, -1), drop_remainder=True
-    )
-    val_dataset = val_dataset.map(label_encoder.encode_batch, num_parallel_calls=AUTO)
-    val_dataset = val_dataset.apply(tf.data.experimental.ignore_errors())
-    val_dataset = val_dataset.prefetch(AUTO)
-    return train_dataset, val_dataset
 
 #----------------------------------------------
-def get_inference_model(threshold):
+def get_inference_model(threshold, model):
 
     # ANY size input
     image = tf.keras.Input(shape=[None, None, 3], name="image")
@@ -85,48 +57,38 @@ def get_inference_model(threshold):
     return inference_model
 
 
-
 ###############################################################
 ## VARIABLES
 ###############################################################
 
-# data_path= os.getcwd()+os.sep+"data/tamucc/subset_3class/400"
-
 sample_data_path = 'data/secoora/sample'
-
-# filepath = os.getcwd()+os.sep+'results/tamucc_subset_3class_mv2_best_weights_model2.h5'
-
 train_hist_fig = os.getcwd()+os.sep+'results/secoora_retinanet_model1.png'
-# cm_filename = os.getcwd()+os.sep+'results/tamucc_sample_3class_mv2_model2_cm_val.png'
-# sample_plot_name = os.getcwd()+os.sep+'results/tamucc_sample_3class_mv2_model2_est24samples.png'
-#
-# test_samples_fig = os.getcwd()+os.sep+'results/tamucc_full_sample_3class_mv2_model_est24samples.png'
-
 
 model_dir = "retinanet/"
-label_encoder = LabelEncoderCoco()
 
-num_classes = 80
-
-# learning_rates = [2.5e-06, 0.000625, 0.00125, 0.0025, 0.00025, 2.5e-05]
-# learning_rate_boundaries = [125, 250, 500, 240000, 360000]
-# learning_rate_fn = tf.optimizers.schedules.PiecewiseConstantDecay(
-#     boundaries=learning_rate_boundaries, values=learning_rates
-# )
-
-start_lr = 1e-6 #0.00001
-min_lr = start_lr
-max_lr = 1e-3
-rampup_epochs = 5
-sustain_epochs = 0
-exp_decay = .9
-MAX_EPOCHS = 100
-patience = 10
+# num_classes = 80
+#
+# # learning_rates = [2.5e-06, 0.000625, 0.00125, 0.0025, 0.00025, 2.5e-05]
+# # learning_rate_boundaries = [125, 250, 500, 240000, 360000]
+# # learning_rate_fn = tf.optimizers.schedules.PiecewiseConstantDecay(
+# #     boundaries=learning_rate_boundaries, values=learning_rates
+# # )
+#
+# start_lr = 1e-6 #0.00001
+# min_lr = start_lr
+# max_lr = 1e-3
+# rampup_epochs = 5
+# sustain_epochs = 0
+# exp_decay = .9
+# MAX_EPOCHS = 100
+# patience = 10
 
 
 ###############################################################
 ## EXECUTION
 ###############################################################
+
+## custom learning rate scheduler
 
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=True)
 
@@ -138,14 +100,26 @@ plt.savefig(os.getcwd()+os.sep+'results/learnratesched.png', dpi=200, bbox_inche
 
 
 
-"""
-## Initializing model
-"""
+# ## Initializing model
+# ## Building the ResNet50 backbone
+# RetinaNet uses a ResNet based backbone, using which a feature pyramid network
+# is constructed. In the example we use ResNet50 as the backbone, and return the
+# feature maps at strides 8, 16 and 32.
+
 
 resnet50_backbone = get_backbone()
-loss_fn = RetinaNetLoss(num_classes)
-model = RetinaNet(num_classes, resnet50_backbone)
 
+
+# ## Implementing Smooth L1 loss and Focal Loss as keras custom losses
+
+loss_fn = RetinaNetLoss(num_classes)
+
+# ## Building the classification and box regression heads.
+# The RetinaNet model has separate heads for bounding box regression and
+# for predicting class probabilities for the objects. These heads are shared
+# between all the feature maps of the feature pyramid.
+
+model = RetinaNet(num_classes, resnet50_backbone)
 
 """
 ## Setting up callbacks, and compiling model
@@ -177,15 +151,39 @@ weights_dir = "data/coco"
 latest_checkpoint = tf.train.latest_checkpoint(weights_dir)
 model.load_weights(latest_checkpoint)
 
-
-
 """
 ## Building inference model
 """
 
 threshold = 0.33 #0.5
 
-inference_model = get_inference_model(threshold)
+# inference_model = get_inference_model(threshold, model)
+
+#
+# #----------------------------------------------
+# def get_inference_model(threshold):
+#     """
+#     ""
+#     This function
+#     INPUTS:
+#         * val_dataset [tensorflow dataset]: validation dataset
+#         * train_dataset [tensorflow dataset]: training dataset
+#     OPTIONAL INPUTS: None
+#     OUTPUTS:
+#         * val_dataset [tensorflow dataset]: validation dataset
+#         * train_dataset [tensorflow dataset]: training dataset
+#     GLOBAL INPUTS: BATCH_SIZE
+#     """
+#     # ANY size input
+image = tf.keras.Input(shape=[None, None, 3], name="image")
+
+predictions = model(image, training=False)
+
+detections = DecodePredictions(confidence_threshold=threshold)(image, predictions)
+
+inference_model = tf.keras.Model(inputs=image, outputs=detections)
+    # return inference_model
+
 
 """
 ## Generating detections
@@ -215,9 +213,11 @@ for sample in val_dataset.take(4):
 
 
 
+sample_filenames = sorted(tf.io.gfile.glob('/home/marda/Downloads/buildings'+os.sep+'*.jpeg'))
+
 
 ## what about our secoora imagery?
-sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
+# sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
 print(len(sample_filenames))
 
@@ -232,7 +232,7 @@ for counter,f in enumerate(sample_filenames):
     boxes = detections.nmsed_boxes[0][:num_detections] / ratio
     scores = detections.nmsed_scores[0][:num_detections]
 
-    classes = ['person' for k in boxes]
+    # classes = ['person' for k in boxes]
 
     visualize_detections(image, boxes, classes,scores)
 
@@ -257,28 +257,48 @@ for counter,f in enumerate(sample_filenames):
     "coco/2017", split=["train", "validation"], with_info=True, data_dir="data"
 )
 
-"""
-## Setting up a `tf.data` pipeline
-To ensure that the model is fed with data efficiently we will be using
-`tf.data` API to create our input pipeline. The input pipeline
-consists for the following major processing steps:
-- Apply the preprocessing function to the samples
-- Create batches with fixed batch size. Since images in the batch can
-have different dimensions, and can also have different number of
-objects, we use `padded_batch` to the add the necessary padding to create
-rectangular tensors
-- Create targets for each sample in the batch using `LabelEncoderCoco`
-"""
+
+# ## Setting up a `tf.data` pipeline
+# To ensure that the model is fed with data efficiently we will be using
+# `tf.data` API to create our input pipeline. The input pipeline
+# consists for the following major processing steps:
+# - Apply the preprocessing function to the samples
+# - Create batches with fixed batch size. Since images in the batch can
+# have different dimensions, and can also have different number of
+# objects, we use `padded_batch` to the add the necessary padding to create
+# rectangular tensors
+# - Create targets for each sample in the batch using `LabelEncoderCoco`
+
+
+
+# ## Preprocessing data
+# Preprocessing the images involves two steps:
+# - Resizing the image: Images are resized such that the shortest size is equal
+# to 800 px, after resizing if the longest side of the image exceeds 1333 px,
+# the image is resized such that the longest size is now capped at 1333 px.
+# - Applying augmentation: Random scale jittering  and random horizontal flipping
+# are the only augmentations applied to the images.
+# Along with the images, bounding boxes are rescaled and flipped if required.
+#
+
+# ## Implementing Anchor generator
+# Anchor boxes are fixed sized boxes that the model uses to predict the bounding
+# box for an object. It does this by regressing the offset between the location
+# of the object's center and the center of an anchor box, and then uses the width
+# and height of the anchor box to predict a relative scale of the object. In the
+# case of RetinaNet, each location on a given feature map has nine anchor boxes
+# (at three scales and three ratios).
 
 
 train_dataset, val_dataset = prepare_coco_datasets_for_training(train_dataset, val_dataset)
 
-epochs = 10
+
+epochs = 2 #10
 
 history = model.fit(
     train_dataset.take(50),
     validation_data=val_dataset.take(50),
-    epochs=MAX_EPOCHS,
+    epochs=epochs,
     callbacks=callbacks,
     verbose=1,
 )
@@ -311,7 +331,7 @@ K.clear_session()
 
 threshold = 0.33 #0.5
 
-inference_model = get_inference_model(threshold)
+inference_model = get_inference_model(threshold, model)
 
 
 for counter,f in enumerate(sample_filenames):

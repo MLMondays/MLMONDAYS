@@ -32,11 +32,21 @@ from imports import *
 ###############################################################
 root = 'data/secoora'+os.sep
 
+#
+# output_path = root+'secoora.tfrecord'
+#
+# image_dir = root+'images'
+#
+# csv_input = root+'labels.csv'
+#
+# write_tfrecords(output_path, image_dir, csv_input)
+
+
 output_path = root+'secoora-train.tfrecord'
 
 image_dir = root+'train'
 
-csv_input = root+'train_labels.csv'
+csv_input = root+'train.csv'
 
 write_tfrecords(output_path, image_dir, csv_input)
 
@@ -44,8 +54,8 @@ write_tfrecords(output_path, image_dir, csv_input)
 ##================
 output_path = root+'secoora-validation.tfrecord'
 
-image_dir = root+'validation'
+image_dir = root+'val'
 
-csv_input = root+'validation_labels.csv'
+csv_input = root+'val.csv'
 
 write_tfrecords(output_path, image_dir, csv_input)

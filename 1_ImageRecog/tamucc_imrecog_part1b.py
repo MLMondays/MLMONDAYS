@@ -54,16 +54,6 @@ def get_validation_dataset():
     """
     return get_batched_dataset(validation_filenames)
 
-def get_validation_eval_dataset():
-    """
-    This function will return a batched dataset for model training
-    INPUTS: None
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: validation_filenames
-    OUTPUTS: batched data set object
-    """
-    return get_eval_dataset(validation_filenames)
-
 #-----------------------------------
 def get_aug_datasets():
     """
@@ -215,7 +205,8 @@ else:
 
 ##########################################################
 ### evaluate
-loss, accuracy = custom_model2.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
+# loss, accuracy = custom_model2.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
+loss, accuracy = custom_model2.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)
 print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
 ##85%
@@ -230,7 +221,7 @@ make_sample_plot(custom_model2, sample_filenames, test_samples_fig, CLASSES)
 ##################################################
 
 ## confusion matrix
-val_ds = get_validation_eval_dataset()
+val_ds = get_validation_dataset().take(50)
 
 labs, preds = get_label_pairs(val_ds, custom_model2)
 

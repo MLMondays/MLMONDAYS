@@ -25,7 +25,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-## from https://keras.io/examples/vision/retinanet/
+## Code from https://keras.io/examples/vision/retinanet/
+## Code modified from https://keras.io/examples/vision/retinanet/
 
 
 ## COCO
@@ -70,6 +71,56 @@ print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('
 ## TFRECORDS
 ###############################################################
 
+
+#----------------------------------------------
+def prepare_coco_datasets_for_training(train_dataset, val_dataset):
+    """
+    "prepare_coco_datasets_for_training"
+    This function prepares a coco dataset loaded from tfds into one trainable by the model
+    INPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    OPTIONAL INPUTS: None
+    OUTPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    GLOBAL INPUTS: BATCH_SIZE
+    """
+    # ## Encoding labels
+    # The raw labels, consisting of bounding boxes and class ids need to be
+    # transformed into targets for training. This transformation consists of
+    # the following steps:
+    # - Generating anchor boxes for the given image dimensions
+    # - Assigning ground truth boxes to the anchor boxes
+    # - The anchor boxes that are not assigned any objects, are either assigned the
+    # background class or ignored depending on the IOU
+    # - Generating the classification and regression targets using anchor boxes
+
+    label_encoder = LabelEncoderCoco()
+
+    train_dataset = train_dataset.map(preprocess_coco_data, num_parallel_calls=AUTO)
+
+    train_dataset = train_dataset.shuffle(8 * BATCH_SIZE)
+    train_dataset = train_dataset.padded_batch(
+        batch_size = BATCH_SIZE, padding_values=(0.0, 1e-8, -1), drop_remainder=True
+    )
+
+    train_dataset = train_dataset.map(
+        label_encoder.encode_batch, num_parallel_calls=AUTO
+    )
+    train_dataset = train_dataset.apply(tf.data.experimental.ignore_errors())
+    train_dataset = train_dataset.prefetch(AUTO)
+
+
+    val_dataset = val_dataset.map(preprocess_coco_data, num_parallel_calls=AUTO)
+    val_dataset = val_dataset.padded_batch(
+        batch_size = BATCH_SIZE, padding_values=(0.0, 1e-8, -1), drop_remainder=True
+    )
+    val_dataset = val_dataset.map(label_encoder.encode_batch, num_parallel_calls=AUTO)
+    val_dataset = val_dataset.apply(tf.data.experimental.ignore_errors())
+    val_dataset = val_dataset.prefetch(AUTO)
+    return train_dataset, val_dataset
+
 #-----------------------------------
 def file2tensor(f):
     """
@@ -93,6 +144,19 @@ def file2tensor(f):
 
 
 def write_tfrecords(output_path, image_dir, csv_input):
+    """
+    write_tfrecords
+    ""
+    This function
+    INPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    OPTIONAL INPUTS: None
+    OUTPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    GLOBAL INPUTS: BATCH_SIZE
+    """
     writer = tf.io.TFRecordWriter(output_path)
 
     path = os.path.join(os.getcwd(),image_dir)
@@ -125,20 +189,59 @@ def bytes_list_feature(value):
 def float_list_feature(value):
   return tf.train.Feature(float_list=tf.train.FloatList(value=value))
 
-# TO-DO replace this with label map
+#------------------------------------------------------
 def class_text_to_int(row_label):
+    """
+    class_text_to_int
+    ""
+    This function
+    INPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    OPTIONAL INPUTS: None
+    OUTPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    GLOBAL INPUTS: BATCH_SIZE
+    """
     if row_label == 'person':
         return 1
     else:
         None
 
 def split(df, group):
+    """
+    split
+    ""
+    This function
+    INPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    OPTIONAL INPUTS: None
+    OUTPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    GLOBAL INPUTS: BATCH_SIZE
+    """
     data = namedtuple('data', ['filename', 'object'])
     gb = df.groupby(group)
     return [data(filename, gb.get_group(x)) for filename, x in zip(gb.groups.keys(), gb.groups)]
 
 
 def create_tf_example_coco(group, path):
+    """
+    create_tf_example_coco
+    ""
+    This function
+    INPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    OPTIONAL INPUTS: None
+    OUTPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    GLOBAL INPUTS: BATCH_SIZE
+    """
     with tf.io.gfile.GFile(os.path.join(path, '{}'.format(group.filename)), 'rb') as fid:
         encoded_jpg = fid.read()
     encoded_jpg_io = io.BytesIO(encoded_jpg)
@@ -183,19 +286,12 @@ def create_tf_example_coco(group, path):
 ## DATA PROCESSING
 ###############################################################
 
-"""
-## Implementing Anchor generator
-Anchor boxes are fixed sized boxes that the model uses to predict the bounding
-box for an object. It does this by regressing the offset between the location
-of the object's center and the center of an anchor box, and then uses the width
-and height of the anchor box to predict a relative scale of the object. In the
-case of RetinaNet, each location on a given feature map has nine anchor boxes
-(at three scales and three ratios).
-"""
-
 
 class AnchorBox:
-    """Generates anchor boxes.
+    """
+    "AnchorBox"
+    ## Code from https://keras.io/examples/vision/retinanet/
+    Generates anchor boxes.
     This class has operations to generate anchor boxes for feature maps at
     strides `[8, 16, 32, 64, 128]`. Where each anchor each box is of the
     format `[x, y, width, height]`.
@@ -239,7 +335,10 @@ class AnchorBox:
         return anchor_dims_all
 
     def _get_anchors(self, feature_height, feature_width, level):
-        """Generates anchor boxes for a given feature map size and level
+        """
+        "_get_anchors"
+        ## Code from https://keras.io/examples/vision/retinanet/
+        Generates anchor boxes for a given feature map size and level
         Arguments:
           feature_height: An integer representing the height of the feature map.
           feature_width: An integer representing the width of the feature map.
@@ -263,7 +362,10 @@ class AnchorBox:
         )
 
     def get_anchors(self, image_height, image_width):
-        """Generates anchor boxes for all the feature maps of the feature pyramid.
+        """
+        "get_anchors"
+        ## Code from https://keras.io/examples/vision/retinanet/
+        Generates anchor boxes for all the feature maps of the feature pyramid.
         Arguments:
           image_height: Height of the input image.
           image_width: Width of the input image.
@@ -282,20 +384,10 @@ class AnchorBox:
         return tf.concat(anchors, axis=0)
 
 
-"""
-## Preprocessing data
-Preprocessing the images involves two steps:
-- Resizing the image: Images are resized such that the shortest size is equal
-to 800 px, after resizing if the longest side of the image exceeds 1333 px,
-the image is resized such that the longest size is now capped at 1333 px.
-- Applying augmentation: Random scale jittering  and random horizontal flipping
-are the only augmentations applied to the images.
-Along with the images, bounding boxes are rescaled and flipped if required.
-"""
-
-
 def random_flip_horizontal(image, boxes):
-    """Flips image and boxes horizontally with 50% chance
+    """
+    "random_flip_horizontal"
+    Flips image and boxes horizontally with 50% chance
     Arguments:
       image: A 3-D tensor of shape `(height, width, channels)` representing an
         image.
@@ -315,7 +407,9 @@ def random_flip_horizontal(image, boxes):
 def resize_and_pad_image(
     image, min_side=800.0, max_side=1333.0, jitter=[640, 1024], stride=128.0
 ):
-    """Resizes and pads image while preserving aspect ratio.
+    """
+    "resize_and_pad_image"
+    Resizes and pads image while preserving aspect ratio.
     1. Resizes images so that the shorter side is equal to `min_side`
     2. If the longer side is greater than `max_side`, then resize the image
       with longer side equal to `max_side`
@@ -357,7 +451,9 @@ def resize_and_pad_image(
 
 
 def preprocess_coco_data(sample):
-    """Applies preprocessing step to a single sample
+    """
+    "preprocess_coco_data"
+    Applies preprocessing step to a single sample
     Arguments:
       sample: A dict representing a single training sample.
     Returns:
@@ -388,7 +484,19 @@ def preprocess_coco_data(sample):
 
 
 def preprocess_secoora_data(example):
-
+    """
+    preprocess_secoora_data
+    ""
+    This function
+    INPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    OPTIONAL INPUTS: None
+    OUTPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    GLOBAL INPUTS: BATCH_SIZE
+    """
     image = tf.image.decode_jpeg(example['image'], channels=3)
     image = tf.cast(image, tf.float32)
     #image = tf.image.per_image_standardization(image)
@@ -403,10 +511,10 @@ def preprocess_secoora_data(example):
 
     bbox3 = tf.stack(
         [
-            bbox[:, 0] * ratio, # image_shape[1],
-            bbox[:, 1] * ratio, #image_shape[0],
-            bbox[:, 2] * ratio, #image_shape[1],
-            bbox[:, 3] * ratio, #image_shape[0],
+            bbox[:, 0] * ratio,
+            bbox[:, 1] * ratio,
+            bbox[:, 2] * ratio,
+            bbox[:, 3] * ratio,
         ],
         axis=-1,
     )
@@ -415,21 +523,10 @@ def preprocess_secoora_data(example):
     return image, bbox, class_id
 
 
-"""
-## Encoding labels
-The raw labels, consisting of bounding boxes and class ids need to be
-transformed into targets for training. This transformation consists of
-the following steps:
-- Generating anchor boxes for the given image dimensions
-- Assigning ground truth boxes to the anchor boxes
-- The anchor boxes that are not assigned any objects, are either assigned the
-background class or ignored depending on the IOU
-- Generating the classification and regression targets using anchor boxes
-"""
-
-
 class LabelEncoderCoco:
-    """Transforms the raw labels into targets for training.
+    """
+    ""
+    Transforms the raw labels into targets for training.
     This class has operations to generate targets for a batch of samples which
     is made up of the input images, bounding boxes for the objects present and
     their class ids.
@@ -534,16 +631,21 @@ class LabelEncoderCoco:
 ## MODEL BUILDING
 ###############################################################
 
-"""
-## Building the ResNet50 backbone
-RetinaNet uses a ResNet based backbone, using which a feature pyramid network
-is constructed. In the example we use ResNet50 as the backbone, and return the
-feature maps at strides 8, 16 and 32.
-"""
-
-
 def get_backbone():
-    """Builds ResNet50 with pre-trained imagenet weights"""
+    """
+    "get_backbone"
+    Builds ResNet50 with pre-trained imagenet weights"
+    ""
+    This function
+    INPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    OPTIONAL INPUTS: None
+    OUTPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    GLOBAL INPUTS: BATCH_SIZE
+    """
     backbone = tf.keras.applications.ResNet50(
         include_top=False, input_shape=[None, None, 3]
     )
@@ -562,7 +664,9 @@ def get_backbone():
 
 
 class FeaturePyramid(tf.keras.layers.Layer):
-    """Builds the Feature Pyramid with the feature maps from the backbone.
+    """
+    "FeaturePyramid"
+    Builds the Feature Pyramid with the feature maps from the backbone.
     Attributes:
       num_classes: Number of classes in the dataset.
       backbone: The backbone to build the feature pyramid from.
@@ -597,16 +701,10 @@ class FeaturePyramid(tf.keras.layers.Layer):
         return p3_output, p4_output, p5_output, p6_output, p7_output
 
 
-"""
-## Building the classification and box regression heads.
-The RetinaNet model has separate heads for bounding box regression and
-for predicting class probabilities for the objects. These heads are shared
-between all the feature maps of the feature pyramid.
-"""
-
-
 def build_head(output_filters, bias_init):
-    """Builds the class/box predictions head.
+    """
+    "build_head"
+    Builds the class/box predictions head.
     Arguments:
       output_filters: Number of convolution filters in the final layer.
       bias_init: Bias Initializer for the final convolution layer.
@@ -640,7 +738,9 @@ def build_head(output_filters, bias_init):
 
 
 class RetinaNet(tf.keras.Model):
-    """A subclassed Keras model implementing the RetinaNet architecture.
+    """
+    "RetinaNet"
+    A subclassed Keras model implementing the RetinaNet architecture.
     Attributes:
       num_classes: Number of classes in the dataset.
       backbone: The backbone to build the feature pyramid from.
@@ -677,7 +777,9 @@ class RetinaNet(tf.keras.Model):
 
 
 class DecodePredictions(tf.keras.layers.Layer):
-    """A Keras layer that decodes predictions of the RetinaNet model.
+    """
+    "DecodePredictions"
+    A Keras layer that decodes predictions of the RetinaNet model.
     Attributes:
       num_classes: Number of classes in the dataset
       confidence_threshold: Minimum class probability, below which detections
@@ -768,13 +870,12 @@ def lrfn(epoch):
     return lr(epoch, start_lr, min_lr, max_lr, rampup_epochs, sustain_epochs, exp_decay)
 
 
-"""
-## Implementing Smooth L1 loss and Focal Loss as keras custom losses
-"""
-
 
 class RetinaNetBoxLoss(tf.losses.Loss):
-    """Implements Smooth L1 loss"""
+    """
+    "RetinaNetBoxLoss"
+    Implements Smooth L1 loss
+    """
 
     def __init__(self, delta):
         super(RetinaNetBoxLoss, self).__init__(
@@ -795,7 +896,10 @@ class RetinaNetBoxLoss(tf.losses.Loss):
 
 
 class RetinaNetClassificationLoss(tf.losses.Loss):
-    """Implements Focal loss"""
+    """
+    "RetinaNetClassificationLoss"
+    Implements Focal loss
+    """
 
     def __init__(self, alpha, gamma):
         super(RetinaNetClassificationLoss, self).__init__(
@@ -816,7 +920,10 @@ class RetinaNetClassificationLoss(tf.losses.Loss):
 
 
 class RetinaNetLoss(tf.losses.Loss):
-    """Wrapper to combine both the losses"""
+    """
+    "RetinaNetLoss"
+    Wrapper to combine both the losses
+    """
 
     def __init__(self, num_classes=80, alpha=0.25, gamma=2.0, delta=1.0):
         super(RetinaNetLoss, self).__init__(reduction="auto", name="RetinaNetLoss")
@@ -849,24 +956,28 @@ class RetinaNetLoss(tf.losses.Loss):
 
 
 def prepare_image(image):
+    """
+    prepare_image
+    ""
+    This function
+    INPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    OPTIONAL INPUTS: None
+    OUTPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    GLOBAL INPUTS: BATCH_SIZE
+    """
     image, _, ratio = resize_and_pad_image(image, jitter=None)
     image = tf.keras.applications.resnet.preprocess_input(image)
     return tf.expand_dims(image, axis=0), ratio
 
 
-
-
-"""
-## Computing pairwise Intersection Over Union (IOU)
-As we will see later in the example, we would be assigning ground truth boxes
-to anchor boxes based on the extent of overlapping. This will require us to
-calculate the Intersection Over Union (IOU) between all the anchor
-boxes and ground truth boxes pairs.
-"""
-
-
 def compute_iou(boxes1, boxes2):
-    """Computes pairwise IOU matrix for given two sets of boxes
+    """
+    "compute_iou"
+    Computes pairwise IOU matrix for given two sets of boxes
     Arguments:
       boxes1: A tensor with shape `(N, 4)` representing bounding boxes
         where each box is of the format `[x, y, width, height]`.
@@ -924,7 +1035,19 @@ def plot_history(history, train_hist_fig):
 def visualize_detections(
     image, boxes, classes, scores, figsize=(7, 7), linewidth=1, color=[0, 0, 1]
 ):
-    """Visualize Detections"""
+    """
+    visualize_detections
+    ""
+    This function
+    INPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    OPTIONAL INPUTS: None
+    OUTPUTS:
+        * val_dataset [tensorflow dataset]: validation dataset
+        * train_dataset [tensorflow dataset]: training dataset
+    GLOBAL INPUTS: BATCH_SIZE
+    """
     image = np.array(image, dtype=np.uint8)
     plt.figure(figsize=figsize)
     plt.axis("off")
@@ -967,7 +1090,9 @@ between the formats.
 
 
 def swap_xy(boxes):
-    """Swaps order the of x and y coordinates of the boxes.
+    """
+    "swap_xy"
+    Swaps order the of x and y coordinates of the boxes.
     Arguments:
       boxes: A tensor with shape `(num_boxes, 4)` representing bounding boxes.
     Returns:
@@ -977,7 +1102,9 @@ def swap_xy(boxes):
 
 
 def convert_to_xywh(boxes):
-    """Changes the box format to center, width and height.
+    """
+    "convert_to_xywh"
+    Changes the box format to center, width and height.
     Arguments:
       boxes: A tensor of rank 2 or higher with a shape of `(..., num_boxes, 4)`
         representing bounding boxes where each box is of the format
@@ -992,7 +1119,9 @@ def convert_to_xywh(boxes):
 
 
 def convert_to_corners(boxes):
-    """Changes the box format to corner coordinates
+    """
+    "convert_to_corners"
+    Changes the box format to corner coordinates
     Arguments:
       boxes: A tensor of rank 2 or higher with a shape of `(..., num_boxes, 4)`
         representing bounding boxes where each box is of the format
