@@ -109,8 +109,8 @@ class EmbeddingModel(tf.keras.Model):
 #---------------------------------------------------
 def get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim):
     """
+    get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
     # code modified from https://keras.io/examples/vision/metric_learning/
-    "get_large_embedding_model"
     This function makes an instance of a larger embedding model, which is a keras sequential model
     consisting of 5 convolutiional blocks, average 2d pooling, and an embedding layer
     INPUTS:
@@ -139,8 +139,8 @@ def get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim):
 #---------------------------------------------------
 def get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim):
     """
+    get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
     # code modified from https://keras.io/examples/vision/metric_learning/
-    "get_embedding_model"
     This function makes an instance of an embedding model, which is a keras sequential model
     consisting of 3 convolutiional blocks, average 2d pooling, and an embedding layer
     INPUTS:
@@ -171,7 +171,7 @@ def get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim):
 #---------------------------------------------------
 def fit_knn_to_embeddings(model, X_train, ytrain, n_neighbors):
     """
-    "fit_knn_to_embeddings"
+    fit_knn_to_embeddings(model, X_train, ytrain, n_neighbors)
     This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
     using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
     saving out to the provided filename, cm_filename
@@ -194,14 +194,13 @@ def fit_knn_to_embeddings(model, X_train, ytrain, n_neighbors):
     return knn
 
 
-
 ###############################################################
 ### TRAINING FUNCTIONS
 ###############################################################
 
 def weighted_binary_crossentropy(zero_weight, one_weight):
     """
-    "weighted_binary_crossentropy"
+    weighted_binary_crossentropy(zero_weight, one_weight)
     This function computes weighted binary crossentropy loss
     INPUTS:
         * zero_weight [float]: weight for the zero class
@@ -228,7 +227,7 @@ def weighted_binary_crossentropy(zero_weight, one_weight):
 # learning rate function
 def lrfn(epoch):
     """
-    "lrfn"
+    lrfn(epoch)
     This function creates a custom piecewise linear-exponential learning rate function
     for a custom learning rate scheduler. It is linear to a max, then exponentially decays
     INPUTS: current epoch number

@@ -68,7 +68,6 @@ class HomeSplash extends React.Component {
             <Button href={docUrl('doc2.html')}>Data</Button>
             <Button href={docUrl('doc3.html')}>Help</Button>
             <Button href={"https://github.com/dbuscombe-usgs/DL-CDI2020"}>Github Repository</Button>
-            <Button href={"https://forms.office.com/Pages/ResponsePage.aspx?id=urWTBhhLe02TQfMvQApUlAxdiRifVmlAg0g-PN54QUVUQVJKUjRDM0pNWk5UUVBaOFdQUE9IRUVISiQlQCN0PWcu"}>Register your interest</Button>
 
           </PromoSection>
         </div>
@@ -114,7 +113,6 @@ class HomeSplash2 extends React.Component {
       <SplashContainer>
         <div className="inner">
           <PromoSection>
-            <Button href={"https://forms.office.com/Pages/ResponsePage.aspx?id=urWTBhhLe02TQfMvQApUlAxdiRifVmlAg0g-PN54QUVUQVJKUjRDM0pNWk5UUVBaOFdQUE9IRUVISiQlQCN0PWcu"}>Register your interest</Button>
 
           </PromoSection>
         </div>
@@ -244,6 +242,59 @@ class Index extends React.Component {
       </Block>
     );
 
+    const Summary = () => (
+      <Block background="dark" layout="fourColumn">
+        {[
+          {
+            content: 'A concise summary of the various datasets and models (and some of their parameters) are listed here',
+            image: `${baseUrl}img/summary.png`,
+            imageAlign: 'bottom',
+            title: 'Summary of topics, models and datasets ',
+          },
+        ]}
+      </Block>
+    );
+
+    const Is = () => (
+      <Block background="dark" layout="fourColumn">
+        {[
+          {
+            content: ' ',
+            image: `${baseUrl}img/is.png`,
+            imageAlign: 'bottom',
+            title: ' ',
+          },
+        ]}
+      </Block>
+    );
+
+    const Not = () => (
+      <Block background="dark" layout="fourColumn">
+        {[
+          {
+            content: ' ',
+            image: `${baseUrl}img/not.png`,
+            imageAlign: 'bottom',
+            title: ' ',
+          },
+        ]}
+      </Block>
+    );
+
+    const Growth = () => (
+      <Block background="dark" layout="fourColumn">
+        {[
+          {
+            content: ' ',
+            image: `${baseUrl}img/MLgrowth.png`,
+            imageAlign: 'bottom',
+            title: ' ',
+          },
+        ]}
+      </Block>
+    );
+
+
     const Features = () => (
       <Block background="light" layout="fourColumn">
         {[
@@ -299,23 +350,6 @@ class Index extends React.Component {
       </Block>
     );
 
-
-    const SignUp = () => (
-      <Block background="light" layout="twoColumn">
-        {[
-          {
-            content:
-            'Please register your interest in attending this course, using the button below. '+
-            '<br/><br/>In the event of over-subscription, the course leaders and CDI leadership '+
-            'will use the information you provide to determine your potential suitability for this course.',
-            image: `${baseUrl}img/undraw_programming_2svr.png`,
-            imageAlign: 'top',
-            title: 'How to sign up',
-          },
-        ]}
-
-      </Block>
-    );
 
     const Warning = () => (
       <Block background="dark" layout="twoColumn">
@@ -423,7 +457,10 @@ class Index extends React.Component {
           <ObjRecog />
           <ImSeg />
           <ImClass />
-          <SignUp />
+          <Summary />
+          <Is />
+          <Not />
+          <Growth />
           <HomeSplash2 siteConfig={siteConfig} language={language} />
           <Disclaimer />
         </div>

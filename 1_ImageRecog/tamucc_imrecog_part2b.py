@@ -29,10 +29,10 @@
 ###############################################################
 
 from imports import *
-
 #-----------------------------------
 def get_training_dataset():
     """
+    get_training_dataset()
     This function will return a batched dataset for model training
     INPUTS: None
     OPTIONAL INPUTS: None
@@ -43,6 +43,7 @@ def get_training_dataset():
 
 def get_validation_dataset():
     """
+    get_validation_dataset()
     This function will return a batched dataset for model training
     INPUTS: None
     OPTIONAL INPUTS: None
@@ -51,9 +52,21 @@ def get_validation_dataset():
     """
     return get_batched_dataset(validation_filenames)
 
+def get_validation_eval_dataset():
+    """
+    get_validation_eval_dataset()
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_eval_dataset(validation_filenames)
+
 #-----------------------------------
 def get_aug_datasets():
     """
+    get_aug_datasets()
     This function will create train and validation sets based on a specific
     data augmentation pipeline consisting of random flipping, small rotations,
     translations and contrast adjustments
@@ -75,7 +88,7 @@ def get_aug_datasets():
     augmented_val_ds = get_validation_dataset().map(
       lambda x, y: (data_augmentation(x, training=True), y))
     return augmented_train_ds, augmented_val_ds
-
+    
 ###############################################################
 ## VARIABLES
 ###############################################################

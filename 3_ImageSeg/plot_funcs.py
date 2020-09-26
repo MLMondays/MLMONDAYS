@@ -42,10 +42,49 @@ np.random.seed(SEED)
 
 import matplotlib.pyplot as plt
 
+import pydensecrf.densecrf as dcrf
+from pydensecrf.utils import create_pairwise_bilateral, unary_from_labels
+
 
 ###############################################################
 ### PLOTTING FUNCTIONS
 ###############################################################
+
+#-----------------------------------
+def crf_refine(label, img):
+    """
+    "crf_refine"
+    This function refines a label image based on an input label image and the associated image
+    Uses a conditional random field algorithm using spatial and image features
+    INPUTS:
+        * label [ndarray]: label image 2D matrix of integers
+        * image [ndarray]: image 3D matrix of integers
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: label [ndarray]: label image 2D matrix of integers
+    """
+    H = label.shape[0]
+    W = label.shape[1]
+    U = unary_from_labels(1+label,5,gt_prob=0.51)
+    d = dcrf.DenseCRF2D(H, W, 5)
+    d.setUnaryEnergy(U)
+
+    # to add the color-independent term, where features are the locations only:
+    d.addPairwiseGaussian(sxy=(3, 3),
+                 compat=3,
+                 kernel=dcrf.DIAG_KERNEL,
+                 normalization=dcrf.NORMALIZE_SYMMETRIC)
+    feats = create_pairwise_bilateral(
+                          sdims=(100, 100),
+                          schan=(2,2,2),
+                          img=img,
+                          chdim=2)
+
+    d.addPairwiseEnergy(feats, compat=120,kernel=dcrf.DIAG_KERNEL,normalization=dcrf.NORMALIZE_SYMMETRIC)
+    Q = d.inference(10)
+    kl1 = d.klDivergence(Q)
+    return np.argmax(Q, axis=0).reshape((H, W)).astype(np.uint8), kl1
+
 
 #-----------------------------------
 def plot_seg_history_iou(history, train_hist_fig):
@@ -111,19 +150,23 @@ def plot_seg_history(history, train_hist_fig):
 def make_sample_seg_plot(model, sample_filenames, test_samples_fig, flag='binary'):
     """
     "make_sample_seg_plot"
-    This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
-    using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
-    saving out to the provided filename, cm_filename
+    This function uses a trained model to estimate the label image from each input image
+    and returns both images and labels as a list
     INPUTS:
         * model: trained and compiled keras model
         * sample_filenames: [list] of strings
         * test_samples_fig [string]: filename to print figure to
+        * flag [string]: either 'binary' or 'multiclass'
     OPTIONAL INPUTS: None
     GLOBAL INPUTS: None
-    OUTPUTS: None (matplotlib figure, printed to file)
+    OUTPUTS:
+        * imgs: [list] of images
+        * lbls: [list] of label images
     """
 
     plt.figure(figsize=(16,16))
+    imgs = []
+    lbls = []
 
     for counter,f in enumerate(sample_filenames):
         image = seg_file2tensor(f)/255
@@ -142,13 +185,105 @@ def make_sample_seg_plot(model, sample_filenames, test_samples_fig, flag='binary
         plt.title(name, fontsize=10)
         plt.imshow(image)
         if flag is 'binary':
-            plt.imshow(est_label, alpha=0.5, cmap=plt.cm.gray)
+            plt.imshow(est_label, alpha=0.5, cmap=plt.cm.gray, vmin=0, vmax=1)
         else:
-            plt.imshow(est_label, alpha=0.5, cmap=plt.cm.bwr)
+            plt.imshow(est_label, alpha=0.5, cmap=plt.cm.bwr, vmin=0, vmax=3)
 
         plt.axis('off')
+        imgs.append((image.numpy()*255).astype(np.uint8))
+        lbls.append(est_label)
 
     # plt.show()
     plt.savefig(test_samples_fig,
                 dpi=200, bbox_inches='tight')
     plt.close('all')
+
+    return imgs, lbls
+
+
+###---------------------------------------------------------
+def make_sample_ensemble_seg_plot(model2, model3, sample_filenames, test_samples_fig, flag='binary'):
+    """
+    "make_sample_ensemble_seg_plot"
+    This function uses two trained models to estimate the label image from each input image
+    It then uses a KL score to determine which one to return
+    and returns both images and labels as a list, as well as a list of which model's output is returned
+    INPUTS:
+        * model: trained and compiled keras model
+        * sample_filenames: [list] of strings
+        * test_samples_fig [string]: filename to print figure to
+        * flag [string]: either 'binary' or 'multiclass'
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * imgs: [list] of images
+        * lbls: [list] of label images
+        * model_num: [list] of integers indicating which model's output was retuned based on CRF KL divergence
+    """
+
+    plt.figure(figsize=(16,16))
+    imgs = []
+    lbls = []
+    model_num = []
+
+    for counter,f in enumerate(sample_filenames):
+        image = seg_file2tensor(f)/255
+        est_label1 = model2.predict(tf.expand_dims(image, 0) , batch_size=1).squeeze()
+        if flag is 'binary':
+            est_label1[est_label1>0.5] = 1
+            est_label1 = (est_label1*255).astype(np.uint8)
+        else:
+            est_label1 = tf.argmax(est_label1, axis=-1)
+
+
+        est_label2 = model3.predict(tf.expand_dims(image, 0) , batch_size=1).squeeze()
+        if flag is 'binary':
+            est_label2[est_label2>0.5] = 1
+            est_label2 = (est_label2*255).astype(np.uint8)
+        else:
+            est_label2 = tf.argmax(est_label2, axis=-1)
+
+        label = est_label1.numpy().astype('int')
+        img = (image.numpy()*255).astype(np.uint8)
+        est_labelA, kl1 = crf_refine(label, img )
+        label = est_label2.numpy().astype('int')
+        est_labelB, kl2 = crf_refine(label, img )
+        del label
+
+        # plt.subplot(221); plt.imshow(image); plt.imshow(est_label1, alpha=0.5, cmap=plt.cm.bwr, vmin=0, vmax=3); plt.axis('off'); plt.title('Model 1 estimate', fontsize=6)
+        # plt.subplot(222); plt.imshow(image); plt.imshow(est_label2, alpha=0.5, cmap=plt.cm.bwr, vmin=0, vmax=3); plt.axis('off'); plt.title('Model 2 estimate', fontsize=6)
+        # plt.subplot(223); plt.imshow(image); plt.imshow(est_labelA, alpha=0.5, cmap=plt.cm.bwr, vmin=0, vmax=3); plt.axis('off'); plt.title('Model 1 CRF estimate ('+str(-np.log(-kl1))[:7]+')', fontsize=6)
+        # plt.subplot(224); plt.imshow(image); plt.imshow(est_labelB, alpha=0.5, cmap=plt.cm.bwr, vmin=0, vmax=3); plt.axis('off'); plt.title('Model 2 CRF estimate ('+str(-np.log(-kl2))[:7]+')', fontsize=6)
+        # plt.savefig('crf-example'+str(counter)+'.png', dpi=600, bbox_inches='tight'); plt.close('all')
+        #
+
+        if kl1<kl2:
+            est_label = est_labelA.copy()
+            model_num.append(1)
+        else:
+            est_label = est_labelB.copy()
+            model_num.append(2)
+
+        if flag is 'binary':
+            plt.subplot(6,4,counter+1)
+        else:
+            plt.subplot(4,4,counter+1)
+        name = sample_filenames[counter].split(os.sep)[-1].split('_')[0]
+        plt.title(name, fontsize=10)
+        plt.imshow(image)
+        if flag is 'binary':
+            plt.imshow(est_label, alpha=0.5, cmap=plt.cm.gray, vmin=0, vmax=1)
+        else:
+            plt.imshow(est_label, alpha=0.5, cmap=plt.cm.bwr, vmin=0, vmax=3)
+
+        plt.axis('off')
+
+        imgs.append(image)
+        lbls.append(est_label)
+
+    # plt.show()
+    plt.savefig(test_samples_fig,
+                dpi=200, bbox_inches='tight')
+    plt.close('all')
+
+    return imgs, lbls, model_num

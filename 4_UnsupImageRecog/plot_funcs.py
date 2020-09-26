@@ -66,7 +66,7 @@ import tensorflow as tf #numerical operations on gpu
 #-----------------------------------
 def conf_mat_filesamples(model, knn, sample_filenames, num_classes, num_dim_use, CLASSES):
     """
-    "conf_mat_filesamples"
+    conf_mat_filesamples(model, knn, sample_filenames, num_classes, num_dim_use, CLASSES)
     This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
     using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
     saving out to the provided filename, cm_filename
@@ -108,7 +108,7 @@ def conf_mat_filesamples(model, knn, sample_filenames, num_classes, num_dim_use,
 #-----------------------------------
 def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
     """
-    "p_confmat"
+    p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1)
     This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
     using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
     saving out to the provided filename, cm_filename

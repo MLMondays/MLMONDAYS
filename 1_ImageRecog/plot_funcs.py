@@ -62,7 +62,7 @@ import tensorflow as tf #numerical operations on gpu
 #-----------------------------------
 def plot_history(history, train_hist_fig):
     """
-    "plot_history"
+    plot_history(history, train_hist_fig)
     This function plots the training history of a model
     INPUTS:
         * history [dict]: the output dictionary of the model.fit() process, i.e. history = model.fit(...)
@@ -92,7 +92,7 @@ def plot_history(history, train_hist_fig):
 #-----------------------------------
 def get_label_pairs(val_ds, model):
     """
-    "get_label_pairs"
+    get_label_pairs(val_ds, model)
     This function gets label observations and model estimates
     INPUTS:
         * val_ds: a batched data set object
@@ -118,7 +118,7 @@ def get_label_pairs(val_ds, model):
 #-----------------------------------
 def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
     """
-    "p_confmat"
+    p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1)
     This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
     using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
     saving out to the provided filename, cm_filename
@@ -160,7 +160,7 @@ def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
 
 def make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES):
     """
-    "make_sample_plot"
+    make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES))
     This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
     using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
     saving out to the provided filename, cm_filename
@@ -213,7 +213,7 @@ def make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES):
 #-----------------------------------
 def compute_hist(images):
     """
-    "compute_hist"
+    compute_hist(images)
     Compute the per channel histogram for a batch
     of images
     INPUTS:
@@ -246,7 +246,7 @@ def compute_hist(images):
 #-----------------------------------
 def plot_distribution(images, labels, class_id, CLASSES):
     """
-    "plot_distribution"
+    plot_distribution(images, labels, class_id, CLASSES)
     Compute the per channel histogram for a batch
     of images
     INPUTS:
@@ -293,7 +293,7 @@ def plot_distribution(images, labels, class_id, CLASSES):
 #-----------------------------------
 def plot_one_class(inp_batch, sample_idx, label, batch_size, CLASSES, rows=8, cols=8, size=(20,15)):
     """
-    "plot_one_class"
+    plot_one_class(inp_batch, sample_idx, label, batch_size, CLASSES, rows=8, cols=8, size=(20,15)):
     Plot "batch_size" images that belong to the class "label"
     INPUTS:
         * inp_batch
@@ -319,7 +319,7 @@ def plot_one_class(inp_batch, sample_idx, label, batch_size, CLASSES, rows=8, co
 #-----------------------------------
 def compute_mean_image(images, opt="mean"):
     """
-    "compute_mean_image"
+    compute_mean_image(images, opt="mean")
     Compute and return mean image given
     a batch of images
     INPUTS:
@@ -338,7 +338,7 @@ def compute_mean_image(images, opt="mean"):
 #-----------------------------------
 def plot_mean_images(images, labels, CLASSES, rows=3, cols = 2):
     """
-    "plot_mean_images"
+    plot_mean_images(images, labels, CLASSES, rows=3, cols = 2)
     Plot the mean image of a set of images
     INPUTS:
         * images [ndarray]: batch of shape (N x W x H x 3)
@@ -363,7 +363,7 @@ def plot_mean_images(images, labels, CLASSES, rows=3, cols = 2):
 #-----------------------------------
 def plot_tsne(tsne_result, label_ids, CLASSES):
     """
-    "plot_tsne"
+    plot_tsne(tsne_result, label_ids, CLASSES)
     Plot TSNE loadings and colour code by class
     Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
     INPUTS:
@@ -398,7 +398,7 @@ def plot_tsne(tsne_result, label_ids, CLASSES):
 #-----------------------------------
 def visualize_scatter_with_images(X_2d_data, labels, images, figsize=(15,15), image_zoom=1,xlim = (-3,3), ylim=(-3,3)):
     """
-    "visualize_scatter_with_images"
+    visualize_scatter_with_images(X_2d_data, labels, images, figsize=(15,15), image_zoom=1,xlim = (-3,3), ylim=(-3,3))
     Plot TSNE loadings and colour code by class
     Source: https://www.kaggle.com/gaborvecsei/plants-t-sne
     INPUTS:

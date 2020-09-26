@@ -58,6 +58,8 @@ def get_validation_dataset(flag):
 data_path= os.getcwd()+os.sep+"data/obx"
 
 sample_data_path = os.getcwd()+os.sep+"data/obx/sample"
+sample_label_data_path = os.getcwd()+os.sep+"data/obx/sample_labels"
+
 
 trainsamples_fig = os.getcwd()+os.sep+'results/obx_sample_2class_trainsamples.png'
 valsamples_fig = os.getcwd()+os.sep+'results/obx_sample_2class_valsamples.png'
@@ -131,23 +133,11 @@ plt.savefig(valsamples_fig, dpi=200, bbox_inches='tight')
 plt.close('all')
 
 
-#
-# augmented_train_ds, augmented_val_ds = get_aug_datasets()
-#
-# plt.figure(figsize=(16,16))
-# for im,l in augmented_train_ds.take(1):
-#     for count,im in enumerate(im):
-#        plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
-#        plt.imshow(im)
-#        plt.title(CLASSES[l[count]], fontsize=8)
-#        plt.axis('off')
-# # plt.show()
-# plt.savefig(augsamples_fig, dpi=200, bbox_inches='tight')
 
 nclasses = 1  #1 class in the sense of 1 class + background (one classifying node because binary decision)
 model = res_unet((TARGET_SIZE, TARGET_SIZE, 3), BATCH_SIZE, 'binary', nclasses)
 
-model.compile(optimizer = 'adam', loss = dice_coef_loss, metrics = [dice_coef, mean_iou])
+model.compile(optimizer = 'adam', loss = dice_coef_loss, metrics = [dice_coef, mean_iou]) #
 
 # model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = [dice_coef, mean_iou])
 # model.summary()
@@ -168,7 +158,7 @@ lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch)
 callbacks = [model_checkpoint, earlystop, lr_callback]
 
 
-do_train = False #True
+do_train = True # False #True
 
 if do_train:
     history = model.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
@@ -192,7 +182,7 @@ scores = model.evaluate(val_ds, steps=validation_steps)
 
 print('loss={loss:0.4f}, Mean Dice={dice_coef:0.4f}'.format(loss=scores[0], dice_coef=scores[1]))
 
-#98%
+#90%
 
 ##########################################################
 ### predict

@@ -1,0 +1,16 @@
+SECCORA
+
+The imagery and associated label data have been curated especially for this course.
+
+We have used publicly available web camera imagery from the SouthEast Coastal Ocean Observing Regional Association's WebCAT service. WebCAT stands for the NOAA NOS (National Observing System) Web Camera Applications Testbed. These cameras have various purposes, for example counting right whales, identifying rip currents, validating wave models, and understanding human use of beaches, etc. Of the web cameras in seven locations, we will only use imagery from the the camera installed at one site, namely St. Augustine Pier, Florida.
+
+sample/ contains 24 sample jpeg images
+
+secoora-train.tfrecord contains training data
+
+secoora-validation.tfrecord contains validation data
+
+Labels for each bounding box are in the format
+xmin, ymin, xmax, ymax, class
+
+There is only one class, 'person', consistent with the same class in the large COCO dataset

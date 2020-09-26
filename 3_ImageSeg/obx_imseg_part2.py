@@ -57,6 +57,7 @@ def get_validation_dataset(flag):
 data_path= os.getcwd()+os.sep+"data/obx"
 
 sample_data_path = os.getcwd()+os.sep+"data/obx/sample"
+sample_label_data_path = os.getcwd()+os.sep+"data/obx/sample_labels"
 
 trainsamples_fig = os.getcwd()+os.sep+'results/obx_sample_4class_trainsamples.png'
 valsamples_fig = os.getcwd()+os.sep+'results/obx_sample_4class_valsamples.png'
@@ -73,7 +74,7 @@ patience = 20
 
 ims_per_shard = 20
 
-
+VALIDATION_SPLIT = 0.5
 ###############################################################
 ## EXECUTION
 ###############################################################
@@ -159,7 +160,7 @@ if do_train:
                           callbacks=callbacks)
 
     # Plot training history
-    plot_seg_history_iou(history, hist_fig.replace('model1','model2'))
+    plot_seg_history_iou(history, hist_fig)
 
     plt.close('all')
     K.clear_session()
@@ -177,10 +178,26 @@ scores = model2.evaluate(val_ds, steps=validation_steps)
 
 print('loss={loss:0.4f}, Mean IoU={mean_iou:0.4f}'.format(loss=scores[0], mean_iou=scores[1]))
 
+#65%
 
 ##########################################################
 ### predict
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
-make_sample_seg_plot(model2, sample_filenames, test_samples_fig, flag='multiclass')
+imgs, lbls =make_sample_seg_plot(model2, sample_filenames, test_samples_fig, flag='multiclass')
+
+sample_label_filenames = sorted(tf.io.gfile.glob(sample_label_data_path+os.sep+'*.jpg'))
+
+obs = [np.array(seg_file2tensor(f)/255, dtype=np.uint8).squeeze() for f in sample_label_filenames]
+
+
+iou = []
+for k in range(len(obs)):
+    i = mean_iou_np(np.expand_dims(np.expand_dims(obs[k],axis=0),axis=-1), np.expand_dims(np.expand_dims(lbls[k],axis=0),axis=-1))
+    iou.append(i)
+
+print('Mean IoU={mean_iou:0.3f}'.format(mean_iou=np.mean(iou)))
+
+
+#57%

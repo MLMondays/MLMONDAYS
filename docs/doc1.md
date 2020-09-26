@@ -6,8 +6,6 @@ sidebar_label: Overview
 
 ML-Mondays consists of 4 in-person classes, on Oct 5, Oct 13 (a day delayed, due to the Federal Holiday Columbus Day), Oct 19, and Oct 26. Each class follows on from the last. Classes 1 and 4 are pairs, as are classes 2 and 3. Participants are therefore expected to last the course. Optional homework assignments will be set for participants to carry out in their own time.
 
-> If you can't guarantee blocking out 2-3 hrs on those days in Oct, then you do not have time for the course
-
 However, all course materials, including code, data, notebooks, this website, and videos, will be made available to the entire USGS in November, after the event. Full agenda to be announced later.
 
 ## Required pre-course reading

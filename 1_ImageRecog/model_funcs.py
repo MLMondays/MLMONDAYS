@@ -57,7 +57,7 @@ from tensorflow.keras.applications import Xception #xception model, used for fea
 # learning rate function
 def lrfn(epoch):
     """
-    "lrfn"
+    lrfn(epoch)
     This function creates a custom piecewise linear-exponential learning rate function
     for a custom learning rate scheduler. It is linear to a max, then exponentially decays
     INPUTS: current epoch number
@@ -79,7 +79,7 @@ def lrfn(epoch):
 #-----------------------------------
 def transfer_learning_model_vgg(num_classes, input_shape, dropout_rate=0.5):
     """
-    "transfer_learning_model_vgg"
+    transfer_learning_model_vgg(num_classes, input_shape, dropout_rate=0.5)
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on vgg, trained using transfer learning
     (initialized using pretrained imagenet weights)
@@ -111,7 +111,7 @@ def transfer_learning_model_vgg(num_classes, input_shape, dropout_rate=0.5):
 #-----------------------------------
 def mobilenet_model(num_classes, input_shape, dropout_rate=0.5):
     """
-    "mobilenet_model"
+    mobilenet_model(num_classes, input_shape, dropout_rate=0.5)
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on mobilenet, trained from scratch
     INPUTS:
@@ -142,7 +142,7 @@ def mobilenet_model(num_classes, input_shape, dropout_rate=0.5):
 #-----------------------------------
 def transfer_learning_mobilenet_model(num_classes, input_shape, dropout_rate=0.5):
     """
-    "transfer_learning_mobilenet_model"
+    transfer_learning_mobilenet_model(num_classes, input_shape, dropout_rate=0.5)
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on mobilenet v2, trained using transfer learning
     (initialized using pretrained imagenet weights)
@@ -174,7 +174,7 @@ def transfer_learning_mobilenet_model(num_classes, input_shape, dropout_rate=0.5
 #-----------------------------------
 def transfer_learning_xception_model(num_classes, input_shape, dropout_rate=0.25):
     """
-    "transfer_learning_xception_model"
+    transfer_learning_xception_model(num_classes, input_shape, dropout_rate=0.25)
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on xception, trained using transfer learning
     (initialized using pretrained imagenet weights)
@@ -206,7 +206,7 @@ def transfer_learning_xception_model(num_classes, input_shape, dropout_rate=0.25
 #-----------------------------------
 def xception_model(num_classes, input_shape, dropout_rate=0.25):
     """
-    "xception_model"
+    xception_model(num_classes, input_shape, dropout_rate=0.25)
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category based on xception, trained from scratch
     INPUTS:
@@ -237,7 +237,7 @@ def xception_model(num_classes, input_shape, dropout_rate=0.25):
 ###===================================================
 def conv_block(inp, filters=32, bn=True, pool=True):
     """
-    "conv_block"
+    conv_block(inp, filters=32, bn=True, pool=True)
     This function generates a convolutional block
     INPUTS:
         * inp = input layer
@@ -264,7 +264,7 @@ def conv_block(inp, filters=32, bn=True, pool=True):
 ###===================================================
 def make_cat_model(num_classes, dropout, denseunits, base_filters, bn=False, pool=True, shallow=True):
     """
-    "make_cat_model"
+    make_cat_model(num_classes, dropout, denseunits, base_filters, bn=False, pool=True, shallow=True)
     This function creates an implementation of a convolutional deep learning model for estimating
 	a discrete category
     INPUTS:

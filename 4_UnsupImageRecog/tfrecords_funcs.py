@@ -55,7 +55,7 @@ from collections import defaultdict
 #-----------------------------------
 def get_batched_dataset(filenames):
     """
-    "get_batched_dataset"
+    get_batched_dataset(filenames)
     This function defines a workflow for the model to read data from
     tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
     and also formats the imagery properly for model training
@@ -84,7 +84,8 @@ def get_batched_dataset(filenames):
 
 def get_data_stuff(ds, num_batches):
     """
-    "get_data_stuff" - This function extracts lists of images and corresponding labels for training or testing
+    get_data_stuff(ds, num_batches)
+    This function extracts lists of images and corresponding labels for training or testing
     INPUTS:
         * ds [PrefetchDataset]: either get_training_dataset() or get_validation_dataset()
         * num_batches [int]
@@ -120,7 +121,7 @@ def get_data_stuff(ds, num_batches):
 #-----------------------------------
 def read_classes_from_json(json_file):
     """
-    "read_classes_from_json"
+    read_classes_from_json(json_file)
     This function reads the contents of a json file enumerating classes
     INPUTS:
         * json_file [string]: full path to the json file
@@ -143,7 +144,7 @@ def read_classes_from_json(json_file):
 #-----------------------------------
 def file2tensor(f):
     """
-    "file2tensor"
+    file2tensor(f)
     This function reads a jpeg image from file into a cropped and resized tensor,
     for use in prediction with a trained mobilenet or vgg model
     (the imagery is standardized depedning on target model framework)
@@ -182,7 +183,7 @@ def file2tensor(f):
 #-----------------------------------
 def resize_and_crop_image(image, label):
     """
-    "resize_and_crop_image"
+    resize_and_crop_image(image, label)
     This function crops to square and resizes an image
     The label passes through unmodified
     INPUTS:
@@ -211,7 +212,7 @@ def resize_and_crop_image(image, label):
 #-----------------------------------
 def recompress_image(image, label):
     """
-    "recompress_image"
+    recompress_image(image, label)
     This function takes an image encoded as a byte string
     and recodes as an 8-bit jpeg
     Label passes through unmodified
@@ -235,7 +236,7 @@ There is one for bytestrings (images), one for floats (not used here) and one fo
 """
 def _bytestring_feature(list_of_bytestrings):
     """
-    "_bytestring_feature"
+    "_bytestring_feature(list_of_bytestrings)"
     cast inputs into tf dataset 'feature' classes
     INPUTS:
         * list_of_bytestrings
@@ -247,7 +248,7 @@ def _bytestring_feature(list_of_bytestrings):
 
 def _int_feature(list_of_ints):
     """
-    "_int_feature"
+    "_int_feature(list_of_ints)"
     cast inputs into tf dataset 'feature' classes
     INPUTS:
         * list_of_ints
@@ -259,7 +260,7 @@ def _int_feature(list_of_ints):
 
 def _float_feature(list_of_floats):
     """
-    "_float_feature"
+    "_float_feature(list_of_floats)"
     cast inputs into tf dataset 'feature' classes
     INPUTS:
         * list_of_floats
@@ -272,7 +273,7 @@ def _float_feature(list_of_floats):
 #-----------------------------------
 def to_tfrecord(img_bytes, label, CLASSES):
     """
-    "to_tfrecord"
+    to_tfrecord(img_bytes, label, CLASSES)
     This function creates a TFRecord example from an image byte string and a label feature
     INPUTS:
         * img_bytes
@@ -292,7 +293,7 @@ def to_tfrecord(img_bytes, label, CLASSES):
 #-----------------------------------
 def read_tfrecord(example):
     """
-    "read_tfrecord"
+    read_tfrecord(example)
     This function reads an example from a TFrecord file into a single image and label
     INPUTS:
         * TFRecord example object
@@ -320,7 +321,7 @@ def read_tfrecord(example):
 #-----------------------------------
 def read_image_and_label(img_path):
     """
-    "read_image_and_label"
+    read_image_and_label(img_path)
     This function reads a jpeg image from a provided filepath
     and extracts the label from the filename (assuming the class name is
     before "_IMG" in the filename)
@@ -343,7 +344,7 @@ def read_image_and_label(img_path):
 #-----------------------------------
 def get_dataset_for_tfrecords(recoded_dir, shared_size):
     """
-    "get_dataset_for_tfrecords"
+    get_dataset_for_tfrecords(recoded_dir, shared_size)
     This function reads a list of TFREcord shard files,
     decode the images and label
     resize and crop the image to TARGET_SIZE
@@ -367,7 +368,7 @@ def get_dataset_for_tfrecords(recoded_dir, shared_size):
 #-----------------------------------
 def write_records(tamucc_dataset, tfrecord_dir, CLASSES):
     """
-    "write_records"
+    write_records(tamucc_dataset, tfrecord_dir, CLASSES)
     This function writes a tf.data.Dataset object to TFRecord shards
     INPUTS:
         * tamucc_dataset [tf.data.Dataset]

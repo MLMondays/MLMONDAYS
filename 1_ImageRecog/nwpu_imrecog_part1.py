@@ -32,6 +32,7 @@ from imports import *
 #-----------------------------------
 def get_training_dataset():
     """
+    get_training_dataset()
     This function will return a batched dataset for model training
     INPUTS: None
     OPTIONAL INPUTS: None
@@ -42,6 +43,7 @@ def get_training_dataset():
 
 def get_validation_dataset():
     """
+    get_validation_dataset()
     This function will return a batched dataset for model training
     INPUTS: None
     OPTIONAL INPUTS: None
@@ -52,6 +54,7 @@ def get_validation_dataset():
 
 def get_validation_eval_dataset():
     """
+    get_validation_eval_dataset()
     This function will return a batched dataset for model training
     INPUTS: None
     OPTIONAL INPUTS: None
@@ -63,6 +66,7 @@ def get_validation_eval_dataset():
 #-----------------------------------
 def get_aug_datasets():
     """
+    get_aug_datasets()
     This function will create train and validation sets based on a specific
     data augmentation pipeline consisting of random flipping, small rotations,
     translations and contrast adjustments
@@ -88,6 +92,7 @@ def get_aug_datasets():
 #-----------------------------------
 def read_image_and_label(img_path):
     """
+    read_image_and_label(img_path)
     This function will read an image from file, decode into jpeg,
     and extract the label name from the file name
     according to a specific set of rules

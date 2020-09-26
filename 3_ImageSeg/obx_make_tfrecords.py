@@ -26,11 +26,13 @@
 
 from imports import *
 
+from imageio import imwrite
+
 ###############################################################
 ## VARIABLES
 ###############################################################
 
-imdir = '/media/marda/TWOTB/USGS/DATA/FloSup/water_masks/final/images'
+imdir = '/media/marda/TWOTB/USGS/SOFTWARE/mlmondays_prep/imseg/obx/images'
 
 # Convert folder of pngs into jpegs
 # for file in *.png
@@ -38,18 +40,66 @@ imdir = '/media/marda/TWOTB/USGS/DATA/FloSup/water_masks/final/images'
 # > convert $file $"${file%.png}.jpg"
 # > done
 
-lab_path = '/media/marda/TWOTB/USGS/DATA/FloSup/water_masks/final/labels'
+lab_path = '/media/marda/TWOTB/USGS/SOFTWARE/mlmondays_prep/imseg/obx/labels'
 
 tfrecord_dir = '/media/marda/TWOTB/USGS/SOFTWARE/DL-CDI2020/3_ImageSeg/data/obx'
 
-# images = tf.io.gfile.glob(imdir+os.sep+'*.jpg')
 
-# images = tf.io.gfile.glob(lab_path+os.sep+'*.jpg')
+
+NY = 7360
+NX = 4912
+
+# we create two instances with the same arguments
+data_gen_args = dict(featurewise_center=False,
+                     featurewise_std_normalization=False,
+                     rotation_range=5,
+                     width_shift_range=0.1,
+                     height_shift_range=0.1,
+                     zoom_range=0.2)
+image_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**data_gen_args)
+mask_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**data_gen_args)
+
+#cant read all images into memory so I'll have to do this in batches
+i=41
+for k in range(14):
+
+    #set a different seed each time to get a new batch of ten
+    seed = int(np.random.randint(0,100,size=1))
+    img_generator = image_datagen.flow_from_directory(
+            imdir,
+            target_size=(NX, NY),
+            batch_size=10,
+            class_mode=None, seed=seed, shuffle=True)
+
+   #the seed must be the same as for the training set to get the same images
+    mask_generator = mask_datagen.flow_from_directory(
+            lab_path,
+            target_size=(NX, NY),
+            batch_size=10,
+            class_mode=None, seed=seed, shuffle=True)
+
+    #The following merges the two generators (and their flows) together:
+    train_generator = (pair for pair in zip(img_generator, mask_generator))
+
+    #grab a batch of 10 images and label images
+    x, y = next(train_generator)
+
+    # wrute them to file and increment the counter
+    for im,lab in zip(x,y):
+        imwrite(imdir+os.sep+'augimage_000'+str(i)+'.jpg', im)
+        imwrite(lab_path+os.sep+'auglabel_000'+str(i)+'_deep_whitewater_shallow_no_water_label.jpg', lab)
+        i += 1
+
+    #save memory
+    del x, y, im, lab
+    #get a new batch
+
 
 
 ###############################################################
 ## EXECUTION
 ###############################################################
+
 nb_images=len(tf.io.gfile.glob(imdir+os.sep+'*.jpg'))
 
 #there are only 146 images total, so we use a smaller number for images per shard
@@ -61,7 +111,7 @@ shared_size = int(np.ceil(1.0 * nb_images / SHARDS))
 
 dataset = get_seg_dataset_for_tfrecords_obx(imdir, lab_path, shared_size)
 
-# # view a batch
+# view a batch
 # for imgs,lbls in dataset.take(1):
 #   imgs = imgs[:BATCH_SIZE]
 #   lbls = lbls[:BATCH_SIZE]

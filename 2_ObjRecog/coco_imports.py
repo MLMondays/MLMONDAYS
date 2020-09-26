@@ -32,14 +32,13 @@
 ims_per_shard = 200
 BATCH_SIZE = 1 #>2 =OOM on coco on 11gb gpu
 
-MAX_EPOCHS = 10
+num_classes = 1 #80
 
-num_classes = 80
-
-start_lr = 1e-6 #0.00001
+start_lr = 1e-06
 min_lr = start_lr
-max_lr = 1e-3
+max_lr = 1e-04
 rampup_epochs = 5
 sustain_epochs = 0
-exp_decay = .9
-patience = 10
+exp_decay = .8
+MAX_EPOCHS = 100
+patience = 20

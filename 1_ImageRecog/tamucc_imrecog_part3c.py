@@ -31,6 +31,7 @@ from imports import *
 #-----------------------------------
 def get_training_dataset():
     """
+    get_training_dataset()
     This function will return a batched dataset for model training
     INPUTS: None
     OPTIONAL INPUTS: None
@@ -41,6 +42,7 @@ def get_training_dataset():
 
 def get_validation_dataset():
     """
+    get_validation_dataset()
     This function will return a batched dataset for model training
     INPUTS: None
     OPTIONAL INPUTS: None
@@ -49,9 +51,21 @@ def get_validation_dataset():
     """
     return get_batched_dataset(validation_filenames)
 
+def get_validation_eval_dataset():
+    """
+    get_validation_eval_dataset()
+    This function will return a batched dataset for model training
+    INPUTS: None
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: validation_filenames
+    OUTPUTS: batched data set object
+    """
+    return get_eval_dataset(validation_filenames)
+
 #-----------------------------------
 def get_aug_datasets():
     """
+    get_aug_datasets()
     This function will create train and validation sets based on a specific
     data augmentation pipeline consisting of random flipping, small rotations,
     translations and contrast adjustments
@@ -77,7 +91,7 @@ def get_aug_datasets():
 #-----------------------------------
 def get_all_labels(nb_images, VALIDATION_SPLIT, BATCH_SIZE):
     """
-    "get_all_labels"
+    get_all_labels(nb_images, VALIDATION_SPLIT, BATCH_SIZE)
     This function will obtain the classes of all samples in both train and
     validation sets. For computing class imbalance on the whole dataset
     INPUTS:
