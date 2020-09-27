@@ -86,14 +86,47 @@ train_hist_fig = os.getcwd()+os.sep+'results/secoora_retinanet_model1.png'
 model_dir = "retinanet/"
 weights_dir = "data/coco"
 
-# num_classes = 80
-#
-# # learning_rates = [2.5e-06, 0.000625, 0.00125, 0.0025, 0.00025, 2.5e-05]
-# # learning_rate_boundaries = [125, 250, 500, 240000, 360000]
-# # learning_rate_fn = tf.optimizers.schedules.PiecewiseConstantDecay(
-# #     boundaries=learning_rate_boundaries, values=learning_rates
-# # )
-#
+train_csv = 'data/secoora/train_labels.csv'
+sample_csv = 'data/secoora/sample.csv'
+
+
+## data viz
+
+sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
+print(len(sample_filenames))
+
+
+dat = pd.read_csv(sample_csv)
+print(len(dat))
+
+grouped = split(dat, 'filename')
+
+SAMPLE_NUM_PEOPLE = []
+counter = 0
+for group in grouped:
+    image = file2tensor('data/secoora/sample/'+group[0])
+
+    fig =plt.figure(figsize=(16,16))
+    plt.axis("off")
+    plt.imshow(image)
+    ax = plt.gca()
+
+    bboxs = []
+    labels = []
+    for index, row in group.object.iterrows():
+        labels.append(class_text_to_int(row['class']))
+        bboxs.append([row['xmin'], row['ymin'], row['xmax'], row['ymax']])
+        for box in bboxs:
+            x1, y1, x2, y2 = box
+            w, h = x2 - x1, y2 - y1
+            patch = plt.Rectangle([x1, y1], w, h, fill=False, edgecolor=[0, 1, 0], linewidth=1)
+            ax.add_patch(patch)
+            ax.text(x1, y1, 'person', bbox={"facecolor": [0, 1, 0], "alpha": 0.4}, clip_box=ax.clipbox, clip_on=True)
+    #plt.show()
+    plt.savefig('examples/secoora_examples'+str(counter)+'.png', dpi=200, bbox_inches='tight')
+    counter += 1
+    SAMPLE_NUM_PEOPLE.append(len(bboxs))
+
 
 
 ###############################################################
@@ -296,7 +329,6 @@ plt.close('all')
 K.clear_session()
 
 
-
 # """
 # ## Loading weights
 # """
@@ -337,98 +369,3 @@ SCORES2 = np.hstack(SCORES2)
 
 
 #any difference? plot number of detections and probability of thoem (histogram?)
-
-
-
-
-
-
-# plt.close('all')
-# val_dataset = tfds.load("coco/2017", split="validation", data_dir="data")
-# int2str = dataset_info.features["objects"]["label"].int2str
-#
-# for sample in val_dataset.take(4):
-#     image = tf.cast(sample["image"], dtype=tf.float32)
-#     input_image, ratio = prepare_image(image)
-#     detections = inference_model.predict(input_image)
-#     num_detections = detections.valid_detections[0]
-#     class_names = [
-#         int2str(int(x)) for x in detections.nmsed_classes[0][:num_detections]
-#     ]
-#     boxes = detections.nmsed_boxes[0][:num_detections] / ratio
-#     scores = detections.nmsed_scores[0][:num_detections]
-#
-#     visualize_detections(image, boxes, class_names, scores)
-#
-
-    # visualize_detections(
-    #     image,
-    #     detections.nmsed_boxes[0][:num_detections] / ratio,
-    #     class_names,
-    #     detections.nmsed_scores[0][:num_detections],
-    # )
-
-
-#
-# boxes = detections.nmsed_boxes[0][:num_detections] / ratio
-# scores = detections.nmsed_scores[0][:num_detections]
-# classes = ['','','']
-# image = np.array(image, dtype=np.uint8)
-# linewidth=1
-# color=[0, 0, 1]
-#
-#
-# plt.figure(figsize=(7, 7))
-# plt.axis("off")
-# plt.imshow(image)
-# ax = plt.gca()
-# for box, cls, score in zip(boxes.numpy(), classes, scores):
-#     print(box)
-#
-#     text = "{}: {:.2f}".format(cls, score)
-#     x1, y1, x2, y2 = box
-#     w, h = x2 - x1, y2 - y1
-#     patch = plt.Rectangle(
-#         [x1, y1], w, h, fill=False, edgecolor=color, linewidth=linewidth
-#     )
-#     ax.add_patch(patch)
-#     ax.text(
-#         x1,
-#         y1,
-#         text,
-#         bbox={"facecolor": color, "alpha": 0.4},
-#         clip_box=ax.clipbox,
-#         clip_on=True,
-#     )
-# plt.show()
-
-
-
-# evaluation
-# iou
-# viz - examples of classes (small tiles)
-
-
-    #
-    # image = np.array(image, dtype=np.uint8)
-    # plt.figure(figsize=(7, 7))
-    # plt.axis("off")
-    # plt.imshow(image)
-    # ax = plt.gca()
-    # for box, _cls, score in zip(boxes, classes, scores):
-    #     text = "{}: {:.2f}".format(_cls, score)
-    #     x1, y1, x2, y2 = box
-    #     w, h = x2 - x1, y2 - y1
-    #     patch = plt.Rectangle(
-    #         [x1, y1], w, h, fill=False, edgecolor=[1,0,0], linewidth=2
-    #     )
-    #     ax.add_patch(patch)
-    #     ax.text(
-    #         x1,
-    #         y1,
-    #         text,
-    #         bbox={"facecolor": [0,1,0], "alpha": 0.4},
-    #         clip_box=ax.clipbox,
-    #         clip_on=True,
-    #     )
-    # plt.show()

@@ -32,30 +32,30 @@ from imports import *
 ###############################################################
 root = 'data/secoora'+os.sep
 
-#
-# output_path = root+'secoora.tfrecord'
-#
-# image_dir = root+'images'
-#
-# csv_input = root+'labels.csv'
-#
-# write_tfrecords(output_path, image_dir, csv_input)
-
 
 output_path = root+'secoora-train.tfrecord'
 
-image_dir = root+'train'
+image_dir = root+'train_images'
 
-csv_input = root+'train.csv'
+csv_input = root+'train_labels.csv'
 
-write_tfrecords(output_path, image_dir, csv_input)
+# write_tfrecords(output_path, image_dir, csv_input)
+
+
+writer = tf.io.TFRecordWriter(output_path)
+
+path = os.path.join(os.getcwd(),image_dir)
+
+examples = pd.read_csv(csv_input)
+print(len(examples))
+grouped = split(examples, 'filename')
 
 
 ##================
 output_path = root+'secoora-validation.tfrecord'
 
-image_dir = root+'val'
+image_dir = root+'val_images'
 
-csv_input = root+'val.csv'
+csv_input = root+'test_validation_labels.csv'
 
 write_tfrecords(output_path, image_dir, csv_input)

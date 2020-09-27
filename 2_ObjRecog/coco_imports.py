@@ -32,7 +32,7 @@
 ims_per_shard = 200
 BATCH_SIZE = 1 #>2 =OOM on coco on 11gb gpu
 
-num_classes = 1 #80
+num_classes = 80
 
 start_lr = 1e-06
 min_lr = start_lr

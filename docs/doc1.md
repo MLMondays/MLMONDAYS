@@ -32,13 +32,70 @@ To gain more familiarity with machine learning and deep learning concepts and te
 
 *A) Live session*: we'll work through jupyter notebooks containing workflows for image recognition (whole image classification). We'll be trying to answer the question, `How much of the Texas coastline is developed?`. To answer this question, we will train a deep learning model to classify aerial (oblique) images of the Texas coast, categorized into several natural and non-natural landuse/cover classes. See the [data page](doc2#how-much-of-the-texas-coastline-is-developed) for more information on the dataset.
 
+#### Data Visualization
+
+We're going to spend some time visualizing data, to introduce some techniques to do so that might be helpful in designing your own class labels for your own datasets. This is a practical class!
+
+The visualizations will include mean images per class, per-channel, per-class histograms of image values, and dimensionality reduction techniques that might help both visualize and inform categorization of imagery. We'll see that the class boundaries are not at all distinct for the TAMUCC dataset - class boundaries are not distinct in terms of easily extractable image features. This exercise should convince you of the need for a more powerful supervised model
+
+Finally, we'll see how the class boundaries in the NWPU dataset are better visualized using an unsupervised dimensionality reduction approach
+
+#### Image recognition model training workflow
+
+In this lesson, we will train a neural network 'end to end' in an extremely discriminative approach that explicitly maps the classes to the image features, and optimized to extract the features that explicitly predict the class. The network works by linking an image feature extractor to a classifying head, such that feature extraction is limited to only those that help predict the class. The feature extraction therefore results in classification directly.
+
+For datasets where classes are obviously distinct, this is an extremely successful approach. We will see this with the NWPU dataset. However, for the TAMUCC dataset, where there is a lot more variability within classes and a lot less variability within classes, we will see how successful this approach is.
+
+
+1. Set up a data workflow to feed the model as it trains
+  * use batches fed optimally to the GPU from TFRecord files
+  * use data augmentation as a regularization strategy
+  * split into train (40% of the data) and validation portions (60%)
+
+2. Train it
+  * use transfer learning to train a classifier
+  * use a learning rate scheduler to pass variable learning rates to the model as it trains
+  * use 'early stopping' to base cessation of training on observed plateauing of validation loss
+  * use a checkpoint to monitor validation loss and save the best model weights when the validation loss improves
+  * use class weightings to lessen effects of class imbalance
+
+3. Evaluate it
+  * study the model training history - the loss and accuracy curves of train and validation sets
+  * evaluate the performance of the trained model on the validation set
+  * plot a 'confusion matrix' of correspondences between actual and estimate class labels
+  * read some sample images from file, and use the model for prediction
+
+4. Look at results from a  similar workflow on different class subsets
+
+
 *B) Optional class assignment*: an additional dataset will be provided that you can work on using the same models introduced in the class. The [NWPU-RESISC45](http://www.escience.cn/people/JunweiHan/NWPU-RESISC45.html) is a publicly available benchmark for REmote Sensing Image Scene Classification (RESISC), created by Northwestern Polytechnical University (NWPU). This dataset contains 31,500 images, covering 45 scene classes with 700 images in each class. Participants will also be encouraged to adapt what they learned in the class to their own image recognition problems using their own data.
+
 
 ## Week 2: Supervised Image Object Detection
 
 *A) Live session*: We'll work through jupyter notebooks containing workflows for image object detection (pixelwise classification). We'll be trying to answer the question, `How do people use beaches?`. To answer this question, we will train a deep learning model to detect and locate people in webcam (static, oblique) images of a beach in Florida. See the [data page](doc2#how-do-people-use-beaches) for more information.
 
+#### RetinaNet
+We are going to build a model called RetinaNet, to detect people in images of often-crowded beaches. RetinaNet is a popular single-stage object detector, which is accurate and runs fast. It uses a feature pyramid network to efficiently detect objects at multiple scales and uses a new Focal loss function, to alleviate the problem of the extreme foreground-background class imbalance.
+
+* [Retina paper](https://arxiv.org/abs/1708.02002)
+* [Feature pyramid paper](https://arxiv.org/abs/1612.03144)
+
+#### Fine-tune with COCO2017 subset
+First, we'll initialize the model with COCO2017 weights for a model trained on the COCO2017 [data set](https://cocodataset.org/#overview) consisting of around 118k images. The 80 classes include 'person', which is also what we have labeled the SECOORA imagery. The other 79 classes include various types of vehicles, animals, sports, kitchen items, food items, personal accessories, furniture, etc. In other words, objects generally at close scale. In the imagery of beaches, or in imagery of natural environments, the objects of interest may not be so close-up. So, one of the attractive features of RetinaNet is the image pyramiding that detects object at 5 different scales. This implementation is based heavily on code [here](https://keras.io/examples/vision/retinanet/). When we ran `download_data.py` earlier on, we downloaded the weights and a subset of the COCO imagery [here](https://github.com/srihari-humbarwadi/datasets/releases)
+
+Next, we'll fine-tune it on the COCO2017 subset of 500 images, to illustrate the process of fine-tuning a model on similar dataset. We'll adopt a similar workflow to that in Part 1, where we used a learning rate scheduler, early stopping, and model checkpoints
+
+#### Used the model to predict unseen imagery
+Finally, I'll demonstrate the process of how you would use the trained/fined tuned model on sample imagery (jpeg images in a local folder)
+
+#### Train a model from scratch
+Next we'll show how to train a model from scratch - this takes too much time, so we'll download the weights from this exercise, load them into the model, and finally use for prediction
+
+In the end, we'll see our model trained from scratch is an excellent way to count people on beaches
+
 *B) Optional class assignment*: participants will be encouraged to adapt what they learned in the class to their own object recognition problems using their own data.
+
 
 ## Week 3: Supervised Image Segmentation
 
@@ -51,53 +108,3 @@ To gain more familiarity with machine learning and deep learning concepts and te
 *A) Live session*: We'll work through jupyter notebooks containing workflows for more advanced and cutting edge *semi-supervised* methods for image recognition (whole image classification). We'll revisit the question posed in week 1, `How much of the Texas coastline is developed?`. See the [data page](doc2#how-much-of-the-texas-coastline-is-developed) for more information on the dataset. To answer this question, we will train a deep learning model to classify aerial (oblique) images of the Texas coast, categorized into several natural and non-natural landuse/cover classes. This time, however, we will use a different form of model that quantifies not only what class an image is in, but also a metric reporting close that is to the other classes. Training will utilize `soft` rather than `hard` labeling - a concept explained in the class - which is a potential strategy for dealing with small training datasets.
 
 *B) Optional class assignment*: participants will be encouraged to adapt what they learned in the class to their own semi-supervised image recognition problems using their own data.
-
-
-## General lesson structure
-
-We will keep to a similar lesson format each week. It incorporates a generic workflow that I have researched that fits many use-cases, starting with a simple model, and building complexity as needed. Not all problems will need every step, but each step will be introduced in case you need to employ and adapt the workflow to your own needs/datasets. The generic lesson outline is below:
-
-*1) Introduction*
-
-Brief introduction to the topic; the types of problems it is designed to solve; the types of data that are suitable; and a brief tour of where this technique fits in the general workflow for the course, and the general machine learning landscape.
-
-*2) Datasets*
-
-Each week, we will have more than one dataset to play with. The purpose is primarily to show you subtly different workflows dictated by the specifics of each dataset (dealing with variety in file naming, folder names, labels, splits, image sizes, etc). It also gives you more opportunity to learn in your own time (outside and beyond the class). Each dataset will be described, and you will be pointed to workflows for each dataset - blog posts, code, files, etc.
-
-*3) Visualization of Primary Dataset*
-
-Due to time constraints, we will demonstrate each topic each week with only one - primary - dataset. This section will show you ways to visualize the data, from simple plots, to identifying outliers, removing corrupt files, and other utilities
-
-*4) Train a simplified model, as demonstration*
-
-We will always start with a relatively simple model. This would be conceptually similar to a larger, more powerful model that we would subsequently employ. It should be - at least by the end of the course - intuitive how this model is put together. It would typically take a relatively short time to train. It is used to demonstrate a general workflow that you would adapt to larger, more complicated models.
-
-*5) Train a more complex model, using transfer learning*
-
-The deep neural models we will use will of course vary, but in general they consist of large image 'feature extractors' (explanation forthcoming) and a classifying layer. We'll demonstrate a more complex workflow, utilizing larger models and weights learned on different data sets. This will demonstrate the principle of `transfer learning`, which is inheriting model weights learned from the same model framework on a different image dataset, then adapting that model to your dataset by leaving the feature extractor alone, and building on top another set of model layers ending in a new classifying layer adapted to your data/classes.
-
-*6) Train a more complex model, either from scratch or using fine-tuning*
-
-This part of the workflow won't always be necessary to achieve a certain desired level of model accuracy. But would certainly be helpful for particularly difficult tasks. This version of the model does not employ transfer learning - instead it is either trained from scratch (all model weights initialized with random numbers and learned from scratch) or fine-tuned, which is using transfer learning but allowing the weights in the feature extractor to continue to modify based on further training of the model.
-
-*7) Lecture*
-
-Deep learning models can take a long time to train, so an efficient use of our time while this occurs is a traditional lecture slideshow format where we can go over some of the theoretical details, some of the broader statistical and computer science themes we are utilizing, and some words on datasets, and data processing pipelines
-
-*8) Model evaluation*
-
-When the model is trained, we will evaluate it in a variety of ways using unseen test data
-
-*9) Model optimization*
-
-You may never be 'done' training and optimizing your model - there are so many things to tweak! The standard list includes, in order of usual importance:
-
-* learning rate, and learning rate schedulers
-* other model hyperparameters (such as dropout rate, and batch size)
-* model layers (such as residual connections and batch normalization)
-* data augmentation (we'll talk about what this means, but essentially it is a way to train with more data generated from your existing data, *augmenting* your existing dataset)
-
-*10) Train an optimized model, with cross-validation*
-
-When you are finally happy with your model, the final training procedure should ideally use cross-validation to better understand its sensitivity to varying inputs (random order of training and validation subsets). The various models can also be used as ensembles. We'll briefly show how to ensemble any model.

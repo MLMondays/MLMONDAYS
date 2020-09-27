@@ -2,8 +2,7 @@
   "docs": {
     "ML Mondays": ["doc1"],
     "Data": ["doc2"],
-    "Image Recognition": ["doc3"],
-    "Object Recognition": ["doc4"],
-    "Image Segmentation": ["doc5"]
+    "Models and Workflows": ["doc3"],
+    "API": ["doc4"]
   }
 }

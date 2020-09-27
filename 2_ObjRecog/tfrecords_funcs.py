@@ -1,5 +1,6 @@
 
 from coco_imports import *
+# from secoora_imports import *
 
 #see mlmondays blog post:
 import os
@@ -196,6 +197,11 @@ def get_test_secoora_dataset(val_filenames):
         'objects/xmax': tf.io.FixedLenSequenceFeature([], tf.float32,allow_missing=True),
         'objects/ymax': tf.io.FixedLenSequenceFeature([], tf.float32,allow_missing=True),
         'objects/label': tf.io.FixedLenSequenceFeature([], tf.int64,allow_missing=True),
+        # 'objects/xmin': tf.io.VarLenFeature(tf.float32),
+        # 'objects/ymin': tf.io.VarLenFeature(tf.float32),
+        # 'objects/xmax': tf.io.VarLenFeature(tf.float32),
+        # 'objects/ymax': tf.io.VarLenFeature(tf.float32),
+        # 'objects/label': tf.io.VarLenFeature(tf.int64),
     }
 
     def _parse_function(example_proto):
@@ -205,7 +211,7 @@ def get_test_secoora_dataset(val_filenames):
     dataset = tf.data.TFRecordDataset(val_filenames)
     dataset = dataset.map(_parse_function)
     return dataset
-    
+
 #----------------------------------------------
 def prepare_secoora_datasets_for_training(data_path, train_filenames, val_filenames):
     """
@@ -231,6 +237,7 @@ def prepare_secoora_datasets_for_training(data_path, train_filenames, val_filena
         'objects/ymax': tf.io.FixedLenSequenceFeature([], tf.float32,allow_missing=True),
         'objects/label': tf.io.FixedLenSequenceFeature([], tf.int64,allow_missing=True),
     }
+
 
     def _parse_function(example_proto):
       # Parse the input `tf.train.Example` proto using the dictionary above.

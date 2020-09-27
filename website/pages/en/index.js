@@ -66,7 +66,8 @@ class HomeSplash extends React.Component {
           <PromoSection>
             <Button href={docUrl('doc1.html')}>Docs</Button>
             <Button href={docUrl('doc2.html')}>Data</Button>
-            <Button href={docUrl('doc3.html')}>Help</Button>
+            <Button href={docUrl('doc3.html')}>Models</Button>
+            <Button href={docUrl('doc4.html')}>API</Button>
             <Button href={"https://github.com/dbuscombe-usgs/DL-CDI2020"}>Github Repository</Button>
 
           </PromoSection>
@@ -281,19 +282,6 @@ class Index extends React.Component {
       </Block>
     );
 
-    const Growth = () => (
-      <Block background="dark" layout="fourColumn">
-        {[
-          {
-            content: ' ',
-            image: `${baseUrl}img/MLgrowth.png`,
-            imageAlign: 'bottom',
-            title: ' ',
-          },
-        ]}
-      </Block>
-    );
-
 
     const Features = () => (
       <Block background="light" layout="fourColumn">
@@ -460,7 +448,6 @@ class Index extends React.Component {
           <Summary />
           <Is />
           <Not />
-          <Growth />
           <HomeSplash2 siteConfig={siteConfig} language={language} />
           <Disclaimer />
         </div>
