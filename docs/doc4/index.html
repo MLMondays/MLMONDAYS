@@ -108,6 +108,7 @@
 <h3><a class="anchor" aria-hidden="true" id="model_funcspy"></a><a href="#model_funcspy" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>model_funcs.py</h3>
 <h4><a class="anchor" aria-hidden="true" id="model-creation"></a><a href="#model-creation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model creation</h4>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="transfer_learning_model_vgg"></a><a href="#transfer_learning_model_vgg" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>transfer_learning_model_vgg</h5>
 <pre><code class="hljs css language-python">transfer_learning_model_vgg(num_classes, input_shape, dropout_rate=<span class="hljs-number">0.5</span>)
 </code></pre>
 <p>This function creates an implementation of a convolutional deep learning model for estimating
@@ -116,17 +117,18 @@ a discrete category based on vgg, trained using transfer learning
 <ul>
 <li>INPUTS:
 <ul>
-<li>num_classes = number of classes (output nodes on classification layer)</li>
-<li>input_shape = size of input layer (i.e. image tensor)</li>
+<li><code>num_classes</code> = number of classes (output nodes on classification layer)</li>
+<li><code>input_shape</code> = size of input layer (i.e. image tensor)</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>dropout_rate = proportion of neurons to randomly set to zero, after the pooling layer</li>
+<li><code>dropout_rate</code> = proportion of neurons to randomly set to zero, after the pooling layer</li>
 </ul></li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: keras model instance</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="mobilenet_model"></a><a href="#mobilenet_model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>mobilenet_model</h5>
 <pre><code class="hljs css language-python">mobilenet_model(num_classes, input_shape, dropout_rate=<span class="hljs-number">0.5</span>)
 </code></pre>
 <p>This function creates an implementation of a convolutional deep learning model for estimating
@@ -134,17 +136,18 @@ a discrete category based on mobilenet, trained from scratch</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>num_classes = number of classes (output nodes on classification layer)</li>
-<li>input_shape = size of input layer (i.e. image tensor)</li>
+<li><code>num_classes</code> = number of classes (output nodes on classification layer)</li>
+<li><code>input_shape</code> = size of input layer (i.e. image tensor)</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>dropout_rate = proportion of neurons to randomly set to zero, after the pooling layer</li>
+<li><code>dropout_rate</code> = proportion of neurons to randomly set to zero, after the pooling layer</li>
 </ul></li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: keras model instance</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="transfer_learning_mobilenet_model"></a><a href="#transfer_learning_mobilenet_model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>transfer_learning_mobilenet_model</h5>
 <pre><code class="hljs css language-python">transfer_learning_mobilenet_model(num_classes, input_shape, dropout_rate=<span class="hljs-number">0.5</span>)
 </code></pre>
 <p>This function creates an implementation of a convolutional deep learning model for estimating
@@ -153,17 +156,18 @@ a discrete category based on mobilenet v2, trained using transfer learning
 <ul>
 <li>INPUTS:
 <ul>
-<li>num_classes = number of classes (output nodes on classification layer)</li>
-<li>input_shape = size of input layer (i.e. image tensor)</li>
+<li><code>num_classes</code> = number of classes (output nodes on classification layer)</li>
+<li><code>input_shape</code> = size of input layer (i.e. image tensor)</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>dropout_rate = proportion of neurons to randomly set to zero, after the pooling layer</li>
+<li><code>dropout_rate</code> = proportion of neurons to randomly set to zero, after the pooling layer</li>
 </ul></li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: keras model instance</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="transfer_learning_xception_model"></a><a href="#transfer_learning_xception_model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>transfer_learning_xception_model</h5>
 <pre><code class="hljs css language-python">transfer_learning_xception_model(num_classes, input_shape, dropout_rate=<span class="hljs-number">0.25</span>)
 </code></pre>
 <p>This function creates an implementation of a convolutional deep learning model for estimating
@@ -172,17 +176,18 @@ a discrete category based on xception, trained using transfer learning
 <ul>
 <li>INPUTS:
 <ul>
-<li>num_classes = number of classes (output nodes on classification layer)</li>
-<li>input_shape = size of input layer (i.e. image tensor)</li>
+<li><code>num_classes</code> = number of classes (output nodes on classification layer)</li>
+<li><code>input_shape</code> = size of input layer (i.e. image tensor)</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>dropout_rate = proportion of neurons to randomly set to zero, after the pooling layer</li>
+<li><code>dropout_rate</code> = proportion of neurons to randomly set to zero, after the pooling layer</li>
 </ul></li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: keras model instance</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="xception_model"></a><a href="#xception_model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>xception_model</h5>
 <pre><code class="hljs css language-python">xception_model(num_classes, input_shape, dropout_rate=<span class="hljs-number">0.25</span>)
 </code></pre>
 <p>This function creates an implementation of a convolutional deep learning model for estimating
@@ -190,36 +195,38 @@ a discrete category based on xception, trained from scratch</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>num_classes = number of classes (output nodes on classification layer)</li>
-<li>input_shape = size of input layer (i.e. image tensor)</li>
+<li><code>num_classes</code> = number of classes (output nodes on classification layer)</li>
+<li><code>input_shape</code> = size of input layer (i.e. image tensor)</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>dropout_rate = proportion of neurons to randomly set to zero, after the pooling layer</li>
+<li><code>dropout_rate</code> = proportion of neurons to randomly set to zero, after the pooling layer</li>
 </ul></li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: keras model instance</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="conv_block"></a><a href="#conv_block" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>conv_block</h5>
 <pre><code class="hljs css language-python">conv_block(inp, filters=<span class="hljs-number">32</span>, bn=<span class="hljs-literal">True</span>, pool=<span class="hljs-literal">True</span>)
 </code></pre>
 <p>This function generates a convolutional block</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>inp = input layer</li>
+<li><code>inp</code> = input layer</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>filters = number of convolutional filters to use</li>
-<li>bn=False, use batch normalization in each convolutional layer</li>
-<li>pool=True, use pooling in each convolutional layer</li>
-<li>shallow=True, if False, a larger model with more convolution layers is used</li>
+<li><code>filters</code> = number of convolutional filters to use</li>
+<li><code>bn</code>=False, use batch normalization in each convolutional layer</li>
+<li><code>pool</code>=True, use pooling in each convolutional layer</li>
+<li><code>shallow</code>=True, if False, a larger model with more convolution layers is used</li>
 </ul></li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: keras model layer object</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="make_cat_model"></a><a href="#make_cat_model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>make_cat_model</h5>
 <pre><code class="hljs css language-python">make_cat_model(num_classes, dropout, denseunits, base_filters, bn=<span class="hljs-literal">False</span>, pool=<span class="hljs-literal">True</span>, shallow=<span class="hljs-literal">True</span>)
 </code></pre>
 <p>This function creates an implementation of a convolutional deep learning model for estimating
@@ -227,34 +234,36 @@ a discrete category</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>num_classes = number of classes (output nodes on classification layer)</li>
-<li>dropout = proportion of neurons to randomly set to zero, after the pooling layer</li>
-<li>denseunits = number of neurons in the classifying layer</li>
-<li>base_filters = number of convolutional filters to use in the first layer</li>
+<li><code>num_classes</code> = number of classes (output nodes on classification layer)</li>
+<li><code>dropout</code> = proportion of neurons to randomly set to zero, after the pooling layer</li>
+<li><code>denseunits</code> = number of neurons in the classifying layer</li>
+<li><code>base_filters</code> = number of convolutional filters to use in the first layer</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>bn=False, use batch normalization in each convolutional layer</li>
-<li>pool=True, use pooling in each convolutional layer</li>
-<li>shallow=True, if False, a larger model with more convolution layers is used</li>
+<li><code>bn</code>=False, use batch normalization in each convolutional layer</li>
+<li><code>pool</code>=True, use pooling in each convolutional layer</li>
+<li><code>shallow</code>=True, if False, a larger model with more convolution layers is used</li>
 </ul></li>
 <li>GLOBAL INPUTS: TARGET_SIZE</li>
 <li>OUTPUTS: keras model instance</li>
 </ul>
 <h4><a class="anchor" aria-hidden="true" id="model-training"></a><a href="#model-training" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model training</h4>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="lrfn"></a><a href="#lrfn" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>lrfn</h5>
 <pre><code class="hljs css language-python">lrfn(epoch)
 </code></pre>
 <p>This function creates a custom piecewise linear-exponential learning rate function for a custom learning rate scheduler. It is linear to a max, then exponentially decays</p>
 <ul>
-<li>INPUTS: current epoch number</li>
+<li>INPUTS: current <code>epoch</code> number</li>
 <li>OPTIONAL INPUTS: None</li>
-<li>GLOBAL INPUTS: start_lr, min_lr, max_lr, rampup_epochs, sustain_epochs, exp_decay</li>
+<li>GLOBAL INPUTS:<code>start_lr</code>, <code>min_lr</code>, <code>max_lr</code>, <code>rampup_epochs</code>, <code>sustain_epochs</code>, <code>exp_decay</code></li>
 <li>OUTPUTS:  the function lr with all arguments passed</li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" id="tfrecords_funcspy"></a><a href="#tfrecords_funcspy" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>tfrecords_funcs.py</h3>
 <h4><a class="anchor" aria-hidden="true" id="tf-dataset-creation"></a><a href="#tf-dataset-creation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TF-dataset creation</h4>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="get_batched_dataset"></a><a href="#get_batched_dataset" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>get_batched_dataset</h5>
 <pre><code class="hljs css language-python">get_batched_dataset(filenames)
 </code></pre>
 <p>This function defines a workflow for the model to read data from
@@ -264,13 +273,14 @@ and also formats the imagery properly for model training
 <ul>
 <li>INPUTS:
 <ul>
-<li>filenames [list]</li>
+<li><code>filenames</code> [list]</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: BATCH_SIZE, AUTO</li>
-<li>OUTPUTS: tf.data.Dataset object</li>
+<li>OUTPUTS: <code>tf.data.Dataset</code> object</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="get_eval_dataset"></a><a href="#get_eval_dataset" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>get_eval_dataset</h5>
 <pre><code class="hljs css language-python">get_eval_dataset(filenames)
 </code></pre>
 <p>This function defines a workflow for the model to read data from
@@ -280,50 +290,53 @@ and also formats the imagery properly for model training
 <ul>
 <li>INPUTS:
 <ul>
-<li>filenames [list]</li>
+<li><code>filenames</code> [list]</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: BATCH_SIZE, AUTO</li>
-<li>OUTPUTS: tf.data.Dataset object</li>
+<li>OUTPUTS: <code>tf.data.Dataset</code> object</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="resize_and_crop_image"></a><a href="#resize_and_crop_image" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>resize_and_crop_image</h5>
 <pre><code class="hljs css language-python">resize_and_crop_image(image, label)
 </code></pre>
 <p>This function crops to square and resizes an image. The label passes through unmodified</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>image [tensor array]</li>
-<li>label [int]</li>
+<li><code>image</code> [tensor array]</li>
+<li><code>label</code> [int]</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: TARGET_SIZE</li>
 <li>OUTPUTS:
 <ul>
-<li>image [tensor array]</li>
-<li>label [int]</li>
+<li><code>image</code> [tensor array]</li>
+<li><code>label</code> [int]</li>
 </ul></li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="recompress_image"></a><a href="#recompress_image" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>recompress_image</h5>
 <pre><code class="hljs css language-python">recompress_image(image, label)
 </code></pre>
 <p>This function takes an image encoded as a byte string and recodes as an 8-bit jpeg. Label passes through unmodified</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>image [tensor array]</li>
-<li>label [int]</li>
+<li><code>image</code> [tensor array]</li>
+<li><code>label</code> [int]</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS:
 <ul>
-<li>image [tensor array]</li>
-<li>label [int]</li>
+<li><code>image</code> [tensor array]</li>
+<li><code>label</code> [int]</li>
 </ul></li>
 </ul>
 <h4><a class="anchor" aria-hidden="true" id="tfrecord-reading"></a><a href="#tfrecord-reading" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TFRecord reading</h4>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="file2tensor"></a><a href="#file2tensor" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>file2tensor</h5>
 <pre><code class="hljs css language-python">file2tensor(f, model=<span class="hljs-string">'mobilenet'</span>)
 </code></pre>
 <p>This function reads a jpeg image from file into a cropped and resized tensor,
@@ -332,36 +345,35 @@ for use in prediction with a trained mobilenet or vgg model
 <ul>
 <li>INPUTS:
 <ul>
-<li>f [string] file name of jpeg</li>
+<li><code>f</code> [string] file name of jpeg</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>model = {'mobilenet' | 'vgg'}</li>
+<li><code>model</code> = {'mobilenet' | 'vgg'}</li>
 </ul></li>
 <li>OUTPUTS:
 <ul>
-<li>image [tensor array]: unstandardized image</li>
-<li>im [tensor array]: standardized image</li>
+<li><code>image</code> [tensor array]: unstandardized image</li>
+<li><code>im</code> [tensor array]: standardized image</li>
 </ul></li>
 <li>GLOBAL INPUTS: TARGET_SIZE</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="read_classes_from_json"></a><a href="#read_classes_from_json" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>read_classes_from_json</h5>
 <pre><code class="hljs css language-python">read_classes_from_json(json_file)
 </code></pre>
 <p>This function reads the contents of a json file enumerating classes</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>json_file [string]: full path to the json file</li>
+<li><code>json_file</code> [string]: full path to the json file</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: None</li>
-<li>OUTPUTS:
-<ul>
-<li>CLASSES [list]: list of classesd as byte strings</li>
-</ul></li>
+<li>OUTPUTS: <code>CLASSES</code> [list]: list of classesd as byte strings</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="read_tfrecord_vgg"></a><a href="#read_tfrecord_vgg" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>read_tfrecord_vgg</h5>
 <pre><code class="hljs css language-python">read_tfrecord_vgg(example)
 </code></pre>
 <p>This function reads an example record from a tfrecord file
@@ -369,17 +381,18 @@ and parses into label and image ready for vgg model training</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>example: an tfrecord 'example' object, containing an image and label</li>
+<li><code>example</code>: an tfrecord 'example' object, containing an image and label</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: TARGET_SIZE</li>
 <li>OUTPUTS:
 <ul>
-<li>image [tensor]: resized and pre-processed for vgg</li>
-<li>class_label [tensor] 32-bit integer</li>
+<li><code>image</code> [tensor]: resized and pre-processed for vgg</li>
+<li><code>class_label</code> [tensor] 32-bit integer</li>
 </ul></li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="read_tfrecord_mv2"></a><a href="#read_tfrecord_mv2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>read_tfrecord_mv2</h5>
 <pre><code class="hljs css language-python">read_tfrecord_mv2(example)
 </code></pre>
 <p>This function reads an example record from a tfrecord file
@@ -387,93 +400,95 @@ and parses into label and image ready for mobilenet model training</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>example: an tfrecord 'example' object, containing an image and label</li>
+<li><code>example</code>: an tfrecord 'example' object, containing an image and label</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: TARGET_SIZE</li>
 <li>OUTPUTS:
 <ul>
-<li>image [tensor]: resized and pre-processed for mobilenetv2</li>
-<li>class_label [tensor] 32-bit integer</li>
+<li><code>image</code> [tensor]: resized and pre-processed for mobilenetv2</li>
+<li><code>class_label</code> [tensor] 32-bit integer</li>
 </ul></li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="read_tfrecord"></a><a href="#read_tfrecord" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>read_tfrecord</h5>
 <pre><code class="hljs css language-python">read_tfrecord(example)
 </code></pre>
 <p>This function reads an example from a TFrecord file into a single image and label</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>TFRecord example object</li>
+<li>TFRecord <code>example</code> object</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: TARGET_SIZE</li>
 <li>OUTPUTS:
 <ul>
-<li>image [tensor array]</li>
-<li>class_label [tensor int]</li>
+<li><code>image</code> [tensor array]</li>
+<li><code>class_label</code> [tensor int]</li>
 </ul></li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="read_image_and_label"></a><a href="#read_image_and_label" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>read_image_and_label</h5>
 <pre><code class="hljs css language-python">read_image_and_label(img_path)
 </code></pre>
 <p>This function reads a jpeg image from a provided filepath and extracts the label from the filename (assuming the class name is before &quot;IMG&quot; in the filename)</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>img_path [string]: filepath to a jpeg image</li>
+<li><code>img_path</code> [string]: filepath to a jpeg image</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS:
 <ul>
-<li>image [tensor array]</li>
-<li>class_label [tensor int]</li>
+<li><code>image</code> [tensor array]</li>
+<li><code>class_label</code> [tensor int]</li>
 </ul></li>
 </ul>
 <h4><a class="anchor" aria-hidden="true" id="tfrecord-creation"></a><a href="#tfrecord-creation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TFRecord creation</h4>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="get_dataset_for_tfrecords"></a><a href="#get_dataset_for_tfrecords" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>get_dataset_for_tfrecords</h5>
 <pre><code class="hljs css language-python">get_dataset_for_tfrecords(recoded_dir, shared_size)
 </code></pre>
 <p>This function reads a list of TFREcord shard files, decode the images and label resize and crop the image to TARGET_SIZE, and create batches</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>recoded_dir</li>
-<li>shared_size</li>
+<li><code>recoded_dir</code></li>
+<li><code>shared_size</code></li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: TARGET_SIZE</li>
-<li>OUTPUTS:
-<ul>
-<li>tf.data.Dataset object</li>
-</ul></li>
+<li>OUTPUTS: <code>tf.data.Dataset</code> object</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="write_records"></a><a href="#write_records" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>write_records</h5>
 <pre><code class="hljs css language-python">write_records(tamucc_dataset, tfrecord_dir, CLASSES)
 </code></pre>
 <p>This function writes a tf.data.Dataset object to TFRecord shards</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>tamucc_dataset [tf.data.Dataset]</li>
-<li>tfrecord_dir [string] : path to directory where files will be written</li>
-<li>CLASSES [list] of class string names</li>
+<li><code>tamucc_dataset</code> [tf.data.Dataset]</li>
+<li><code>tfrecord_dir</code> [string] : path to directory where files will be written</li>
+<li><code>CLASSES</code> [list] of class string names</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: None (files written to disk)</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="to_tfrecord"></a><a href="#to_tfrecord" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>to_tfrecord</h5>
 <pre><code class="hljs css language-python">to_tfrecord(img_bytes, label, CLASSES)
 </code></pre>
 <p>This function creates a TFRecord example from an image byte string and a label feature</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>img_bytes: an image bytestring</li>
-<li>label: label string of image</li>
-<li>CLASSES: list of string classes in the entire dataset</li>
+<li><code>img_bytes</code>: an image bytestring</li>
+<li><code>label</code>: label string of image</li>
+<li><code>CLASSES</code>: list of string classes in the entire dataset</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: None</li>
@@ -481,38 +496,41 @@ and parses into label and image ready for mobilenet model training</p>
 </ul>
 <h3><a class="anchor" aria-hidden="true" id="plot_funcspy"></a><a href="#plot_funcspy" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>plot_funcs.py</h3>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="plot_history"></a><a href="#plot_history" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>plot_history</h5>
 <pre><code class="hljs css language-python">plot_history(history, train_hist_fig)
 </code></pre>
 <p>This function plots the training history of a model</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>history [dict]: the output dictionary of the model.fit() process, i.e. history = model.fit(...)</li>
-<li>train_hist_fig [string]: the filename where the plot will be printed</li>
+<li><code>history</code> [dict]: the output dictionary of the model.fit() process, i.e. history = model.fit(...)</li>
+<li><code>train_hist_fig</code> [string]: the filename where the plot will be printed</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: None (figure printed to file)</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="get_label_pairs"></a><a href="#get_label_pairs" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>get_label_pairs</h5>
 <pre><code class="hljs css language-python">get_label_pairs(val_ds, model)
 </code></pre>
 <p>This function gets label observations and model estimates</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>val_ds: a batched data set object</li>
-<li>model: trained and compiled keras model instance</li>
+<li><code>val_ds</code>: a batched data set object</li>
+<li><code>model</code>: trained and compiled keras model instance</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS:
 <ul>
-<li>labs [ndarray]: 1d vector of numeric labels</li>
-<li>preds [ndarray]: 1d vector of correspodning model predicted numeric labels</li>
+<li><code>labs</code> [ndarray]: 1d vector of numeric labels</li>
+<li><code>preds</code> [ndarray]: 1d vector of correspodning model predicted numeric labels</li>
 </ul></li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="p_confmat"></a><a href="#p_confmat" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>p_confmat</h5>
 <pre><code class="hljs css language-python">p_confmat(labs, preds, cm_filename, CLASSES, thres = <span class="hljs-number">0.1</span>)
 </code></pre>
 <p>This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
@@ -521,19 +539,20 @@ saving out to the provided filename, cm_filename</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>labs [ndarray]: 1d vector of labels</li>
-<li>preds [ndarray]: 1d vector of model predicted labels</li>
-<li>cm_filename [string]: filename to write the figure to</li>
-<li>CLASSES [list] of strings: class names</li>
+<li><code>labs</code> [ndarray]: 1d vector of labels</li>
+<li><code>preds</code> [ndarray]: 1d vector of model predicted labels</li>
+<li><code>cm_filename</code> [string]: filename to write the figure to</li>
+<li><code>CLASSES</code> [list] of strings: class names</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>thres [float]: threshold controlling what values are displayed</li>
+<li><code>thres</code> [float]: threshold controlling what values are displayed</li>
 </ul></li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: None (figure printed to file)</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="make_sample_plot"></a><a href="#make_sample_plot" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>make_sample_plot</h5>
 <pre><code class="hljs css language-python">make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES))
 </code></pre>
 <p>This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
@@ -542,16 +561,17 @@ saving out to the provided filename, cm_filename</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>model: trained and compiled keras model</li>
-<li>sample_filenames: [list] of strings</li>
-<li>test_samples_fig [string]: filename to print figure to</li>
-<li>CLASSES [list] os trings: class names</li>
+<li><code>model</code>: trained and compiled keras model</li>
+<li><code>sample_filenames</code>: [list] of strings</li>
+<li><code>test_samples_fig</code> [string]: filename to print figure to</li>
+<li><code>CLASSES</code> [list] os trings: class names</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: None (matplotlib figure, printed to file)</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="compute_hist"></a><a href="#compute_hist" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>compute_hist</h5>
 <pre><code class="hljs css language-python">compute_hist(images)
 </code></pre>
 <p>Compute the per channel histogram for a batch
@@ -559,130 +579,746 @@ of images</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>images [ndarray]: batch of shape (N x W x H x 3)</li>
+<li><code>images</code> [ndarray]: batch of shape (N x W x H x 3)</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS:
 <ul>
-<li>hist_r [dict]: histogram frequencies {'hist'} and bins {'bins'} for red channel</li>
-<li>hist_g [dict]: histogram frequencies {'hist'} and bins {'bins'} for green channel</li>
-<li>hist_b [dict]: histogram frequencies {'hist'} and bins {'bins'} for blue channel</li>
+<li><code>hist_r</code> [dict]: histogram frequencies {'hist'} and bins {'bins'} for red channel</li>
+<li><code>hist_g</code> [dict]: histogram frequencies {'hist'} and bins {'bins'} for green channel</li>
+<li><code>hist_b</code> [dict]: histogram frequencies {'hist'} and bins {'bins'} for blue channel</li>
 </ul></li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="plot_distribution"></a><a href="#plot_distribution" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>plot_distribution</h5>
 <pre><code class="hljs css language-python">plot_distribution(images, labels, class_id, CLASSES)
 </code></pre>
 <p>Compute the per channel histogram for a batch of images</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>images [ndarray]: batch of shape (N x W x H x 3)</li>
-<li>labels [ndarray]: batch of shape (N x 1)</li>
-<li>class_id [int]: class integer to plot</li>
+<li><code>images</code> [ndarray]: batch of shape (N x W x H x 3)</li>
+<li><code>labels</code> [ndarray]: batch of shape (N x 1)</li>
+<li><code>class_id</code> [int]: class integer to plot</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: matplotlib figure</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="plot_one_class"></a><a href="#plot_one_class" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>plot_one_class</h5>
 <pre><code class="hljs css language-python">plot_one_class(inp_batch, sample_idx, label, batch_size, CLASSES, rows=<span class="hljs-number">8</span>, cols=<span class="hljs-number">8</span>, size=(<span class="hljs-number">20</span>,<span class="hljs-number">15</span>))
 </code></pre>
-<p>Plot &quot;batch_size&quot; images that belong to the class &quot;label&quot;</p>
+<p>Plot <code>batch_size</code> images that belong to the class <code>label</code></p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>inp_batch [ndarray]: batch of N images</li>
-<li>sample_idx [list]: indices of the N images</li>
-<li>label [string]: class string</li>
-<li>batch_size [int]: number of images to plot</li>
+<li><code>inp_batch</code> [ndarray]: batch of N images</li>
+<li><code>sample_idx</code> [list]: indices of the N images</li>
+<li><code>label</code> [string]: class string</li>
+<li><code>batch_size</code> [int]: number of images to plot</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>rows=8 [int]: number of rows</li>
-<li>cols=8 [int]: number of columns</li>
-<li>size=(20,15) [tuple]: size of matplotlib figure</li>
+<li><code>rows</code>=8 [int]: number of rows</li>
+<li><code>cols</code>=8 [int]: number of columns</li>
+<li><code>size</code>=(20,15) [tuple]: size of matplotlib figure</li>
 </ul></li>
 <li>GLOBAL INPUTS: None (matplotlib figure, printed to file)</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="compute_mean_image"></a><a href="#compute_mean_image" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>compute_mean_image</h5>
 <pre><code class="hljs css language-python">compute_mean_image(images, opt=<span class="hljs-string">"mean"</span>)
 </code></pre>
 <p>Compute and return mean image given a batch of images</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>images [ndarray]: batch of shape (N x W x H x 3)</li>
+<li><code>images</code> [ndarray]: batch of shape (N x W x H x 3)</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>opt=&quot;mean&quot; or &quot;median&quot;</li>
+<li><code>opt</code>=&quot;mean&quot; or &quot;median&quot;</li>
 </ul></li>
 <li>GLOBAL INPUTS:</li>
 <li>OUTPUTS: 2d mean image [ndarray]</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="plot_mean_images"></a><a href="#plot_mean_images" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>plot_mean_images</h5>
 <pre><code class="hljs css language-python">plot_mean_images(images, labels, CLASSES, rows=<span class="hljs-number">3</span>, cols = <span class="hljs-number">2</span>)
 </code></pre>
 <p>Plot the mean image of a set of images</p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>images [ndarray]: batch of shape (N x W x H x 3)</li>
-<li>labels [ndarray]: batch of shape (N x 1)</li>
+<li><code>images</code> [ndarray]: batch of shape (N x W x H x 3)</li>
+<li><code>labels</code> [ndarray]: batch of shape (N x 1)</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>rows [int]: number of rows</li>
-<li>cols [int]: number of columns</li>
+<li><code>rows</code> [int]: number of rows</li>
+<li><code>cols</code> [int]: number of columns</li>
 </ul></li>
 <li>GLOBAL INPUTS: CLASSES</li>
 <li>OUTPUTS: matplotlib figure</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="plot_tsne"></a><a href="#plot_tsne" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>plot_tsne</h5>
 <pre><code class="hljs css language-python">plot_tsne(tsne_result, label_ids, CLASSES)
 </code></pre>
 <p>Plot TSNE loadings and colour code by class. <a href="https://www.kaggle.com/gaborvecsei/plants-t-sne">Source</a></p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>tsne_result [ndarray]: N x 2 data of loadings on two axes</li>
-<li>label_ids [int]: N class labels</li>
+<li><code>tsne_result</code> [ndarray]: N x 2 data of loadings on two axes</li>
+<li><code>label_ids</code> [int]: N class labels</li>
 </ul></li>
 <li>OPTIONAL INPUTS: None</li>
 <li>GLOBAL INPUTS: CLASSES</li>
 <li>OUTPUTS: matplotlib figure, matplotlib figure axes object</li>
 </ul>
 <hr>
+<h5><a class="anchor" aria-hidden="true" id="visualize_scatter_with_images"></a><a href="#visualize_scatter_with_images" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>visualize_scatter_with_images</h5>
 <pre><code class="hljs css language-python">visualize_scatter_with_images(X_2d_data, labels, images, figsize=(<span class="hljs-number">15</span>,<span class="hljs-number">15</span>), image_zoom=<span class="hljs-number">1</span>,xlim = (<span class="hljs-number">-3</span>,<span class="hljs-number">3</span>), ylim=(<span class="hljs-number">-3</span>,<span class="hljs-number">3</span>))
 </code></pre>
 <p>Plot TSNE loadings and colour code by class. <a href="https://www.kaggle.com/gaborvecsei/plants-t-sne">Source</a></p>
 <ul>
 <li>INPUTS:
 <ul>
-<li>X_2d_data [ndarray]: N x 2 data of loadings on two axes</li>
-<li>images [ndarray] : N batch of images to plot</li>
+<li><code>X_2d_data</code> [ndarray]: N x 2 data of loadings on two axes</li>
+<li><code>images</code> [ndarray] : N batch of images to plot</li>
 </ul></li>
 <li>OPTIONAL INPUTS:
 <ul>
-<li>figsize=(15,15)</li>
-<li>image_zoom=1 [float]: control the scaling of the imagery (make smaller for smaller thumbnails)</li>
-<li>xlim = (-3,3) [tuple]: set x axes limits</li>
-<li>ylim = (-3,3) [tuple]: set y axes limits]</li>
+<li><code>figsize</code>=(15,15)</li>
+<li><code>image_zoom</code>=1 [float]: control the scaling of the imagery (make smaller for smaller thumbnails)</li>
+<li><code>xlim</code> = (-3,3) [tuple]: set x axes limits</li>
+<li><code>ylim</code> = (-3,3) [tuple]: set y axes limits]</li>
 </ul></li>
 <li>GLOBAL INPUTS: None</li>
 <li>OUTPUTS: matplotlib figure</li>
 </ul>
 <h2><a class="anchor" aria-hidden="true" id="2_objrecog"></a><a href="#2_objrecog" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2_ObjRecog</h2>
 <h3><a class="anchor" aria-hidden="true" id="general-workflow-using-your-own-data-1"></a><a href="#general-workflow-using-your-own-data-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>General workflow using your own data</h3>
+<ol>
+<li>Create a TFREcord dataset from your data, organised as follows:</li>
+</ol>
+<ul>
+<li>copy training images into a folder called <code>train</code></li>
+<li>copy validation images into a folder called <code>validation</code></li>
+<li>create a text, csv file that lists each of the objects in each image, with the following columns: filename, xmin, ymin, xmax (float y coord pixel), ymax (float y coord pixel), class (string)</li>
+<li>modify the provided workflow (<code>secoora_make_tfrecords.py</code>) for your dataset, to create your train and validation tfrecord shards</li>
+</ul>
+<pre><code class="hljs">  filename, width,  height, class,  xmin,   ymin,   xmax,   ymax
+  staugustinecam<span class="hljs-number">.2019</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span>_1400.mp4_frames_25.jpg, <span class="hljs-number">1280</span>,   <span class="hljs-number">720</span>,    person, <span class="hljs-number">1088</span>,   <span class="hljs-number">581</span>,    <span class="hljs-number">1129</span>,   <span class="hljs-number">631</span>
+  staugustinecam<span class="hljs-number">.2019</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span>_1400.mp4_frames_25.jpg, <span class="hljs-number">1280</span>,   <span class="hljs-number">720</span>,    person, <span class="hljs-number">1125</span>,   <span class="hljs-number">524</span>,    <span class="hljs-number">1183</span>,   <span class="hljs-number">573</span>
+  staugustinecam<span class="hljs-number">.2019</span><span class="hljs-number">-04</span><span class="hljs-number">-04</span>_0700.mp4_frames_51.jpg, <span class="hljs-number">1280</span>,   <span class="hljs-number">720</span>,    person, <span class="hljs-number">158</span>,    <span class="hljs-number">198</span>,    <span class="hljs-number">178</span>,    <span class="hljs-number">244</span>
+  staugustinecam<span class="hljs-number">.2019</span><span class="hljs-number">-04</span><span class="hljs-number">-04</span>_0700.mp4_frames_51.jpg, <span class="hljs-number">1280</span>,   <span class="hljs-number">720</span>,    person, <span class="hljs-number">131</span>,    <span class="hljs-number">197</span>,    <span class="hljs-number">162</span>,    <span class="hljs-number">244</span>
+  staugustinecam<span class="hljs-number">.2019</span><span class="hljs-number">-04</span><span class="hljs-number">-04</span>_0700.mp4_frames_51.jpg, <span class="hljs-number">1280</span>,   <span class="hljs-number">720</span>,    person, <span class="hljs-number">40</span>, <span class="hljs-number">504</span>,    <span class="hljs-number">87</span>, <span class="hljs-number">581</span>
+  staugustinecam<span class="hljs-number">.2019</span><span class="hljs-number">-04</span><span class="hljs-number">-04</span>_0700.mp4_frames_51.jpg, <span class="hljs-number">1280</span>,   <span class="hljs-number">720</span>,    person, <span class="hljs-number">0</span>,  <span class="hljs-number">492</span>,    <span class="hljs-number">15</span>, <span class="hljs-number">572</span>
+  staugustinecam<span class="hljs-number">.2019</span><span class="hljs-number">-01</span><span class="hljs-number">-01</span>_1400.mp4_frames_44.jpg, <span class="hljs-number">1280</span>,   <span class="hljs-number">720</span>,    person, <span class="hljs-number">1086</span>,   <span class="hljs-number">537</span>,    <span class="hljs-number">1130</span>,   <span class="hljs-number">615</span>
+  staugustinecam<span class="hljs-number">.2019</span><span class="hljs-number">-01</span><span class="hljs-number">-01</span>_1400.mp4_frames_44.jpg, <span class="hljs-number">1280</span>,   <span class="hljs-number">720</span>,    person, <span class="hljs-number">1064</span>,   <span class="hljs-number">581</span>,    <span class="hljs-number">1134</span>,   <span class="hljs-number">624</span>
+  staugustinecam<span class="hljs-number">.2019</span><span class="hljs-number">-01</span><span class="hljs-number">-01</span>_1400.mp4_frames_44.jpg, <span class="hljs-number">1280</span>,   <span class="hljs-number">720</span>,    person, <span class="hljs-number">1136</span>,   <span class="hljs-number">526</span>,    <span class="hljs-number">1186</span>,   <span class="hljs-number">570</span>
+</code></pre>
+<ol start="2">
+<li>Set up your model</li>
+</ol>
+<ul>
+<li>Decide on whether you want to train a model from scratch, or trained using weights transfered from another task (such as coco 2017)</li>
+</ul>
+<ol start="3">
+<li>Set up a model training pipeline</li>
+</ol>
+<ul>
+<li><code>.compile()</code> your model with an appropriate loss function and metrics</li>
+<li>define a <code>LearningRateScheduler</code> function to vary learning rates over training as a function of training epoch</li>
+<li>define an <code>EarlyStopping</code> criteria and create a <code>ModelCheckpoint</code> to save trained model weights</li>
+<li>if transfer learning using weights not from coco, load your initial weights from somewhere else</li>
+</ul>
+<ol start="5">
+<li>Train the model</li>
+</ol>
+<ul>
+<li>Use <code>history = model.fit()</code> to create a record of the training history. Pass the training and validation datasets, and a list of callbacks containing your model checkpoint, learning rate scheduler, and early stopping monitor)</li>
+</ul>
+<ol start="6">
+<li>Evaluate your model</li>
+</ol>
+<ul>
+<li>Plot and study the <code>history</code> time-series of losses and metrics. If unsatisfactory, begin the iterative process of model optimization</li>
+<li>Use the <code>loss, accuracy = model.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)</code> function using the validation dataset and specifying the number of validation steps</li>
+<li>Make plots of model outputs, organized in such a way that you can at-a-glance see where the model is failing. Make use of <code>visualize_detections</code>, as a starting point, to visualize sample imagery with their model predictions</li>
+</ul>
 <h3><a class="anchor" aria-hidden="true" id="model_funcspy-1"></a><a href="#model_funcspy-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>model_funcs.py</h3>
 <h4><a class="anchor" aria-hidden="true" id="model-creation-1"></a><a href="#model-creation-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model creation</h4>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="anchorbox"></a><a href="#anchorbox" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>AnchorBox</h5>
+<pre><code class="hljs css language-python">AnchorBox()
+</code></pre>
+<p>Code from <a href="https://keras.io/examples/vision/retinanet/">https://keras.io/examples/vision/retinanet/</a>. Generates anchor boxes.
+This class has operations to generate anchor boxes for feature maps at strides <code>[8, 16, 32, 64, 128]</code>. Where each anchor each box is of the format <code>[x, y, width, height]</code>.</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>aspect_ratios</code>: A list of float values representing the aspect ratios of
+the anchor boxes at each location on the feature map</li>
+<li><code>scales</code>: A list of float values representing the scale of the anchor boxes
+at each location on the feature map.</li>
+<li><code>num_anchors</code>: The number of anchor boxes at each location on feature map</li>
+<li><code>areas</code>: A list of float values representing the areas of the anchor
+boxes for each feature map in the feature pyramid.</li>
+<li><code>strides</code>: A list of float value representing the strides for each feature
+map in the feature pyramid.</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS: anchor boxes for all the feature maps, stacked as a single tensor with shape
+<code>(total_anchors, 4)</code>, when <code>AnchorBox._get_anchors()</code> is called</li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="get_backbone"></a><a href="#get_backbone" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>get_backbone</h5>
+<pre><code class="hljs css language-python">get_backbone()
+</code></pre>
+<p>Code from <a href="https://keras.io/examples/vision/retinanet/">https://keras.io/examples/vision/retinanet/</a>. This function Builds ResNet50 with pre-trained imagenet weights</p>
+<ul>
+<li>INPUTS: None</li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS: keras Model</li>
+<li>GLOBAL INPUTS: BATCH_SIZE</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="featurepyramid"></a><a href="#featurepyramid" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>FeaturePyramid</h5>
+<pre><code class="hljs css language-python">FeaturePyramid()
+</code></pre>
+<p>Code from <a href="https://keras.io/examples/vision/retinanet/">https://keras.io/examples/vision/retinanet/</a>. This class builds the Feature Pyramid with the feature maps from the backbone.</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>num_classes</code>: Number of classes in the dataset.</li>
+<li><code>backbone</code>: The backbone to build the feature pyramid from. Currently supports ResNet50 only (the output of get_backbone())</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS: the 5-feature pyramids (feature maps) at strides <code>[8, 16, 32, 64, 128]</code></li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="build_head"></a><a href="#build_head" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>build_head</h5>
+<pre><code class="hljs css language-python">build_head(output_filters, bias_init)
+</code></pre>
+<p>Code from <a href="https://keras.io/examples/vision/retinanet/">https://keras.io/examples/vision/retinanet/</a>. This function builds the class/box predictions head.</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>output_filters</code>: Number of convolution filters in the final layer.</li>
+<li><code>bias_init</code>: Bias Initializer for the final convolution layer.</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS: a keras sequential model representing either the classification
+or the box regression head depending on <code>output_filters</code>.</li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="retinanet"></a><a href="#retinanet" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>RetinaNet</h5>
+<pre><code class="hljs css language-python">RetinaNet()
+</code></pre>
+<p>Code from <a href="https://keras.io/examples/vision/retinanet/">https://keras.io/examples/vision/retinanet/</a>. This class returns a subclassed Keras model implementing the RetinaNet architecture.</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>num_classes</code>: Number of classes in the dataset.</li>
+<li><code>backbone</code>: The backbone to build the feature pyramid from. Supports ResNet50 only.</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>val_dataset</code> [tensorflow dataset]: validation dataset</li>
+<li><code>train_dataset</code> [tensorflow dataset]: training dataset</li>
+</ul></li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
 <h4><a class="anchor" aria-hidden="true" id="model-training-1"></a><a href="#model-training-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model training</h4>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="compute_iou"></a><a href="#compute_iou" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>compute_iou</h5>
+<pre><code class="hljs css language-python">compute_iou(boxes1, boxes2)
+</code></pre>
+<p>This function computes pairwise IOU matrix for given two sets of boxes</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>boxes1</code>: A tensor with shape <code>(N, 4)</code> representing bounding boxes
+where each box is of the format <code>[x, y, width, height]</code>.</li>
+<li><code>boxes2</code>: A tensor with shape <code>(M, 4)</code> representing bounding boxes
+where each box is of the format <code>[x, y, width, height]</code>.</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS: pairwise IOU matrix with shape <code>(N, M)</code>, where the value at ith row jth column holds the IOU between ith box and jth box from <code>boxes1</code> and <code>boxes2</code> respectively.</li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="retinanetboxloss"></a><a href="#retinanetboxloss" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>RetinaNetBoxLoss</h5>
+<pre><code class="hljs css language-python">RetinaNetBoxLoss()
+</code></pre>
+<p>Code from <a href="https://keras.io/examples/vision/retinanet/">https://keras.io/examples/vision/retinanet/</a>. This class implements smooth L1 loss</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>y_true</code> [tensor]: label observations</li>
+<li><code>y_pred</code> [tensor]: label estimates</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>loss</code> [tensor]</li>
+</ul></li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="retinanetclassificationloss"></a><a href="#retinanetclassificationloss" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>RetinaNetClassificationLoss</h5>
+<pre><code class="hljs css language-python">RetinaNetClassificationLoss()
+</code></pre>
+<p>Code from <a href="https://keras.io/examples/vision/retinanet/">https://keras.io/examples/vision/retinanet/</a>. This class implements Focal loss.</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>y_true</code> [tensor]: label observations</li>
+<li><code>y_pred</code> [tensor]: label estimates</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>loss</code> [tensor]</li>
+</ul></li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="retinaloss"></a><a href="#retinaloss" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>RetinaLoss</h5>
+<pre><code class="hljs css language-python">RetinaNetLoss()
+</code></pre>
+<p>Code from <a href="https://keras.io/examples/vision/retinanet/">https://keras.io/examples/vision/retinanet/</a>. This class is a wrapper to sum RetinaNetClassificationLoss and RetinaNetClassificationLoss outputs.</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>y_true</code> [tensor]: label observations</li>
+<li><code>y_pred</code> [tensor]: label estimates</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>loss</code> [tensor]</li>
+</ul></li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<h4><a class="anchor" aria-hidden="true" id="model-prediction"></a><a href="#model-prediction" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model prediction</h4>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="decodepredictions"></a><a href="#decodepredictions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>DecodePredictions</h5>
+<pre><code class="hljs css language-python">DecodePredictions()
+</code></pre>
+<p>Code from <a href="https://keras.io/examples/vision/retinanet/">https://keras.io/examples/vision/retinanet/</a>. This class creates a Keras layer that decodes predictions of the RetinaNet model.</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>num_classes</code>: Number of classes in the dataset</li>
+<li><code>confidence_threshold</code>: Minimum class probability, below which detections
+are pruned.</li>
+<li><code>nms_iou_threshold</code>: IOU threshold for the NMS operation</li>
+<li><code>max_detections_per_class</code>: Maximum number of detections to retain per class.</li>
+<li><code>max_detections</code>: Maximum number of detections to retain across all classes.</li>
+<li><code>box_variance</code>: The scaling factors used to scale the bounding box predictions.</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS: a keras layer to decode predictions</li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
 <h3><a class="anchor" aria-hidden="true" id="data_funcspy"></a><a href="#data_funcspy" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>data_funcs.py</h3>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="random_flip_horizontal"></a><a href="#random_flip_horizontal" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>random_flip_horizontal</h5>
+<pre><code class="hljs css language-python">random_flip_horizontal(image, boxes)
+</code></pre>
+<p>Flips image and boxes horizontally with 50% chance</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>image</code>: A 3-D tensor of shape <code>(height, width, channels)</code> representing an
+image.</li>
+<li><code>boxes</code>: A tensor with shape <code>(num_boxes, 4)</code> representing bounding boxes,
+having normalized coordinates.</li>
+</ul></li>
+<li>OUTPUTS: Randomly flipped image and boxes</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="resize_and_pad_image"></a><a href="#resize_and_pad_image" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>resize_and_pad_image</h5>
+<pre><code class="hljs css language-python">resize_and_pad_image(image, min_side=<span class="hljs-number">800.0</span>, max_side=<span class="hljs-number">1333.0</span>, jitter=[<span class="hljs-number">640</span>, <span class="hljs-number">1024</span>], stride=<span class="hljs-number">128.0</span>)
+</code></pre>
+<p>Resizes and pads image while preserving aspect ratio.</p>
+<ol>
+<li>Resizes images so that the shorter side is equal to <code>min_side</code></li>
+<li>If the longer side is greater than <code>max_side</code>, then resize the image
+with longer side equal to <code>max_side</code></li>
+<li>Pad with zeros on right and bottom to make the image shape divisible by
+<code>stride</code></li>
+</ol>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>image</code>: A 3-D tensor of shape <code>(height, width, channels)</code> representing an
+image.</li>
+<li><code>min_side</code>: The shorter side of the image is resized to this value, if
+<code>jitter</code> is set to None.</li>
+<li><code>max_side</code>: If the longer side of the image exceeds this value after
+resizing, the image is resized such that the longer side now equals to
+this value.</li>
+<li><code>jitter</code>: A list of floats containing minimum and maximum size for scale
+jittering. If available, the shorter side of the image will be
+resized to a random value in this range.</li>
+<li><code>stride</code>: The stride of the smallest feature map in the feature pyramid.
+Can be calculated using <code>image_size / feature_map_size</code>.</li>
+</ul></li>
+<li>OUTPUTS:
+<code>image</code>: Resized and padded image.
+<code>image_shape</code>: Shape of the image before padding.
+<code>ratio</code>: The scaling factor used to resize the image</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="preprocess_secoora_data"></a><a href="#preprocess_secoora_data" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>preprocess_secoora_data</h5>
+<pre><code class="hljs css language-python">preprocess_secoora_data(example)
+</code></pre>
+<p>This function preprocesses a secoora dataset for training</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>val_dataset</code> [tensorflow dataset]: validation dataset</li>
+<li><code>train_dataset</code> [tensorflow dataset]: training dataset</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>val_dataset</code> [tensorflow dataset]: validation dataset</li>
+<li><code>train_dataset</code> [tensorflow dataset]: training dataset</li>
+</ul></li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="preprocess_coco_data"></a><a href="#preprocess_coco_data" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>preprocess_coco_data</h5>
+<pre><code class="hljs css language-python">preprocess_coco_data(sample)
+</code></pre>
+<p>Applies preprocessing step to a single sample</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>sample</code>: A dict representing a single training sample.</li>
+<li>OPTIONAL INPUTS: None</li>
+</ul></li>
+<li>OUTPUTS:
+<ul>
+<li><code>image</code>: Resized and padded image with random horizontal flipping applied.</li>
+<li><code>bbox</code>: Bounding boxes with the shape <code>(num_objects, 4)</code> where each box is
+of the format <code>[x, y, width, height]</code>.</li>
+<li><code>class_id</code>: An tensor representing the class id of the objects, having
+shape <code>(num_objects,)</code>.</li>
+</ul></li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="swap_xy"></a><a href="#swap_xy" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>swap_xy</h5>
+<pre><code class="hljs css language-python">swap_xy(boxes)
+</code></pre>
+<p>Swaps order the of x and y coordinates of the boxes.</p>
+<ul>
+<li>INPUTS:
+<code>boxes</code>: A tensor with shape <code>(num_boxes, 4)</code> representing bounding boxes.</li>
+<li>OUTPUTS: swapped boxes with shape same as that of boxes.</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="convert_to_xywh"></a><a href="#convert_to_xywh" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>convert_to_xywh</h5>
+<pre><code class="hljs css language-python">convert_to_xywh(boxes)
+</code></pre>
+<p>Changes the box format to center, width and height.</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>boxes</code>: A tensor of rank 2 or higher with a shape of <code>(..., num_boxes, 4)</code>
+representing bounding boxes where each box is of the format
+<code>[xmin, ymin, xmax, ymax]</code>.</li>
+</ul></li>
+<li>OUTPUTS: converted boxes with shape same as that of boxes.</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="convert_to_corners"></a><a href="#convert_to_corners" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>convert_to_corners</h5>
+<pre><code class="hljs css language-python">convert_to_corners(boxes)
+</code></pre>
+<p>Changes the box format to corner coordinates</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>boxes</code>: A tensor of rank 2 or higher with a shape of <code>(..., num_boxes, 4)</code> representing bounding boxes where each box is of the format <code>[x, y, width, height]</code>.</li>
+</ul></li>
+<li>OUTPUTS: converted boxes with shape same as that of boxes.</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="compute_iou-1"></a><a href="#compute_iou-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>compute_iou</h5>
+<pre><code class="hljs css language-python">compute_iou(boxes1, boxes2)
+</code></pre>
+<p>This function computes pairwise IOU matrix for given two sets of boxes</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>boxes1</code>: A tensor with shape <code>(N, 4)</code> representing bounding boxes
+where each box is of the format <code>[x, y, width, height]</code>.</li>
+<li><code>boxes2</code>: A tensor with shape <code>(M, 4)</code> representing bounding boxes
+where each box is of the format <code>[x, y, width, height]</code>.</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:pairwise IOU matrix with shape <code>(N, M)</code>, where the value at ith row jth column holds the IOU between ith box and jth box from <code>boxes1</code> and <code>boxes2</code> respectively.</li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<h5><a class="anchor" aria-hidden="true" id="anchorbox-1"></a><a href="#anchorbox-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>AnchorBox</h5>
+<pre><code class="hljs css language-python">AnchorBox()
+</code></pre>
+<p>Code from <a href="https://keras.io/examples/vision/retinanet/">https://keras.io/examples/vision/retinanet/</a>. Generates anchor boxes.
+This class has operations to generate anchor boxes for feature maps at strides <code>[8, 16, 32, 64, 128]</code>. Where each anchor each box is of the format <code>[x, y, width, height]</code>.</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>aspect_ratios</code>: A list of float values representing the aspect ratios of
+the anchor boxes at each location on the feature map</li>
+<li><code>scales</code>: A list of float values representing the scale of the anchor boxes
+at each location on the feature map.</li>
+<li><code>num_anchors</code>: The number of anchor boxes at each location on feature map</li>
+<li><code>areas</code>: A list of float values representing the areas of the anchor
+boxes for each feature map in the feature pyramid.</li>
+<li><code>strides</code>: A list of float value representing the strides for each feature
+map in the feature pyramid.</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS: anchor boxes for all the feature maps, stacked as a single tensor with shape
+<code>(total_anchors, 4)</code>, when <code>AnchorBox._get_anchors()</code> is called</li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="labelencodercoco"></a><a href="#labelencodercoco" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>LabelEncoderCoco</h5>
+<pre><code class="hljs css language-python">LabelEncoderCoco()
+</code></pre>
+<p>Transforms the raw labels into targets for training.
+This class has operations to generate targets for a batch of samples which
+is made up of the input images, bounding boxes for the objects present and
+their class ids.</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>anchor_box</code>: Anchor box generator to encode the bounding boxes.</li>
+<li><code>box_variance</code>: The scaling factors used to scale the bounding box targets.</li>
+</ul></li>
+</ul>
 <h3><a class="anchor" aria-hidden="true" id="tfrecords_funcspy-1"></a><a href="#tfrecords_funcspy-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>tfrecords_funcs.py</h3>
 <h4><a class="anchor" aria-hidden="true" id="tf-dataset-creation-1"></a><a href="#tf-dataset-creation-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TF-dataset creation</h4>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="prepare_image"></a><a href="#prepare_image" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>prepare_image</h5>
+<pre><code class="hljs css language-python">prepare_image(image)
+</code></pre>
+<p>This function resizes and pads an image, and rescales for resnet</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>image</code> [tensor array]</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>image</code> [tensor array]
+GLOBAL INPUTS: None</li>
+</ul></li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="prepare_secoora_datasets_for_training"></a><a href="#prepare_secoora_datasets_for_training" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>prepare_secoora_datasets_for_training</h5>
+<pre><code class="hljs css language-python">prepare_secoora_datasets_for_training(data_path, val_filenames)
+</code></pre>
+<p>This function prepares train and validation datasets  by extracting features (images, bounding boxes, and class labels) then map to preprocess_secoora_data, then apply prefetch, padded batch and label encoder</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>data_path</code> [string]: path to the tfrecords</li>
+<li><code>train_filenames</code> [string]: tfrecord filenames for training</li>
+<li><code>val_filenames</code> [string]: tfrecord filenames for validation</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>val_dataset</code> [tensorflow dataset]: validation dataset</li>
+<li><code>train_dataset</code> [tensorflow dataset]: training dataset</li>
+</ul></li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="prepare_secoora_datasets_for_training-1"></a><a href="#prepare_secoora_datasets_for_training-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>prepare_secoora_datasets_for_training</h5>
+<pre><code class="hljs css language-python">prepare_secoora_datasets_for_training(data_path, train_filenames, val_filenames)
+</code></pre>
+<p>This function prepares train and validation datasets  by extracting features (images, bounding boxes, and class labels)
+then map to preprocess_secoora_data, then apply prefetch, padded batch and label encoder</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>data_path</code> [string]: path to the tfrecords</li>
+<li><code>train_filenames</code> [string]: tfrecord filenames for training</li>
+<li><code>val_filenames</code> [string]: tfrecord filenames for validation</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>val_dataset</code> [tensorflow dataset]: validation dataset</li>
+<li><code>train_dataset</code> [tensorflow dataset]: training dataset</li>
+</ul></li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="labelencodercoco-1"></a><a href="#labelencodercoco-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>LabelEncoderCoco</h5>
+<pre><code class="hljs css language-python">prepare_coco_datasets_for_training(train_dataset, val_dataset)
+</code></pre>
+<p>This function prepares a coco dataset loaded from tfds into one trainable by the model</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>val_dataset</code> [tensorflow dataset]: validation dataset</li>
+<li><code>train_dataset</code> [tensorflow dataset]: training dataset</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>val_dataset</code> [tensorflow dataset]: validation dataset</li>
+<li><code>train_dataset</code> [tensorflow dataset]: training dataset</li>
+</ul></li>
+<li>GLOBAL INPUTS: BATCH_SIZE</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="file2tensor-1"></a><a href="#file2tensor-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>file2tensor</h5>
+<pre><code class="hljs css language-python">file2tensor(f)
+</code></pre>
+<p>This function reads a jpeg image from file into a cropped and resized tensor,
+for use in prediction with a trained mobilenet or vgg model
+(the imagery is standardized depending on target model framework)</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>f</code> [string] file name of jpeg</li>
+</ul></li>
+<li>OPTIONAL INPUTS:
+<ul>
+<li><code>model</code> = {'mobilenet' | 'vgg'}</li>
+</ul></li>
+<li>OUTPUTS:
+<ul>
+<li><code>image</code> [tensor array]: unstandardized image</li>
+<li><code>im</code> [tensor array]: standardized image</li>
+</ul></li>
+<li>GLOBAL INPUTS: TARGET_SIZE</li>
+</ul>
 <h4><a class="anchor" aria-hidden="true" id="tfrecord-reading-1"></a><a href="#tfrecord-reading-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TFRecord reading</h4>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="write_tfrecords"></a><a href="#write_tfrecords" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>write_tfrecords</h5>
+<pre><code class="hljs css language-python">write_tfrecords(output_path, image_dir, csv_input)
+</code></pre>
+<p>This function writes tfrecords to fisk</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>image_dir</code> [string]: place where jpeg images are</li>
+<li><code>csv_input</code> [string]: csv file that contains the labels</li>
+<li><code>output_path</code> [string]: place to writes files to</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS: None (tfrecord files written to disk)</li>
+<li>GLOBAL INPUTS: BATCH_SIZE</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="class_text_to_int"></a><a href="#class_text_to_int" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>class_text_to_int</h5>
+<pre><code class="hljs css language-python">class_text_to_int(row_label)
+</code></pre>
+<p>This function converts the string 'person' into the number 1</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>row_label</code> [string]: class label string</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS: 1 or None</li>
+<li>GLOBAL INPUTS: BATCH_SIZE</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="split"></a><a href="#split" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>split</h5>
+<pre><code class="hljs css language-python">split(df, group)
+</code></pre>
+<p>This function splits a pandas dataframe by a pandas group object to extract the label sets from each image for writing to tfrecords</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>df</code> [pandas dataframe]</li>
+<li><code>group</code> [pandas dataframe group object]</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS: tuple of bboxes and classes per image</li>
+<li>GLOBAL INPUTS: BATCH_SIZE</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="create_tf_example_coco"></a><a href="#create_tf_example_coco" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>create_tf_example_coco</h5>
+<pre><code class="hljs css language-python">create_tf_example_coco(group, path)
+</code></pre>
+<p>This function creates an example tfrecord consisting of an image and label encoded as bytestrings. The jpeg image is read into a bytestring, and the bbox coordinates and classes are collated and
+converted also.</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>group</code> [pandas dataframe group object]</li>
+<li><code>path</code> [tensorflow dataset]: training dataset</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>tf_example</code> [tf.train.Example object]</li>
+</ul></li>
+<li>GLOBAL INPUTS: BATCH_SIZE</li>
+</ul>
 <h3><a class="anchor" aria-hidden="true" id="plot_funcspy-1"></a><a href="#plot_funcspy-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>plot_funcs.py</h3>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="plot_history-1"></a><a href="#plot_history-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>plot_history</h5>
+<pre><code class="hljs css language-python">plot_history(history, train_hist_fig)
+</code></pre>
+<p>This function plots the training history of a model</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>history</code> [dict]: the output dictionary of the model.fit() process, i.e. history = model.fit(...)</li>
+<li><code>train_hist_fig</code> [string]: the filename where the plot will be printed</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS: None (figure printed to file)</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="visualize_detections"></a><a href="#visualize_detections" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>visualize_detections</h5>
+<pre><code class="hljs css language-python">visualize_detections(image, boxes, classes, scores, counter, str_prefix, figsize=(<span class="hljs-number">7</span>, <span class="hljs-number">7</span>), linewidth=<span class="hljs-number">1</span>, color=[<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>])
+</code></pre>
+<p>This function allows for visualization of imagery and bounding boxes</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>images</code> [ndarray]: batch of images</li>
+<li><code>boxes</code> [ndarray]: batch of bounding boxes per image</li>
+<li><code>classes</code> [list]: class strings</li>
+<li><code>scores</code> [list]: prediction scores</li>
+<li><code>str_prefix</code> [string]: filename prefix</li>
+</ul></li>
+<li>OPTIONAL INPUTS:
+<ul>
+<li><code>figsize</code>=(7, 7), figure size</li>
+<li><code>linewidth</code>=1, box line width</li>
+<li><code>color</code>=[0, 0, 1], box colour</li>
+</ul></li>
+<li>OUTPUTS:
+<ul>
+<li><code>val_dataset</code> [tensorflow dataset]: validation dataset</li>
+<li><code>train_dataset</code> [tensorflow dataset]: training dataset</li>
+</ul></li>
+<li>GLOBAL INPUTS: None</li>
+</ul>
 <h2><a class="anchor" aria-hidden="true" id="3_imageseg"></a><a href="#3_imageseg" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3_ImageSeg</h2>
 <h3><a class="anchor" aria-hidden="true" id="general-workflow-using-your-own-data-2"></a><a href="#general-workflow-using-your-own-data-2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>General workflow using your own data</h3>
 <h3><a class="anchor" aria-hidden="true" id="model_funcspy-2"></a><a href="#model_funcspy-2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>model_funcs.py</h3>
@@ -694,11 +1330,402 @@ of images</p>
 <h3><a class="anchor" aria-hidden="true" id="plot_funcspy-2"></a><a href="#plot_funcspy-2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>plot_funcs.py</h3>
 <h2><a class="anchor" aria-hidden="true" id="4_unsupimagerecog"></a><a href="#4_unsupimagerecog" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>4_UnsupImageRecog</h2>
 <h3><a class="anchor" aria-hidden="true" id="general-workflow-using-your-own-data-3"></a><a href="#general-workflow-using-your-own-data-3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>General workflow using your own data</h3>
+<ol>
+<li>Create a TFREcord dataset from your data, organised as follows:</li>
+</ol>
+<ul>
+<li>Copy training images into a folder called <code>train</code></li>
+<li>Copy validation images into a folder called <code>validation</code></li>
+<li>Ensure the class name is written to each file name. Ideally this is a prefix such that it is trivial to extract the class name from the file name</li>
+<li>Modify one of the provided workflows (such as <code>tamucc_make_tfrecords.py</code>) for your dataset, to create your train and validation tfrecord shards</li>
+</ul>
+<ol start="2">
+<li>Set up your model</li>
+</ol>
+<ul>
+<li>Decide on whether you want to train a small or large embedding model (<code>get_embedding_model</code> or <code>get_large_embedding_model</code>)</li>
+</ul>
+<ol start="3">
+<li>Set up a data pipeline</li>
+</ol>
+<ul>
+<li>Modify and follow the provided examples to create a <code>get_training_dataset()</code> and <code>get_validation_dataset()</code>. This will likely require you copy and modify <code>get_batched_dataset</code> to your own needs, depending on the format of your labels in filenames, by writing your own <code>read_tfrecord</code> function for your dataset (depending on the model selected)</li>
+<li>Remember for this method you have to read all the data at once into memory, which isn't ideal. You may therefore need to modify <code>get_data_stuff</code> to be a more efficient way to do so for your data</li>
+</ul>
+<ol start="4">
+<li>Set up a model training pipeline</li>
+</ol>
+<ul>
+<li><code>.compile()</code> your model with an appropriate loss function and metrics</li>
+<li>Define a <code>LearningRateScheduler</code> function to vary learning rates over training as a function of training epoch</li>
+<li>Define an <code>EarlyStopping</code> criteria and create a <code>ModelCheckpoint</code> to save trained model weights</li>
+</ul>
+<ol start="5">
+<li>Train the autoencoder embedding model</li>
+</ol>
+<ul>
+<li>Use <code>history = model.fit()</code> to create a record of the training history. Pass the training and validation datasets, and a list of callbacks containing your model checkpoint, learning rate scheduler, and early stopping monitor)</li>
+</ul>
+<ol start="6">
+<li>Train the k-nearest neighbour classifer</li>
+</ol>
+<ul>
+<li>Decide or determine the optimal number of neighbours (<code>k</code>)</li>
+<li>Use <code>fit_knn_to_embeddings</code> to make a model of your training embeddings</li>
+</ul>
+<ol start="6">
+<li>Evaluate your model</li>
+</ol>
+<ul>
+<li>Plot and study the <code>history</code> time-series of losses and metrics. If unsatisfactory, begin the iterative process of model optimization</li>
+<li>Use the <code>loss, accuracy = model.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)</code> function using the validation dataset and specifying the number of validation steps</li>
+<li>Make plots of model outputs, organized in such a way that you can at-a-glance see where the model is failing. Make use of <code>make_sample_plot</code> and <code>p_confmat</code>, as a starting point, to visualize sample imagery with their model predictions, and a confusion matrix of predicted/true class-correspondences</li>
+<li>On the test set, play <code>tf.nn.l2_normalize</code> (i.e. don't use it on test and/or train embeddings and see if it improves results)</li>
+</ul>
 <h3><a class="anchor" aria-hidden="true" id="model_funcspy-3"></a><a href="#model_funcspy-3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>model_funcs.py</h3>
 <h4><a class="anchor" aria-hidden="true" id="model-creation-3"></a><a href="#model-creation-3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model creation</h4>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="embeddingmodel"></a><a href="#embeddingmodel" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>EmbeddingModel</h5>
+<pre><code class="hljs css language-python">EmbeddingModel()
+</code></pre>
+<p>Code modified from <a href="https://keras.io/examples/vision/metric_learning/">https://keras.io/examples/vision/metric_learning/</a>. This class allows an embedding model (an get_embedding_model or get_large_embedding_model instance)
+to be trainable using the conventional model.fit(), whereby it can be passed another class
+that provides batches of data examples in the form of anchors, positives, and negatives</p>
+<ul>
+<li>INPUTS: None</li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS: model training metrics</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="get_large_embedding_model"></a><a href="#get_large_embedding_model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>get_large_embedding_model</h5>
+<pre><code class="hljs css language-python">get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
+</code></pre>
+<p>Code modified from <a href="https://keras.io/examples/vision/metric_learning/">https://keras.io/examples/vision/metric_learning/</a>. This function makes an instance of a larger embedding model, which is a keras sequential model
+consisting of 5 convolutiional blocks, average 2d pooling, and an embedding layer</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>model</code> [keras model]</li>
+<li><code>X_train</code> [list]</li>
+<li><code>ytrain</code> [list]</li>
+<li><code>num_dim_use</code> [int]</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>knn</code> [sklearn knn model]</li>
+</ul></li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="get_embedding_model"></a><a href="#get_embedding_model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>get_embedding_model</h5>
+<pre><code class="hljs css language-python">get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
+</code></pre>
+<p>Code modified from <a href="https://keras.io/examples/vision/metric_learning/">https://keras.io/examples/vision/metric_learning/</a>. This function makes an instance of an embedding model, which is a keras sequential model
+consisting of 3 convolutiional blocks, average 2d pooling, and an embedding layer</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>model</code> [keras model]</li>
+<li><code>X_train</code> [list]</li>
+<li><code>ytrain</code> [list]</li>
+<li><code>num_dim_use</code> [int]</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>knn</code> [sklearn knn model]</li>
+</ul></li>
+</ul>
 <h4><a class="anchor" aria-hidden="true" id="model-training-3"></a><a href="#model-training-3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model training</h4>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="fit_knn_to_embeddings"></a><a href="#fit_knn_to_embeddings" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>fit_knn_to_embeddings</h5>
+<pre><code class="hljs css language-python">fit_knn_to_embeddings(model, X_train, ytrain, n_neighbors)
+</code></pre>
+<p>This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
+using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
+saving out to the provided filename, <code>cm_filename</code></p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>model</code> [keras model]</li>
+<li><code>X_train</code> [list]</li>
+<li><code>ytrain</code> [list]</li>
+<li><code>num_dim_use</code> [int]</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>knn</code> [sklearn knn model]</li>
+</ul></li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="weighted_binary_crossentropy"></a><a href="#weighted_binary_crossentropy" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>weighted_binary_crossentropy</h5>
+<pre><code class="hljs css language-python">weighted_binary_crossentropy(zero_weight, one_weight)
+</code></pre>
+<p>This function computes weighted binary crossentropy loss</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>zero_weight</code> [float]: weight for the zero class</li>
+<li><code>one_weight</code> [float]: weight for the one class</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS: the function <code>wbce</code> with all arguments passed</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="lrfn-1"></a><a href="#lrfn-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>lrfn</h5>
+<pre><code class="hljs css language-python">lrfn(epoch)
+</code></pre>
+<p>This function creates a custom piecewise linear-exponential learning rate function for a custom learning rate scheduler. It is linear to a max, then exponentially decays</p>
+<ul>
+<li>INPUTS: current <code>epoch</code> number</li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS:<code>start_lr</code>, <code>min_lr</code>, <code>max_lr</code>, <code>rampup_epochs</code>, <code>sustain_epochs</code>, <code>exp_decay</code></li>
+<li>OUTPUTS:  the function lr with all arguments passed</li>
+</ul>
 <h3><a class="anchor" aria-hidden="true" id="tfrecords_funcspy-3"></a><a href="#tfrecords_funcspy-3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>tfrecords_funcs.py</h3>
 <h4><a class="anchor" aria-hidden="true" id="tf-dataset-creation-3"></a><a href="#tf-dataset-creation-3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TF-dataset creation</h4>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="get_batched_dataset-1"></a><a href="#get_batched_dataset-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>get_batched_dataset</h5>
+<pre><code class="hljs css language-python">get_batched_dataset(filenames)
+</code></pre>
+<p>This function defines a workflow for the model to read data from
+tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
+and also formats the imagery properly for model training
+(assumes mobilenet by using read_tfrecord_mv2)</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>filenames</code> [list]</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: BATCH_SIZE, AUTO</li>
+<li>OUTPUTS: <code>tf.data.Dataset</code> object</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="get_data_stuff"></a><a href="#get_data_stuff" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>get_data_stuff</h5>
+<pre><code class="hljs css language-python">get_data_stuff(ds, num_batches)
+</code></pre>
+<p>This function extracts lists of images and corresponding labels for training or testing</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>ds</code> [PrefetchDataset]: either get_training_dataset() or get_validation_dataset()</li>
+<li><code>num_batches</code> [int]</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>X</code> [list]</li>
+<li><code>y</code> [list]</li>
+<li><code>class_idx_to_train_idxs</code> [collections.defaultdict]</li>
+</ul></li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="recompress_image-1"></a><a href="#recompress_image-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>recompress_image</h5>
+<pre><code class="hljs css language-python">recompress_image(image, label)
+</code></pre>
+<p>This function takes an image encoded as a byte string and recodes as an 8-bit jpeg. Label passes through unmodified</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>image</code> [tensor array]</li>
+<li><code>label</code> [int]</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>image</code> [tensor array]</li>
+<li><code>label</code> [int]</li>
+</ul></li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="resize_and_crop_image-1"></a><a href="#resize_and_crop_image-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>resize_and_crop_image</h5>
+<pre><code class="hljs css language-python">resize_and_crop_image(image, label)
+</code></pre>
+<p>This function crops to square and resizes an image. The label passes through unmodified</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>image</code> [tensor array]</li>
+<li><code>label</code> [int]</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: TARGET_SIZE</li>
+<li>OUTPUTS:
+<ul>
+<li><code>image</code> [tensor array]</li>
+<li><code>label</code> [int]</li>
+</ul></li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="to_tfrecord-1"></a><a href="#to_tfrecord-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>to_tfrecord</h5>
+<pre><code class="hljs css language-python">to_tfrecord(img_bytes, label, CLASSES)
+</code></pre>
+<p>This function creates a TFRecord example from an image byte string and a label feature</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>img_bytes</code></li>
+<li><code>label</code></li>
+<li><code>CLASSES</code></li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS: <code>tf.train.Feature</code> example</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="get_dataset_for_tfrecords-1"></a><a href="#get_dataset_for_tfrecords-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>get_dataset_for_tfrecords</h5>
+<pre><code class="hljs css language-python">get_dataset_for_tfrecords(recoded_dir, shared_size)
+</code></pre>
+<p>This function reads a list of TFREcord shard files, decode the images and label, resize and crop the image to <code>TARGET_SIZE</code> and creates batches</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>recoded_dir</code></li>
+<li><code>shared_size</code></li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: TARGET_SIZE</li>
+<li>OUTPUTS: <code>tf.data.Dataset</code> object</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="write_records-1"></a><a href="#write_records-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>write_records</h5>
+<pre><code class="hljs css language-python">write_records(tamucc_dataset, tfrecord_dir, CLASSES)
+</code></pre>
+<p>This function writes a <code>tf.data.Dataset</code> object to TFRecord shards</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>tamucc_dataset</code> [tf.data.Dataset]</li>
+<li><code>tfrecord_dir</code> [string] : path to directory where files will be written</li>
+<li><code>CLASSES</code> [list] of class string names</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS: None (files written to disk)</li>
+</ul>
 <h4><a class="anchor" aria-hidden="true" id="tfrecord-reading-3"></a><a href="#tfrecord-reading-3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TFRecord reading</h4>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="read_classes_from_json-1"></a><a href="#read_classes_from_json-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>read_classes_from_json</h5>
+<pre><code class="hljs css language-python">read_classes_from_json(json_file)
+</code></pre>
+<p>This function reads the contents of a json file enumerating classes</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>json_file</code> [string]: full path to the json file</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS: <code>CLASSES</code> [list]: list of classesd as byte strings</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="file2tensor-2"></a><a href="#file2tensor-2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>file2tensor</h5>
+<pre><code class="hljs css language-python">file2tensor(f)
+</code></pre>
+<p>This function reads a jpeg image from file into a cropped and resized tensor, for use in prediction with a trained mobilenet or vgg model (the imagery is standardized depedning on target model framework)</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>f</code> [string] file name of jpeg</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>image</code> [tensor array]: unstandardized image</li>
+<li><code>im</code> [tensor array]: standardized image</li>
+</ul></li>
+<li>GLOBAL INPUTS: TARGET_SIZE</li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="read_tfrecord-1"></a><a href="#read_tfrecord-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>read_tfrecord</h5>
+<pre><code class="hljs css language-python">read_tfrecord(example)
+</code></pre>
+<p>This function reads an example from a TFrecord file into a single image and label</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li>TFRecord <code>example</code> object</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: TARGET_SIZE</li>
+<li>OUTPUTS:
+<ul>
+<li><code>image</code> [tensor array]</li>
+<li><code>class_label</code> [tensor int]</li>
+</ul></li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="read_image_and_label-1"></a><a href="#read_image_and_label-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>read_image_and_label</h5>
+<pre><code class="hljs css language-python">read_image_and_label(img_path)
+</code></pre>
+<p>This function reads a jpeg image from a provided filepath and extracts the label from the filename (assuming the class name is before <code>_IMG</code> in the filename)</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>img_path</code> [string]: filepath to a jpeg image</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>image</code> [tensor array]</li>
+<li><code>class_label</code> [tensor int]</li>
+</ul></li>
+</ul>
 <h3><a class="anchor" aria-hidden="true" id="plot_funcspy-3"></a><a href="#plot_funcspy-3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>plot_funcs.py</h3>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="conf_mat_filesamples"></a><a href="#conf_mat_filesamples" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>conf_mat_filesamples</h5>
+<pre><code class="hljs css language-python">conf_mat_filesamples(model, knn, sample_filenames, num_classes, num_dim_use, CLASSES)
+</code></pre>
+<p>This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
+using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
+saving out to the provided filename, cm_filename</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>model</code> [keras model]</li>
+<li><code>knn</code> [sklearn knn model]</li>
+<li><code>sample_filenames</code> [list] of strings</li>
+<li><code>num_classes</code> [int]</li>
+<li><code>num_dim_use</code> [int]</li>
+<li><code>CLASSES</code> [list] of strings: class names</li>
+</ul></li>
+<li>OPTIONAL INPUTS: None</li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS:
+<ul>
+<li><code>cm</code> [ndarray]: confusion matrix</li>
+</ul></li>
+</ul>
+<hr>
+<h5><a class="anchor" aria-hidden="true" id="p_confmat-1"></a><a href="#p_confmat-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>p_confmat</h5>
+<pre><code class="hljs css language-python">p_confmat(labs, preds, cm_filename, CLASSES, thres = <span class="hljs-number">0.1</span>)
+</code></pre>
+<p>This function computes a confusion matrix (matrix of correspondences between true and estimated classes)
+using the sklearn function of the same name. Then normalizes by column totals, and makes a heatmap plot of the matrix
+saving out to the provided filename, cm_filename</p>
+<ul>
+<li>INPUTS:
+<ul>
+<li><code>labs</code> [ndarray]: 1d vector of labels</li>
+<li><code>preds</code> [ndarray]: 1d vector of model predicted labels</li>
+<li><code>cm_filename</code> [string]: filename to write the figure to</li>
+<li><code>CLASSES</code> [list] of strings: class names</li>
+</ul></li>
+<li>OPTIONAL INPUTS:
+<ul>
+<li><code>thres</code> [float]: threshold controlling what values are displayed</li>
+</ul></li>
+<li>GLOBAL INPUTS: None</li>
+<li>OUTPUTS: None (figure printed to file)</li>
+</ul>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/MLMONDAYS/docs/doc3"><span class="arrow-prev">← </span><span>Models</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#1_imagerecog">1_ImageRecog</a><ul class="toc-headings"><li><a href="#general-workflow-using-your-own-data">General workflow using your own data</a></li><li><a href="#model_funcspy">model_funcs.py</a></li><li><a href="#tfrecords_funcspy">tfrecords_funcs.py</a></li><li><a href="#plot_funcspy">plot_funcs.py</a></li></ul></li><li><a href="#2_objrecog">2_ObjRecog</a><ul class="toc-headings"><li><a href="#general-workflow-using-your-own-data-1">General workflow using your own data</a></li><li><a href="#model_funcspy-1">model_funcs.py</a></li><li><a href="#data_funcspy">data_funcs.py</a></li><li><a href="#tfrecords_funcspy-1">tfrecords_funcs.py</a></li><li><a href="#plot_funcspy-1">plot_funcs.py</a></li></ul></li><li><a href="#3_imageseg">3_ImageSeg</a><ul class="toc-headings"><li><a href="#general-workflow-using-your-own-data-2">General workflow using your own data</a></li><li><a href="#model_funcspy-2">model_funcs.py</a></li><li><a href="#tfrecords_funcspy-2">tfrecords_funcs.py</a></li><li><a href="#plot_funcspy-2">plot_funcs.py</a></li></ul></li><li><a href="#4_unsupimagerecog">4_UnsupImageRecog</a><ul class="toc-headings"><li><a href="#general-workflow-using-your-own-data-3">General workflow using your own data</a></li><li><a href="#model_funcspy-3">model_funcs.py</a></li><li><a href="#tfrecords_funcspy-3">tfrecords_funcs.py</a></li><li><a href="#plot_funcspy-3">plot_funcs.py</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/MLMONDAYS/" class="nav-home"><img src="/MLMONDAYS/img/favicon.ico" alt="&quot;ML Mondays&quot;" width="66" height="58"/></a><div><h5>Internal links</h5><a href="/MLMONDAYS/docs/en/doc1.html">Docs</a><a href="/MLMONDAYS/docs/en/doc2.html">Data</a><a href="/MLMONDAYS/docs/en/doc3.html">Help</a></div><div><h5>Community</h5><a href="https://stackoverflow.com/questions/tagged/" target="_blank" rel="noreferrer noopener">Stack Overflow</a><a href="https://www.usgs.gov/centers/cdi" target="_blank" rel="noreferrer noopener">USGS Community for Data Integration (CDI)</a><a href="https://www.usgs.gov/centers/pcmsc/science/remote-sensing-coastal-change?qt-science_center_objects=0#qt-science_center_objects" target="_blank" rel="noreferrer noopener">USGS Remote Sensing Coastal Change Project</a><a href="https://www.danielbuscombe.com" target="_blank" rel="noreferrer noopener">www.danielbuscombe.com</a></div><div><h5>More</h5><a href="/MLMONDAYS/blog">Blog</a><a href="https://github.com/dbuscombe-usgs/DL-CDI2020">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a><div class="social"><a href="https://twitter.com/magic_walnut" class="twitter-follow-button">Follow @magic_walnut</a></div></div></section><a href="https://mardascience.com/" target="_blank" rel="noreferrer noopener" class="fbOpenSource"><img src="/MLMONDAYS/img/dash-logo-new.png" alt="Marda Science" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Marda Science, LLC</section></footer></div><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script></body></html>
