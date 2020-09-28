@@ -355,7 +355,7 @@ def preprocess_secoora_data(example):
 
 class LabelEncoderCoco:
     """
-    ""
+    LabelEncoderCoco()
     Transforms the raw labels into targets for training.
     This class has operations to generate targets for a batch of samples which
     is made up of the input images, bounding boxes for the objects present and

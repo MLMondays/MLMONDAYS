@@ -66,11 +66,11 @@ For more information about the data and its uses, see [here](https://secoora.org
 
 ![](assets/imseg.png)
 
-The images above are examples of segmentations. The image is overlain with a color-coded semi-transparent *label image* (as opposed to image label, as used in image recognition).
+The images above are examples of segmentations. The image is overlain with a colour-coded semi-transparent *label image* (as opposed to image label, as used in image recognition).
 
 We will use very high-resolution digital images of coastal environments in the Outer Banks, North Carolina. The imagery and associated label data have been curated especially for this course, as part of the USGS Remote Sensing of Coastal Change Florence Supplemental Project.
 
-The categories are (and corresponding colors in the above image):
+The categories are (and corresponding colours in the above image):
 * deep water (blue)
 * white (broke, aerated) water (pink)
 * shallow water and saturated ground (tan)
@@ -80,6 +80,6 @@ The categories are (and corresponding colors in the above image):
 
 
 #### Additional dataset
-An additional dataset will be provided that you can work on using the same models introduced in the class on your own. This [dataset](https://scholars.duke.edu/display/pub1419444) consists of aerial UAV color imagery and labels of oyster reefs in shallow water, made publicly available by Duke University researcher [Patrick Gray](https://github.com/patrickcgray/oyster_net). There are two labels: `reef` and `no reef`.
+An additional dataset will be provided that you can work on using the same models introduced in the class on your own. This [dataset](https://scholars.duke.edu/display/pub1419444) consists of aerial UAV colour imagery and labels of oyster reefs in shallow water, made publicly available by Duke University researcher [Patrick Gray](https://github.com/patrickcgray/oyster_net). There are two labels: `reef` and `no reef`.
 
 ![](assets/reef_montage.png)

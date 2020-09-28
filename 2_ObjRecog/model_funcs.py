@@ -234,7 +234,7 @@ class FeaturePyramid(tf.keras.layers.Layer):
 
 def build_head(output_filters, bias_init):
     """
-    "build_head"
+    "build_head(output_filters, bias_init)"
     ## Code from https://keras.io/examples/vision/retinanet/
     This function builds the class/box predictions head.
     INPUTS:

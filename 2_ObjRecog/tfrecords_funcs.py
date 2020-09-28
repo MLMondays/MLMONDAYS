@@ -255,7 +255,6 @@ def prepare_secoora_datasets_for_training(data_path, train_filenames, val_filena
         batch_size = BATCH_SIZE, drop_remainder=True, padding_values=(0.0, 1e-8, -1), padded_shapes=shapes,
     )
 
-    # i dont understand this!!
     label_encoder = LabelEncoderCoco()
 
     # train_dataset = train_dataset.shuffle(8 * BATCH_SIZE)
@@ -438,7 +437,7 @@ def split(df, group):
 
 def create_tf_example_coco(group, path):
     """
-    create_tf_example_coco(group, path
+    create_tf_example_coco(group, path)
     ""
     This function creates an example tfrecord consisting of an image and label encoded as bytestrings
     The jpeg image is read into a bytestring, and the bbox coordinates and classes are collated and

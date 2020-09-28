@@ -376,8 +376,7 @@ class Index extends React.Component {
             'at the Pacific Coastal and Marine Science Center in Santa Cruz, CA. '+
             '<br/><br/> Dr Leslie Hsu is the CDI coordinator and will serve as course facilitator and main contact person. '+
             '<br/><br/> Dr Jonathan Warrick is a Research Geologist at the Pacific Coastal and Marine Science Center '+
-            'and will also be assisting with course planning and implementation.'+
-            '<br/><br/> Other special guests will be announced soon!',
+            'and will also be assisting with course planning and implementation.',
             image: `${baseUrl}img/undraw_react.svg`,
             imageAlign: 'top',
             title: 'Other team members',
@@ -400,7 +399,7 @@ class Index extends React.Component {
             'python, that you have heard of deep learning and machine learning, and you have '+
             'identified these tools as ones you would like  '+
             'to gain practical experience using together.  '+
-            '<br><br> Each Monday in October 2020, Dr Daniel Buscombe, and some guests (TBD), will introduce an applied image analysis topic, '+
+            '<br><br> Each Monday in October 2020, Dr Daniel Buscombe will introduce an applied image analysis topic, '+
             'and demonstrate a technique using data and python code that have been specially curated for the course. Participants will be expected '+
             'to participate fully by carrying out the same analysis, either on the provided data or their own data. '+
             '<br><br> The course will be conducted entirely online, using Microsoft Teams and USGS Cloud Hosting Solutions, '+

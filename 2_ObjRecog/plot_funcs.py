@@ -53,12 +53,18 @@ def visualize_detections(
 ):
     """
     visualize_detections(image, boxes, classes, scores, counter, str_prefix, figsize=(7, 7), linewidth=1, color=[0, 0, 1])
-    ""
-    This function
+    This function allows for visualization of imagery and bounding boxes
+
     INPUTS:
-        * val_dataset [tensorflow dataset]: validation dataset
-        * train_dataset [tensorflow dataset]: training dataset
-    OPTIONAL INPUTS: None
+        * images [ndarray]: batch of images
+        * boxes [ndarray]: batch of bounding boxes per image
+        * classes [list]: class strings
+        * scores [list]: prediction scores
+        * str_prefix [string]: filename prefix
+    OPTIONAL INPUTS:
+      * figsize=(7, 7)
+      * linewidth=1
+      * color=[0, 0, 1]
     OUTPUTS:
         * val_dataset [tensorflow dataset]: validation dataset
         * train_dataset [tensorflow dataset]: training dataset
