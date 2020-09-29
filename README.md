@@ -431,6 +431,30 @@ There are also `colab` versions of both notebooks that you can save to your own 
   * Make plots of model outputs, organized in such a way that you can at-a-glance see where the model is failing. Make use of `visualize_detections`, as a starting point, to visualize sample imagery with their model predictions
 
 
+### Part 3: Supervised Image Segmentation
+
+1. Create a TFREcord dataset from your data, organised as follows:
+  * Copy images into a folder called `images`
+  * Copy label images into a folder called `labels`
+  * Modify one of the provided workflows (such as `obx_make_tfrecords.py`) for your dataset, to create your train and validation tfrecord shards
+
+2. Set up your model
+
+3. Set up a model training pipeline
+  * `.compile()` your model with an appropriate loss function and metrics
+  * define a `LearningRateScheduler` function to vary learning rates over training as a function of training epoch
+  * define an `EarlyStopping` criteria and create a `ModelCheckpoint` to save trained model weights
+
+5. Train the model
+  * Use `history = model.fit()` to create a record of the training history. Pass the training and validation datasets, and a list of callbacks containing your model checkpoint, learning rate scheduler, and early stopping monitor)
+
+6. Evaluate your model
+  * Plot and study the `history` time-series of losses and metrics. If unsatisfactory, begin the iterative process of model optimization  
+  * Use the `loss, accuracy = model.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)` function using the validation dataset and specifying the number of validation steps
+  * Make plots of model outputs, organized in such a way that you can at-a-glance see where the model is failing. Make use of `make_sample_seg_plot`, as a starting point, to visualize sample imagery with their model predictions
+
+
+
 ### Part 4: Semi-supervised Image Recognition
 
 1. Create a TFREcord dataset from your data, organised as follows:

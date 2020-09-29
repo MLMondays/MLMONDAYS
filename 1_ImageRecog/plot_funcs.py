@@ -43,7 +43,7 @@ np.random.seed(SEED)
 ## plots
 import matplotlib.pyplot as plt #for plotting
 from sklearn.metrics import confusion_matrix #compute confusion matrix from vectors of observed and estimated labels
-import seaborn as sns #extended functionality / style to matplotlib plots
+# import seaborn as sns #extended functionality / style to matplotlib plots
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox #for visualizing image thumbnails plotted as markers
 
 #calcs
@@ -139,9 +139,11 @@ def p_confmat(labs, preds, cm_filename, CLASSES, thres = 0.1):
     cm[cm<thres] = 0
 
     plt.figure(figsize=(15,15))
-    sns.heatmap(cm,
-        annot=True,
-        cmap = sns.cubehelix_palette(dark=0, light=1, as_cmap=True))
+    # sns.heatmap(cm,
+    #     annot=True,
+    #     cmap = sns.cubehelix_palette(dark=0, light=1, as_cmap=True))
+
+    plt.imshow(cm, cmap=plt.cm.hot)
 
     tick_marks = np.arange(len(CLASSES))+.5
     plt.xticks(tick_marks, [c.decode() for c in CLASSES], rotation=45,fontsize=12)
