@@ -6,15 +6,7 @@ sidebar_label: Overview
 
 ML-Mondays consists of 4 in-person classes, on Oct 5, Oct 13 (a day delayed, due to the Federal Holiday Columbus Day), Oct 19, and Oct 26. Each class follows on from the last. Classes 1 and 4 are pairs, as are classes 2 and 3. Participants are therefore expected to last the course. Optional homework assignments will be set for participants to carry out in their own time.
 
-However, all course materials, including code, data, notebooks, this website, and videos, will be made available to the entire USGS in November, after the event. Full agenda to be announced later.
-
-## Required pre-course reading
-
-![](assets/phd.png)
-
-Martin Gorner's 123 min (approx.) course called [TensorFlow, Keras and deep learning, without a PhD](https://codelabs.developers.google.com/codelabs/cloud-tensorflow-mnist/#0) is a clear, approachable, fun introduction to neural networks. It is required pre-course reading for participants.
-
-
+____
 ## Useful Links
 
 ### Reference
@@ -28,6 +20,7 @@ Martin Gorner's 123 min (approx.) course called [TensorFlow, Keras and deep lear
 * [Summary of models](https://dbuscombe-usgs.github.io/MLMONDAYS/docs/doc1)
 
 * [Blog](https://dbuscombe-usgs.github.io/MLMONDAYS/blog/)
+
 
 ### Notebooks
 
@@ -55,6 +48,13 @@ Martin Gorner's 123 min (approx.) course called [TensorFlow, Keras and deep lear
 
 * [Part 4 datasets repository](https://github.com/dbuscombe-usgs/mlmondays_data_ssimrecog)
 
+____
+## Required pre-course reading
+
+![](assets/phd.png)
+
+Martin Gorner's 123 min (approx.) course called [TensorFlow, Keras and deep learning, without a PhD](https://codelabs.developers.google.com/codelabs/cloud-tensorflow-mnist/#0) is a clear, approachable, fun introduction to neural networks. It is required pre-course reading for participants.
+
 
 ## Suggested pre-requisites
 
@@ -73,6 +73,7 @@ To gain more familiarity with machine learning and deep learning concepts and te
 
 (note: in the following `recognition` and `segmentation` are terms that imply specific forms of the more general term, `classification`)
 
+____
 ## Week 1: Supervised Image Recognition
 
 *A) Live session*: we'll work through jupyter notebooks containing workflows for image recognition (whole image classification). We'll be trying to answer the question, `How much of the Texas coastline is developed?`. To answer this question, we will train a deep learning model to classify aerial (oblique) images of the Texas coast, categorized into several natural and non-natural landuse/cover classes. See the [data page](doc2#how-much-of-the-texas-coastline-is-developed) for more information on the dataset.
@@ -115,7 +116,7 @@ For datasets where classes are obviously distinct, this is an extremely successf
 
 *B) Optional class assignment*: an additional dataset will be provided that you can work on using the same models introduced in the class. The [NWPU-RESISC45](http://www.escience.cn/people/JunweiHan/NWPU-RESISC45.html) is a publicly available benchmark for REmote Sensing Image Scene Classification (RESISC), created by Northwestern Polytechnical University (NWPU). This dataset contains 31,500 images, covering 45 scene classes with 700 images in each class. Participants will also be encouraged to adapt what they learned in the class to their own image recognition problems using their own data.
 
-
+____
 ## Week 2: Supervised Image Object Detection
 
 *A) Live session*: We'll work through jupyter notebooks containing workflows for image object detection (pixelwise classification). We'll be trying to answer the question, `How do people use beaches?`. To answer this question, we will train a deep learning model to detect and locate people in webcam (static, oblique) images of a beach in Florida. See the [data page](doc2#how-do-people-use-beaches) for more information.
@@ -145,10 +146,45 @@ In the end, we'll see our model trained from scratch is an excellent way to coun
 
 *B) Optional class assignment*: participants will be encouraged to adapt what they learned in the class to their own object recognition problems using their own data.
 
-
+____
 ## Week 3: Supervised Image Segmentation
 
 *A) Live session*: We'll work through jupyter notebooks containing workflows for image segmentation (pixelwise classification). We'll be trying to answer the question, `How much sand is there in the Outer Banks?`. To answer this question, we will train a deep learning model to segment dry sand pixels in aerial (nadir) imagery of the Outer Banks in North Carolina. See the [data page](doc2#how-much-sand-is-there-in-the-outer-banks) for more information.
+
+In this exercise, we will build and evaluate models to segment images of beaches. We will do so using two different class subsets on the same set of images. First, a binary segmentation of deep water versus everything else (shallow water and all subaerial environments). Second, four classes; deep water, shallow water, broken water (surf, swash), and dry land.
+
+To this this, we construct a model that is a U-Net with residual (or lateral/skip connections). For binary segmentation, we use binary image masks, which in turn dictates use of binary categorical crossentropy as a loss function, and a sigmoid activation function for classification.
+
+For multiclass segmentation, we take our label images, which are 2D images consisting of integers that encode classes, into a stack of binary masks of each class. Each binary mask uses 1 to represent the class, and 0 for everything else. This makes it amenable to simultaneous inference of all classes for all pixels using categorical crossentropy, and the softmax activation function on the classifying head.
+
+We will set up and train 3 different models:
+
+1. for binary (i.e. 2-class) segmentation
+2. for 4-class segmentation
+3. for 4-class segmentation, using a conditional random field (CRF) for post-processing the predicted label images
+
+We will use the CRF in the same sense as used by [Buscombe and Ritchie, 2018](https://www.mdpi.com/2076-3263/8/7/244), in that the deep learning model predicts the pixel class, but the CRF evaluates the likelihood of that class based on the image itself, and will return a modified version that is usually more accurate.
+
+Finally, we make another model trained in a different way (with a different loss function), so we have two models for the same task. And we create an ensemble model based on the outputs of the CRF model for each label estimate
+
+The general workflow:
+
+1. Set up a data workflow to feed the model as it trains
+  * use batches fed optimally to the GPU from TFRecord files
+  * split into train (50% of the data) and validation portions (50%)
+
+2. For the binary model, compile with dice loss, to better deal with class imbalance, and with an IoU metric for accuracy assessment. For multiclass models, we use categorical crossentropy
+
+3. Train it
+  * we are training the model from scratch because we don't have a similar dataset to train two models and transfer the weights, although that would be ideal possibly
+  * use a learning rate scheduler to pass variable learning rates to the model as it trains
+  * use 'early stopping' to base cessation of training on observed plateauing of validation loss
+  * use a checkpoint to monitor validation loss and save the best model weights when the validation loss improves
+
+4. Evaluate it
+  * study the model training history - the loss and accuracy curves of train and validation sets
+  * evaluate the performance of the trained model on the validation set
+  * read some sample images from file, and use the model for prediction
 
 *B) Optional class assignment*: an additional dataset will be provided that you can work on using the same models introduced in the class on your own. This [dataset](https://scholars.duke.edu/display/pub1419444) consists of aerial UAV colour imagery and labels of oyster reefs in shallow water, made publicly available by Duke University researcher [Patrick Gray](https://github.com/patrickcgray/oyster_net). There are two labels: `reef` and `no reef`. Participants will be encouraged to adapt what they learned in the class to their own image segmentation problems using their own data.
 
