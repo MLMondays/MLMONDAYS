@@ -3,8 +3,6 @@ id: doc4
 title: ML Mondays API
 ---
 
-Page under construction -- please check back later
-
 This is the class and function reference of the ML Mondays course code
 
 ## 1_ImageRecog
@@ -1217,19 +1215,598 @@ This function allows for visualization of imagery and bounding boxes
 
 #### Model creation
 
+---
+##### batchnorm_act
+```python
+batchnorm_act(x)
+```
+
+This function applies batch normalization to a keras model layer, `x`, then a relu activation function
+
+* INPUTS:
+    * `z` : keras model layer (should be the output of a convolution or an input layer)
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * batch normalized and relu-activated `x`
+
+---
+##### conv_block
+```python
+conv_block(x, filters, kernel_size=(3, 3), padding="same", strides=1)
+```
+
+This function applies batch normalization to an input layer, then convolves with a 2D convol layer
+The two actions combined is called a convolutional block
+
+* INPUTS:
+    * `filters`: number of filters in the convolutional block
+    * `x`:input keras layer to be convolved by the block
+* OPTIONAL INPUTS:
+    * `kernel_size`=(3, 3): tuple of kernel size (x, y) - this is the size in pixels of the kernel to be convolved with the image
+    * `padding`="same":  see tf.keras.layers.Conv2D
+    * `strides`=1: see tf.keras.layers.Conv2D
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * keras layer, output of the batch normalized convolution
+
+---
+##### bottleneck_block
+```python
+bottleneck_block(x, filters, kernel_size=(3, 3), padding="same", strides=1)
+```
+
+This function creates a bottleneck block layer, which is the addition of a convolution block and a batch normalized/activated block
+
+* INPUTS:
+    * `filters`: number of filters in the convolutional block
+    * `x`: input keras layer
+* OPTIONAL INPUTS:
+    * `kernel_size`=(3, 3): tuple of kernel size (x, y) - this is the size in pixels of the kernel to be convolved with the image
+    * `padding`="same":  see tf.keras.layers.Conv2D
+    * `strides`=1: see tf.keras.layers.Conv2D
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * keras layer, output of the addition between convolutional and bottleneck layers
+
+
+---
+##### res_block
+```python
+res_block(x, filters, kernel_size=(3, 3), padding="same", strides=1)
+```
+
+This function creates a residual block layer, which is the addition of a residual convolution block and a batch normalized/activated block
+
+* INPUTS:
+    * `filters`: number of filters in the convolutional block
+    * `x`: input keras layer
+* OPTIONAL INPUTS:
+    * `kernel_size`=(3, 3): tuple of kernel size (x, y) - this is the size in pixels of the kernel to be convolved with the image
+    * `padding`="same":  see tf.keras.layers.Conv2D
+    * `strides`=1: see tf.keras.layers.Conv2D
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * keras layer, output of the addition between residual convolutional and bottleneck layers
+
+
+---
+##### upsamp_concat_block
+```python
+upsamp_concat_block(x, xskip)
+```
+This function takes an input layer and creates a concatenation of an upsampled version and a residual or 'skip' connection
+
+* INPUTS:
+    * `xskip`: input keras layer (skip connection)
+    * `x`: input keras layer
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * keras layer, output of the addition between residual convolutional and bottleneck layers
+
+---
+##### res_unet
+```python
+res_unet(sz, f, flag, nclasses=1)
+```
+
+This function creates a custom residual U-Net model for image segmentation
+
+* INPUTS:
+    * `sz`: [tuple] size of input image
+    * `f`: [int] number of filters in the convolutional block
+    * flag: [string] if 'binary', the model will expect 2D masks and uses sigmoid. If 'multiclass', the model will expect 3D masks and uses softmax
+    * nclasses [int]: number of classes
+* OPTIONAL INPUTS:
+    * `kernel_size`=(3, 3): tuple of kernel size (x, y) - this is the size in pixels of the kernel to be convolved with the image
+    * `padding`="same":  see tf.keras.layers.Conv2D
+    * `strides`=1: see tf.keras.layers.Conv2D
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * keras model
+
+
 #### Model training
+
+---
+##### metrics_np
+```python
+metrics_np(y_true, y_pred, metric_name, metric_type='standard', drop_last = True, mean_per_class=False, verbose=False)
+```
+
+Compute mean metrics of two segmentation masks, via numpy.
+
+```
+IoU(A,B) = |A & B| / (| A U B|)
+Dice(A,B) = 2*|A & B| / (|A| + |B|)
+```
+
+* INPUTS:
+    * `y_true`: true masks, one-hot encoded. Inputs are B*W*H*N tensors, with
+        * B = batch size,
+        * W = width,
+        * H = height,
+        * N = number of classes
+    * `y_pred`: predicted masks, either softmax outputs, or one-hot encoded. Inputs are B*W*H*N tensors, with
+        * B = batch size,
+        * W = width,
+        * H = height,
+        * N = number of classes
+    * `metric_name`: metric to be computed, either 'iou' or 'dice'.
+    * `metric_type`: one of 'standard' (default), 'soft', 'naive'.
+      In the standard version, y_pred is one-hot encoded and the mean
+      is taken only over classes that are present (in y_true or y_pred).
+      The 'soft' version of the metrics are computed without one-hot
+      encoding y_pred.
+      The 'naive' version return mean metrics where absent classes contribute
+      to the class mean as 1.0 (instead of being dropped from the mean).
+    * `drop_last` = True: boolean flag to drop last class (usually reserved
+      for background class in semantic segmentation)
+    * `mean_per_class` = False: return mean along batch axis for each class.
+    * `verbose` = False: print intermediate results such as intersection, union
+      (as number of pixels).
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * IoU/Dice of `y_true` and `y_pred` [float] `unless mean_per_class` == True
+      in which case it returns the per-class metric, averaged over the batch.
+
+---
+##### mean_iou_np
+```python
+mean_iou_np(y_true, y_pred)
+```
+
+This function calls `metrics_np` to compute IoU
+
+
+---
+##### mean_iou
+```python
+mean_iou(y_true, y_pred)
+```
+
+This function computes the mean IoU between `y_true` and `y_pred`: this version is tensorflow (not numpy) and is used by tensorflow training and evaluation functions
+
+* INPUTS:
+  * y_true: true masks, one-hot encoded. Inputs are B * W * H * N tensors, with
+      * B = batch size,
+      *  W = width,
+      *  H = height,
+      *  N = number of classes
+  * y_pred: predicted masks, either softmax outputs, or one-hot encoded. Inputs are B * W * H * N tensors, with
+      * B = batch size,
+      *  W = width,
+      *  H = height,
+      *  N = number of classes
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * IoU score [tensor]
+
+
+---
+##### dice_coef
+```python
+dice_coef(y_true, y_pred)
+```
+
+This function computes the mean Dice coefficient between `y_true` and `y_pred`: this version is tensorflow (not numpy) and is used by tensorflow training and evaluation functions
+
+* INPUTS:
+    * y_true: true masks, one-hot encoded. Inputs are B * W * H * N tensors, with
+        * B = batch size,
+        *  W = width,
+        *  H = height,
+        *  N = number of classes
+    * y_pred: predicted masks, either softmax outputs, or one-hot encoded. Inputs are B * W * H * N tensors, with
+        * B = batch size,
+        *  W = width,
+        *  H = height,
+        *  N = number of classes
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * Dice score [tensor]
+
+
+
+---
+##### dice_coef_loss
+```python
+dice_coef_loss(y_true, y_pred)
+```
+
+This function computes the mean Dice loss (1 - dice coefficient) between `y_true` and `y_pred`: this version is tensorflow (not numpy) and is used by tensorflow training and evaluation functions
+
+* INPUTS:
+    * y_true: true masks, one-hot encoded. Inputs are B * W * H * N tensors, with
+        * B = batch size,
+        *  W = width,
+        *  H = height,
+        *  N = number of classes
+    * y_pred: predicted masks, either softmax outputs, or one-hot encoded. Inputs are B * W * H * N tensors, with
+        * B = batch size,
+        *  W = width,
+        *  H = height,
+        *  N = number of classes
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * Dice loss [tensor]
 
 
 ### tfrecords_funcs.py
 
 #### TF-dataset creation
 
+---
+##### get_batched_dataset_oysternet
+```python
+get_batched_dataset_oysternet(filenames)
+```
+
+This function defines a workflow for the model to read data from tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
+and also formats the imagery properly for model training (assumes oysternet by using `read_seg_tfrecord_oysternet`)
+
+* INPUTS:
+    * `filenames` [list]
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: BATCH_SIZE, AUTO
+* OUTPUTS: `tf.data.Dataset` object
+
+---
+##### get_batched_dataset_obx
+```python
+get_batched_dataset_obx(filenames, flag)
+```
+
+This function defines a workflow for the model to read data from tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
+and also formats the imagery properly for model training
+
+If input flag is 'binary', `read_seg_tfrecord_obx_binary` is used to read tfrecords and parse into two categories (deep vs everything else)
+
+If input flag is 'multiclass', `read_seg_tfrecord_obx_multiclass` is used to parse tfrecords into 4 classes,. recoded 0 through 3
+
+* INPUTS:
+    * `filenames` [list]
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: BATCH_SIZE, AUTO
+* OUTPUTS: `tf.data.Dataset` object
+
+---
+##### write_seg_records_obx
+```python
+write_seg_records_obx(dataset, tfrecord_dir)
+```
+
+This function writes a `tf.data.Dataset` object to TFRecord shards. The version for OBX data preprends "obx" to the filenames, but otherwise is identical
+to `write_seg_records`
+
+* INPUTS:
+    * `dataset` [tf.data.Dataset]
+    * `tfrecord_dir` [string] : path to directory where files will be written
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS: None (files written to disk)
+
+---
+##### write_seg_records_oysternet
+```python
+write_seg_records_oysternet(dataset, tfrecord_dir, filestr)
+```
+
+This function writes a `tf.data.Dataset` object to TFRecord shards
+
+* INPUTS:
+    * `dataset` [tf.data.Dataset]
+    * `tfrecord_dir` [string] : path to directory where files will be written
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS: None (files written to disk)
+
+
 #### TFRecord reading
+
+---
+##### read_seg_tfrecord_obx_binary
+```python
+read_seg_tfrecord_obx_binary(example)
+```
+
+This function reads an example from a TFrecord file into a single image and label. In this binary image creator for OBX, input 4-class imagery is binarized based on
+0=63=deep, 1=128=broken, 1=191=shallow, 1=255=dry
+
+* INPUTS:
+    * TFRecord `example` object
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: TARGET_SIZE
+* OUTPUTS:
+    * `image` [tensor array]
+    * `class_label` [tensor array]
+
+---
+##### read_seg_tfrecord_obx_multiclass
+```python
+read_seg_tfrecord_obx_multiclass(example)
+```
+
+This function reads an example from a TFrecord file into a single image and label. This is the "multiclass" version for OBS imagery, where the classes are mapped as follows:
+0=63=deep, 2=128=broken, 3=191=shallow, 4=255=dry
+
+* INPUTS:
+    * TFRecord `example` object
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: TARGET_SIZE
+* OUTPUTS:
+    * `image` [tensor array]
+    * `class_label` [tensor array]
+
+
+---
+##### get_seg_dataset_for_tfrecords_oysternet
+```python
+get_seg_dataset_for_tfrecords_oysternet(imdir, lab_path, shared_size)
+```
+
+This function reads an image and label and decodes both jpegs into bytestring arrays. This works because the images and labels have the same name but different paths, hence `tf.strings.regex_replace(img_path, "images", "labels")`
+
+* INPUTS:
+    * `image` [tensor array]
+    * `label` [tensor array]
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: TARGET_SIZE
+* OUTPUTS:
+    * `image` [tensor array]
+    * `label` [tensor array]
+
+
+---
+##### get_seg_dataset_for_tfrecords_obx
+```python
+get_seg_dataset_for_tfrecords_obx(imdir, lab_path, shared_size)
+```
+
+This function reads an image and label and decodes both jpegs into bytestring arrays.
+This is the version for OBX data, which differs in use of both `resize_and_crop_seg_image_obx` and `resize_and_crop_seg_image_obx` for image pre-processing
+
+* INPUTS:
+    * `image` [tensor array]
+    * `label` [tensor array]
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: TARGET_SIZE
+* OUTPUTS:
+    * `image` [tensor array]
+    * `label` [tensor array]
+
+---
+##### read_seg_image_and_label
+```python
+read_seg_image_and_label(img_path)
+```
+
+This function reads an image and label and decodes both jpegs
+into bytestring arrays. This works because the images and labels have the same name but different paths, hence `tf.strings.regex_replace(img_path, "images", "labels")`
+
+* INPUTS:
+    * `img_path` [tensor string]
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * `image` [bytestring]
+    * `label` [bytestring]
+
+---
+##### read_seg_image_and_label_obx
+```python
+read_seg_image_and_label_obx(img_path)
+```
+
+This function reads an image and label and decodes both jpegs into bytestring arrays. This works by parsing out the label image filename from its image pair There are different rules for non-augmented versus augmented imagery
+
+* INPUTS:
+    * `img_path` [tensor string]
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * `image` [bytestring]
+    * `label` [bytestring]
+
+---
+##### resize_and_crop_seg_image
+```python
+resize_and_crop_seg_image(image, label)
+```
+
+This function crops to square and resizes an image and label
+
+* INPUTS:
+    * `image` [tensor array]
+    * `label` [tensor array]
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: TARGET_SIZE
+* OUTPUTS:
+    * `image` [tensor array]
+    * `label` [tensor array]
+
+---
+##### resize_and_crop_seg_image_obx
+```python
+resize_and_crop_seg_image_obx(image, label)
+```
+
+This function crops to square and resizes an image and label
+
+* INPUTS:
+    * `image` [tensor array]
+    * `label` [tensor array]
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: TARGET_SIZE
+* OUTPUTS:
+    * `image` [tensor array]
+    * `label` [tensor array]
+
+---
+##### recompress_seg_image
+```python
+recompress_seg_image(image, label)
+```
+
+This function takes an image and label encoded as a byte string and recodes as an 8-bit jpeg
+
+* INPUTS:
+    * `image` [tensor array]
+    * `label` [tensor array]
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * `image` [tensor array]
+    * `label` [tensor array]
+
+---
+##### read_seg_tfrecord_oysternet
+```python
+read_seg_tfrecord_oysternet(example)
+```
+
+This function reads an example from a TFrecord file into a single image and label
+
+* INPUTS:
+    * TFRecord `example` object
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: TARGET_SIZE
+* OUTPUTS:
+    * `image` [tensor array]
+    * `class_label` [tensor array]
+
+---
+##### seg_file2tensor
+```python
+seg_file2tensor(f)
+```
+
+This function reads a jpeg image from file into a cropped and resized tensor, for use in prediction with a trained segmentation model
+
+* INPUTS:
+    * `f` [string] file name of jpeg
+* OPTIONAL INPUTS: None
+* OUTPUTS:
+    * `image` [tensor array]: unstandardized image
+* GLOBAL INPUTS: TARGET_SIZE
 
 
 ### plot_funcs.py
 
+---
+##### make_sample_ensemble_seg_plot
+```python
+make_sample_ensemble_seg_plot(model2, model3, sample_filenames, test_samples_fig, flag='binary')
+```
 
+This function uses two trained models to estimate the label image from each input image
+It then uses a KL score to determine which one to return and returns both images and labels as a list, as well as a list of which model's output is returned
+
+* INPUTS:
+    * `model`: trained and compiled keras model
+    * `sample_filenames`: [list] of strings
+    * `test_samples_fig` [string]: filename to print figure to
+    * `flag` [string]: either 'binary' or 'multiclass'
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * `imgs`: [list] of images
+    * `lbls`: [list] of label images
+    * `model_num`: [list] of integers indicating which model's output was retuned based on CRF KL divergence
+
+
+---
+##### make_sample_seg_plot
+```python
+make_sample_seg_plot(model, sample_filenames, test_samples_fig, flag='binary')
+```
+
+This function uses a trained model to estimate the label image from each input image
+and returns both images and labels as a list
+
+* INPUTS:
+    * `model`: trained and compiled keras model
+    * `sample_filenames`: [list] of strings
+    * `test_samples_fig` [string]: filename to print figure to
+    * `flag` [string]: either 'binary' or 'multiclass'
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS:
+    * `imgs`: [list] of images
+    * `lbls`: [list] of label images
+
+
+---
+##### plot_seg_history
+```python
+plot_seg_history(history, train_hist_fig)
+```
+
+This function plots the training history of a model
+
+* INPUTS:
+    * `history` [dict]: the output dictionary of the model.fit() process, i.e. history = model.fit(...)
+    * `train_hist_fig` [string]: the filename where the plot will be printed
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS: None (figure printed to file)        
+
+
+---
+##### plot_seg_history_iou
+```python
+plot_seg_history_iou(history, train_hist_fig)
+```
+
+This function plots the training history of a model
+
+* INPUTS:
+    * `history` [dict]: the output dictionary of the model.fit() process, i.e. history = model.fit(...)
+    * `train_hist_fig` [string]: the filename where the plot will be printed
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS: None (figure printed to file)
+
+---
+##### crf_refine
+```python
+crf_refine(label, img)
+```
+
+This function refines a label image based on an input label image and the associated image
+Uses a conditional random field algorithm using spatial and image features
+
+* INPUTS:
+    * `label` [ndarray]: label image 2D matrix of integers
+    * `image` [ndarray]: image 3D matrix of integers
+* OPTIONAL INPUTS: None
+* GLOBAL INPUTS: None
+* OUTPUTS: `label` [ndarray]: label image 2D matrix of integers
 
 
 

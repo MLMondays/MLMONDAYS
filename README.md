@@ -5,6 +5,11 @@ One module per week. All modules include slides, videos and jupyter notebooks.
 
 Please go to the [project website](https://dbuscombe-usgs.github.io/MLMONDAYS) for more details
 
+This project was conceived by Dan Buscombe (Marda Science, LLC and contractor to USGS PCMSC), Leslie Hsu (USGS CDI) and Jonathan Warrick (USGS PCMSC). The project is supported by USGS CDI and the USGS CMHRP. Additional input over course content and testing has been provided by Phil Wernette (USGS PCMSC), and Rich Signell (USGS Woods Hole). Thanks to Sam Congdon (USGS CHS) for Pangeo CHS environment and development.
+
+All code has been written by Dan Buscombe, unless where specified in function docstrings.
+
+
 ## Warning: these resources are not yet finished, so these instructions are for developers only:
 
 ### Conda environment workflow
@@ -75,6 +80,25 @@ To shut down, use `Ctrl+C`
 In each section, there are notebooks you can run on Google Colab instead of your own machine. They are identified by `colab` in the name.
 
 Colab provide free GPU access to run these computational notebooks. If you save the notebooks to your own Google Drive, you can launch them from there.
+
+
+### Windows desktop workflow
+
+Follow this sequence of commands in this order:
+
+```
+conda create --name mlmondays python=3.7
+conda activate mlmondays
+pip install numpy
+pip install seaborn   # --> installs Pillow and matplotlib
+pip install jupyter
+pip install sklearn
+pip install matplotlib
+conda install -c conda-forge tensorflow-gpu   # --> conda-forge only has TF v.2.1 (needs upgrade with pip in next line)
+pip install tensorflow --upgrade
+pip install tensorflow --upgrade   # --> yes, this needs to be run twice (likely)
+pip install tensorflow-gpu --upgrade
+```
 
 
 ## Useful Links

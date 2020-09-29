@@ -4,14 +4,14 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python #=3.6
+  - python
   - pydensecrf #for CRF algorithm (segmentation post-processing)
   - cython #needed for compiling pydensecrf
   - numpy #needed for numerical calculations on cpu
   - Pillow #needed for image operations
   - scikit-learn #ML algos and utilities
   - matplotlib ##plots
-  # - seaborn ##make matplotlib plots nicer!
+  - seaborn ##make matplotlib plots nicer!
   - ipython #optional - for running code in ipython
   - jupyter #for accessing and executing jupyter notebooks
   - pandas  #data wrangling

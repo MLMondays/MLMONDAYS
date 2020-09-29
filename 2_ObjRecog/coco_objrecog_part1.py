@@ -209,9 +209,12 @@ plt.close('all')
 ## Load the COCO2017 dataset using TensorFlow Datasets
 
 val_dataset, dataset_info = tfds.load("coco/2017", split="validation", data_dir="data",
-                        with_info=True)
+                        download=False, with_info=True)
 
 int2str = dataset_info.features["objects"]["label"].int2str
+
+
+
 
 counter = 0
 for sample in val_dataset.take(4):

@@ -46,15 +46,14 @@ tf.random.set_seed(SEED)
 #-----------------------------------
 def batchnorm_act(x):
     """
-    "batchnorm_act"
-    This function
+    batchnorm_act(x)
+    This function applies batch normalization to a keras model layer, `x`, then a relu activation function
     INPUTS:
-        *
+        * `z` : keras model layer (should be the output of a convolution or an input layer)
     OPTIONAL INPUTS: None
     GLOBAL INPUTS: None
     OUTPUTS:
-        *
-        *
+        * batch normalized and relu-activated `x`
     """
     x = tf.keras.layers.BatchNormalization()(x)
     return tf.keras.layers.Activation("relu")(x)
@@ -62,15 +61,20 @@ def batchnorm_act(x):
 #-----------------------------------
 def conv_block(x, filters, kernel_size=(3, 3), padding="same", strides=1):
     """
-    "conv_block"
-    This function
+    conv_block(x, filters, kernel_size=(3, 3), padding="same", strides=1)
+    This function applies batch normalization to an input layer, then convolves with a 2D convol layer
+    The two actions combined is called a convolutional block
+
     INPUTS:
-        *
-    OPTIONAL INPUTS: None
+        * `filters`: number of filters in the convolutional block
+        * `x`:input keras layer to be convolved by the block
+    OPTIONAL INPUTS:
+        * `kernel_size`=(3, 3): tuple of kernel size (x, y) - this is the size in pixels of the kernel to be convolved with the image
+        * `padding`="same":  see tf.keras.layers.Conv2D
+        * `strides`=1: see tf.keras.layers.Conv2D
     GLOBAL INPUTS: None
     OUTPUTS:
-        *
-        *
+        * keras layer, output of the batch normalized convolution
     """
     conv = batchnorm_act(x)
     return tf.keras.layers.Conv2D(filters, kernel_size, padding=padding, strides=strides)(conv)
@@ -78,15 +82,19 @@ def conv_block(x, filters, kernel_size=(3, 3), padding="same", strides=1):
 #-----------------------------------
 def bottleneck_block(x, filters, kernel_size=(3, 3), padding="same", strides=1):
     """
-    "bottleneck_block"
-    This function
+    bottleneck_block(x, filters, kernel_size=(3, 3), padding="same", strides=1)
+
+    This function creates a bottleneck block layer, which is the addition of a convolution block and a batch normalized/activated block
     INPUTS:
-        *
-    OPTIONAL INPUTS: None
+        * `filters`: number of filters in the convolutional block
+        * `x`: input keras layer
+    OPTIONAL INPUTS:
+        * `kernel_size`=(3, 3): tuple of kernel size (x, y) - this is the size in pixels of the kernel to be convolved with the image
+        * `padding`="same":  see tf.keras.layers.Conv2D
+        * `strides`=1: see tf.keras.layers.Conv2D
     GLOBAL INPUTS: None
     OUTPUTS:
-        *
-        *
+        * keras layer, output of the addition between convolutional and bottleneck layers
     """
     conv = tf.keras.layers.Conv2D(filters, kernel_size, padding=padding, strides=strides)(x)
     conv = conv_block(conv, filters, kernel_size=kernel_size, padding=padding, strides=strides)
@@ -99,15 +107,19 @@ def bottleneck_block(x, filters, kernel_size=(3, 3), padding="same", strides=1):
 #-----------------------------------
 def res_block(x, filters, kernel_size=(3, 3), padding="same", strides=1):
     """
-    "res_block"
-    This function
+    res_block(x, filters, kernel_size=(3, 3), padding="same", strides=1)
+
+    This function creates a residual block layer, which is the addition of a residual convolution block and a batch normalized/activated block
     INPUTS:
-        *
-    OPTIONAL INPUTS: None
+        * `filters`: number of filters in the convolutional block
+        * `x`: input keras layer
+    OPTIONAL INPUTS:
+        * `kernel_size`=(3, 3): tuple of kernel size (x, y) - this is the size in pixels of the kernel to be convolved with the image
+        * `padding`="same":  see tf.keras.layers.Conv2D
+        * `strides`=1: see tf.keras.layers.Conv2D
     GLOBAL INPUTS: None
     OUTPUTS:
-        *
-        *
+        * keras layer, output of the addition between residual convolutional and bottleneck layers
     """
     res = conv_block(x, filters, kernel_size=kernel_size, padding=padding, strides=strides)
     res = conv_block(res, filters, kernel_size=kernel_size, padding=padding, strides=1)
@@ -120,15 +132,15 @@ def res_block(x, filters, kernel_size=(3, 3), padding="same", strides=1):
 #-----------------------------------
 def upsamp_concat_block(x, xskip):
     """
-    "upsamp_concat_block"
-    This function
+    upsamp_concat_block(x, xskip)
+    This function takes an input layer and creates a concatenation of an upsampled version and a residual or 'skip' connection
     INPUTS:
-        *
+        * `xskip`: input keras layer (skip connection)
+        * `x`: input keras layer
     OPTIONAL INPUTS: None
     GLOBAL INPUTS: None
     OUTPUTS:
-        *
-        *
+        * keras layer, output of the addition between residual convolutional and bottleneck layers
     """
     u = tf.keras.layers.UpSampling2D((2, 2))(x)
     return tf.keras.layers.Concatenate()([u, xskip])
@@ -136,15 +148,20 @@ def upsamp_concat_block(x, xskip):
 #-----------------------------------
 def res_unet(sz, f, flag, nclasses=1):
     """
-    "res_unet"
-    This function
+    res_unet(sz, f, flag, nclasses=1)
+    This function creates a custom residual U-Net model for image segmentation
     INPUTS:
-        *
-    OPTIONAL INPUTS: None
+        * `sz`: [tuple] size of input image
+        * `f`: [int] number of filters in the convolutional block
+        * flag: [string] if 'binary', the model will expect 2D masks and uses sigmoid. If 'multiclass', the model will expect 3D masks and uses softmax
+        * nclasses [int]: number of classes
+    OPTIONAL INPUTS:
+        * `kernel_size`=(3, 3): tuple of kernel size (x, y) - this is the size in pixels of the kernel to be convolved with the image
+        * `padding`="same":  see tf.keras.layers.Conv2D
+        * `strides`=1: see tf.keras.layers.Conv2D
     GLOBAL INPUTS: None
     OUTPUTS:
-        *
-        *
+        * keras model
     """
     inputs = tf.keras.layers.Input(sz)
 
@@ -186,36 +203,43 @@ def res_unet(sz, f, flag, nclasses=1):
 # from https://gist.github.com/ilmonteux/8340df952722f3a1030a7d937e701b5a
 def metrics_np(y_true, y_pred, metric_name, metric_type='standard', drop_last = True, mean_per_class=False, verbose=False):
     """
+    metrics_np(y_true, y_pred, metric_name, metric_type='standard', drop_last = True, mean_per_class=False, verbose=False)
     Compute mean metrics of two segmentation masks, via numpy.
 
     IoU(A,B) = |A & B| / (| A U B|)
     Dice(A,B) = 2*|A & B| / (|A| + |B|)
 
-    Args:
-        y_true: true masks, one-hot encoded.
-        y_pred: predicted masks, either softmax outputs, or one-hot encoded.
-        metric_name: metric to be computed, either 'iou' or 'dice'.
-        metric_type: one of 'standard' (default), 'soft', 'naive'.
+    INPUTS:
+        * y_true: true masks, one-hot encoded.
+            * Inputs are B*W*H*N tensors, with
+                B = batch size,
+                W = width,
+                H = height,
+                N = number of classes
+        * y_pred: predicted masks, either softmax outputs, or one-hot encoded.
+            * Inputs are B*W*H*N tensors, with
+                B = batch size,
+                W = width,
+                H = height,
+                N = number of classes
+        * metric_name: metric to be computed, either 'iou' or 'dice'.
+        * metric_type: one of 'standard' (default), 'soft', 'naive'.
           In the standard version, y_pred is one-hot encoded and the mean
           is taken only over classes that are present (in y_true or y_pred).
           The 'soft' version of the metrics are computed without one-hot
           encoding y_pred.
           The 'naive' version return mean metrics where absent classes contribute
           to the class mean as 1.0 (instead of being dropped from the mean).
-        drop_last = True: boolean flag to drop last class (usually reserved
+        * drop_last = True: boolean flag to drop last class (usually reserved
           for background class in semantic segmentation)
-        mean_per_class = False: return mean along batch axis for each class.
-        verbose = False: print intermediate results such as intersection, union
+        * mean_per_class = False: return mean along batch axis for each class.
+        * verbose = False: print intermediate results such as intersection, union
           (as number of pixels).
-    Returns:
-        IoU/Dice of y_true and y_pred, as a float, unless mean_per_class == True
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * IoU/Dice of y_true and y_pred, as a float, unless mean_per_class == True
           in which case it returns the per-class metric, averaged over the batch.
-
-    Inputs are B*W*H*N tensors, with
-        B = batch size,
-        W = width,
-        H = height,
-        N = number of classes
     """
 
     assert y_true.shape == y_pred.shape, 'Input masks should be same shape, instead are {}, {}'.format(y_true.shape, y_pred.shape)
@@ -280,34 +304,67 @@ def metrics_np(y_true, y_pred, metric_name, metric_type='standard', drop_last = 
 
 def mean_iou_np(y_true, y_pred, **kwargs):
     """
-    Compute mean Intersection over Union of two segmentation masks, via numpy.
+    mean_iou_np(y_true, y_pred)
+    This function calls `metrics_np` to compute IoU
 
-    Calls metrics_np(y_true, y_pred, metric_name='iou'), see there for allowed kwargs.
+    INPUTS:
+        * y_true: true masks, one-hot encoded.
+            * Inputs are B*W*H*N tensors, with
+                B = batch size,
+                W = width,
+                H = height,
+                N = number of classes
+        * y_pred: predicted masks, either softmax outputs, or one-hot encoded.
+            * Inputs are B*W*H*N tensors, with
+                B = batch size,
+                W = width,
+                H = height,
+                N = number of classes
+        * metric_name: metric to be computed, either 'iou' or 'dice'.
+        * metric_type: one of 'standard' (default), 'soft', 'naive'.
+          In the standard version, y_pred is one-hot encoded and the mean
+          is taken only over classes that are present (in y_true or y_pred).
+          The 'soft' version of the metrics are computed without one-hot
+          encoding y_pred.
+          The 'naive' version return mean metrics where absent classes contribute
+          to the class mean as 1.0 (instead of being dropped from the mean).
+        * drop_last = True: boolean flag to drop last class (usually reserved
+          for background class in semantic segmentation)
+        * mean_per_class = False: return mean along batch axis for each class.
+        * verbose = False: print intermediate results such as intersection, union
+          (as number of pixels).
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * IoU/Dice of y_true and y_pred, as a float, unless mean_per_class == True
+          in which case it returns the per-class metric, averaged over the batch.
     """
     return metrics_np(y_true, y_pred, metric_name='iou', **kwargs)
 
 
-# def batch_iou(obs, lbls):
-#     iou = []
-#     for target, prediction in zip(obs, lbls):
-#         intersection = np.logical_and(target, prediction)
-#         union = np.logical_or(target, prediction)
-#         iou_score = np.sum(intersection) / np.sum(union)
-#         iou.append(iou_score)
-#     return iou
-#
 
 def mean_iou(y_true, y_pred):
     """
-    "dice_coef"
-    This function
+    mean_iou(y_true, y_pred)
+    This function computes the mean IoU between `y_true` and `y_pred`: this version is tensorflow (not numpy) and is used by tensorflow training and evaluation functions
+
     INPUTS:
-        *
+        * y_true: true masks, one-hot encoded.
+            * Inputs are B*W*H*N tensors, with
+                B = batch size,
+                W = width,
+                H = height,
+                N = number of classes
+        * y_pred: predicted masks, either softmax outputs, or one-hot encoded.
+            * Inputs are B*W*H*N tensors, with
+                B = batch size,
+                W = width,
+                H = height,
+                N = number of classes
     OPTIONAL INPUTS: None
     GLOBAL INPUTS: None
     OUTPUTS:
-        *
-        *
+        * IoU score [tensor]
     """
     yt0 = y_true[:,:,:,0]
     yp0 = tf.keras.backend.cast(y_pred[:,:,:,0] > 0.5, 'float32')
@@ -319,15 +376,27 @@ def mean_iou(y_true, y_pred):
 #-----------------------------------
 def dice_coef(y_true, y_pred):
     """
-    "dice_coef"
-    This function
+    dice_coef(y_true, y_pred)
+
+    This function computes the mean Dice coefficient between `y_true` and `y_pred`: this version is tensorflow (not numpy) and is used by tensorflow training and evaluation functions
+
     INPUTS:
-        *
+        * y_true: true masks, one-hot encoded.
+            * Inputs are B*W*H*N tensors, with
+                B = batch size,
+                W = width,
+                H = height,
+                N = number of classes
+        * y_pred: predicted masks, either softmax outputs, or one-hot encoded.
+            * Inputs are B*W*H*N tensors, with
+                B = batch size,
+                W = width,
+                H = height,
+                N = number of classes
     OPTIONAL INPUTS: None
     GLOBAL INPUTS: None
     OUTPUTS:
-        *
-        *
+        * Dice score [tensor]
     """
     smooth = 1.
     y_true_f = tf.reshape(tf.dtypes.cast(y_true, tf.float32), [-1])
@@ -336,21 +405,43 @@ def dice_coef(y_true, y_pred):
     return (2. * intersection + smooth) / (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + smooth)
 
 def dice_coef_loss(y_true, y_pred):
+    """
+    dice_coef_loss(y_true, y_pred)
+
+    This function computes the mean Dice loss (1 - Dice coefficient) between `y_true` and `y_pred`: this version is tensorflow (not numpy) and is used by tensorflow training and evaluation functions
+
+    INPUTS:
+        * y_true: true masks, one-hot encoded.
+            * Inputs are B*W*H*N tensors, with
+                B = batch size,
+                W = width,
+                H = height,
+                N = number of classes
+        * y_pred: predicted masks, either softmax outputs, or one-hot encoded.
+            * Inputs are B*W*H*N tensors, with
+                B = batch size,
+                W = width,
+                H = height,
+                N = number of classes
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS:
+        * Dice loss [tensor]
+    """
     return 1.0 - dice_coef(y_true, y_pred)
-
-
 
 #---------------------------------------------------
 # learning rate function
 def lrfn(epoch):
     """
-    "lrfn"
-    This function creates a custom piecewise linear-exponential learning rate function
-    for a custom learning rate scheduler. It is linear to a max, then exponentially decays
-    INPUTS: current epoch number
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: start_lr, min_lr, max_lr, rampup_epochs, sustain_epochs, exp_decay
-    OUTPUTS:  the function lr with all arguments passed
+    lrfn(epoch)
+    This function creates a custom piecewise linear-exponential learning rate function for a custom learning rate scheduler. It is linear to a max, then exponentially decays
+
+    * INPUTS: current `epoch` number
+    * OPTIONAL INPUTS: None
+    * GLOBAL INPUTS:`start_lr`, `min_lr`, `max_lr`, `rampup_epochs`, `sustain_epochs`, `exp_decay`
+    * OUTPUTS:  the function lr with all arguments passed
+
     """
     def lr(epoch, start_lr, min_lr, max_lr, rampup_epochs, sustain_epochs, exp_decay):
         if epoch < rampup_epochs:

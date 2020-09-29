@@ -50,7 +50,7 @@ tf.random.set_seed(SEED)
 #-----------------------------------
 def read_seg_tfrecord_obx_binary(example):
     """
-    "read_seg_tfrecord_obx_binary"
+    "read_seg_tfrecord_obx_binary(example)"
     This function reads an example from a TFrecord file into a single image and label
     In this binary image creator for OBX, input 4-class imagery is binarized based on
     0=63=deep, 1=128=broken, 1=191=shallow, 1=255=dry
@@ -116,7 +116,7 @@ def read_seg_tfrecord_obx_binary(example):
 #-----------------------------------
 def read_seg_tfrecord_obx_multiclass(example):
     """
-    "read_seg_tfrecord_obx_multiclass"
+    "read_seg_tfrecord_obx_multiclass(example)"
     This function reads an example from a TFrecord file into a single image and label
     This is the "multiclass" version for OBS imagery, where the classes are mapped as follows:
     0=63=deep, 2=128=broken, 3=191=shallow, 4=255=dry
@@ -173,7 +173,7 @@ def read_seg_tfrecord_obx_multiclass(example):
 #-----------------------------------
 def get_batched_dataset_oysternet(filenames):
     """
-    "get_batched_dataset_oysternet"
+    "get_batched_dataset_oysternet(filenames)"
     This function defines a workflow for the model to read data from
     tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
     and also formats the imagery properly for model training
@@ -202,7 +202,7 @@ def get_batched_dataset_oysternet(filenames):
 #-----------------------------------
 def get_batched_dataset_obx(filenames, flag):
     """
-    "get_batched_dataset_obx"
+    "get_batched_dataset_obx(filenames, flag)"
     This function defines a workflow for the model to read data from
     tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
     and also formats the imagery properly for model training
@@ -238,7 +238,7 @@ def get_batched_dataset_obx(filenames, flag):
 #-----------------------------------
 def get_seg_dataset_for_tfrecords_oysternet(imdir, lab_path, shared_size):
     """
-    "get_seg_dataset_for_tfrecords_oysternet"
+    "get_seg_dataset_for_tfrecords_oysternet(imdir, lab_path, shared_size)"
     This function reads an image and label and decodes both jpegs
     into bytestring arrays.
     This works because the images and labels have the same name
@@ -288,7 +288,7 @@ def get_seg_dataset_for_tfrecords_obx(imdir, lab_path, shared_size):
 #-----------------------------------
 def read_seg_image_and_label(img_path):
     """
-    "read_seg_image_and_label"
+    "read_seg_image_and_label(img_path)"
     This function reads an image and label and decodes both jpegs
     into bytestring arrays.
     This works because the images and labels have the same name
@@ -315,7 +315,7 @@ def read_seg_image_and_label(img_path):
 #-----------------------------------
 def read_seg_image_and_label_obx(img_path):
     """
-    "read_seg_image_and_label_obx"
+    "read_seg_image_and_label_obx(img_path)"
     This function reads an image and label and decodes both jpegs
     into bytestring arrays.
     This works by parsing out the label image filename from its image pair
@@ -344,7 +344,7 @@ def read_seg_image_and_label_obx(img_path):
 #-----------------------------------
 def resize_and_crop_seg_image(image, label):
     """
-    "resize_and_crop_seg_image"
+    "resize_and_crop_seg_image(image, label)"
     This function crops to square and resizes an image and label
     INPUTS:
         * image [tensor array]
@@ -375,7 +375,6 @@ def resize_and_crop_seg_image(image, label):
     label = tf.image.crop_to_bounding_box(label, (nw - tw) // 2, (nh - th) // 2, tw, th)
 
     return image, label
-
 
 
 #-----------------------------------
@@ -447,7 +446,7 @@ def recompress_seg_image(image, label):
 #-----------------------------------
 def write_seg_records_obx(dataset, tfrecord_dir):
     """
-    "write_seg_records_obx"
+    "write_seg_records_obx(dataset, tfrecord_dir)"
     This function writes a tf.data.Dataset object to TFRecord shards
     The version for OBX data preprends "obx" to the filenames, but otherwise is identical
     to write_seg_records
@@ -471,7 +470,7 @@ def write_seg_records_obx(dataset, tfrecord_dir):
 #-----------------------------------
 def write_seg_records_oysternet(dataset, tfrecord_dir, filestr):
     """
-    "write_seg_records_oysternet"
+    "write_seg_records_oysternet(dataset, tfrecord_dir, filestr)"
     This function writes a tf.data.Dataset object to TFRecord shards
     INPUTS:
         * dataset [tf.data.Dataset]
@@ -524,7 +523,7 @@ def to_seg_tfrecord(img_bytes, label_bytes):
 #-----------------------------------
 def read_seg_tfrecord_oysternet(example):
     """
-    "read_seg_tfrecord_oysternet"
+    "read_seg_tfrecord_oysternet(example)"
     This function reads an example from a TFrecord file into a single image and label
     INPUTS:
         * TFRecord example object
@@ -559,7 +558,7 @@ def read_seg_tfrecord_oysternet(example):
 #-----------------------------------
 def seg_file2tensor(f):
     """
-    "file2tensor"
+    "seg_file2tensor(f)"
     This function reads a jpeg image from file into a cropped and resized tensor,
     for use in prediction with a trained segmentation model
     INPUTS:

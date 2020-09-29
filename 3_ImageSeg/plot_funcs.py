@@ -53,7 +53,7 @@ from pydensecrf.utils import create_pairwise_bilateral, unary_from_labels
 #-----------------------------------
 def crf_refine(label, img):
     """
-    "crf_refine"
+    "crf_refine(label, img)"
     This function refines a label image based on an input label image and the associated image
     Uses a conditional random field algorithm using spatial and image features
     INPUTS:
@@ -89,7 +89,7 @@ def crf_refine(label, img):
 #-----------------------------------
 def plot_seg_history_iou(history, train_hist_fig):
     """
-    "plot_seg_history_iou"
+    "plot_seg_history_iou(history, train_hist_fig)"
     This function plots the training history of a model
     INPUTS:
         * history [dict]: the output dictionary of the model.fit() process, i.e. history = model.fit(...)
@@ -119,7 +119,7 @@ def plot_seg_history_iou(history, train_hist_fig):
 #-----------------------------------
 def plot_seg_history(history, train_hist_fig):
     """
-    "plot_seg_history"
+    "plot_seg_history(history, train_hist_fig)"
     This function plots the training history of a model
     INPUTS:
         * history [dict]: the output dictionary of the model.fit() process, i.e. history = model.fit(...)
@@ -149,7 +149,7 @@ def plot_seg_history(history, train_hist_fig):
 
 def make_sample_seg_plot(model, sample_filenames, test_samples_fig, flag='binary'):
     """
-    "make_sample_seg_plot"
+    "make_sample_seg_plot(model, sample_filenames, test_samples_fig, flag='binary')"
     This function uses a trained model to estimate the label image from each input image
     and returns both images and labels as a list
     INPUTS:
@@ -204,7 +204,7 @@ def make_sample_seg_plot(model, sample_filenames, test_samples_fig, flag='binary
 ###---------------------------------------------------------
 def make_sample_ensemble_seg_plot(model2, model3, sample_filenames, test_samples_fig, flag='binary'):
     """
-    "make_sample_ensemble_seg_plot"
+    "make_sample_ensemble_seg_plot(model2, model3, sample_filenames, test_samples_fig, flag='binary')"
     This function uses two trained models to estimate the label image from each input image
     It then uses a KL score to determine which one to return
     and returns both images and labels as a list, as well as a list of which model's output is returned
