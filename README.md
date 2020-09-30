@@ -127,9 +127,9 @@ pip install tensorflow-gpu --upgrade
 
 * [Part 2 jupyter notebook for Colab](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/2_ObjRecog/notebooks/MLMondays_week2_live_colab.ipynb)
 
-* [Part 3 jupyter notebook for Colab](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/1_ImageSeg/notebooks/MLMondays_week3_live.ipynb)
+* [Part 3 jupyter notebook](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/3_ImageSeg/notebooks/MLMondays_week3_live.ipynb)
 
-* [Part 3 jupyter notebook](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/1_ImageSeg/notebooks/MLMondays_week3_live_colab.ipynb)
+* [Part 3 jupyter notebook for Colab](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/3_ImageSeg/notebooks/MLMondays_week3_live_colab.ipynb)
 
 * [Part 4 jupyter notebook](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/1_ImageUnsupRecog/notebooks/MLMondays_week4_live.ipynb)
 
