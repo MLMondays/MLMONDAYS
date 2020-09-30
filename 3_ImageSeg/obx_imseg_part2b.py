@@ -57,19 +57,14 @@ def get_validation_dataset(flag):
 data_path= os.getcwd()+os.sep+"data/obx"
 
 sample_data_path = os.getcwd()+os.sep+"data/obx/sample"
+
 sample_label_data_path = os.getcwd()+os.sep+"data/obx/sample_labels"
 
+filepath = os.getcwd()+os.sep+'results/obx_subset_4class_best_weights_model3.h5'
 
-trainsamples_fig = os.getcwd()+os.sep+'results/obx_sample_4class_trainsamples.png'
-valsamples_fig = os.getcwd()+os.sep+'results/obx_sample_4class_valsamples.png'
+hist_fig = os.getcwd()+os.sep+'results/obx_sample_4class_model3.png'
 
-augsamples_fig = os.getcwd()+os.sep+'results/obx_sample_4class_augtrainsamples.png'
-
-filepath = os.getcwd()+os.sep+'results/obx_subset_4class_best_weights_model2.h5'
-
-hist_fig = os.getcwd()+os.sep+'results/obx_sample_4class_model2.png'
-
-test_samples_fig = os.getcwd()+os.sep+'results/obx_sample_4class_model2_est16samples.png'
+test_samples_fig = os.getcwd()+os.sep+'results/obx_sample_4class_model3_est16samples.png'
 
 patience = 20
 
@@ -98,48 +93,20 @@ steps_per_epoch = int(nb_images // len(filenames) * len(training_filenames)) // 
 print(steps_per_epoch)
 print(validation_steps)
 
-
-
 train_ds = get_training_dataset('multiclass')
 val_ds = get_validation_dataset('multiclass')
 
-for imgs,lbls in train_ds.take(1):
-    print(imgs.shape)
-    print(lbls.shape)
-
-plt.figure(figsize=(16,16))
-for imgs,lbls in train_ds.take(1):
-  #print(lbls)
-  for count,(im,lab) in enumerate(zip(imgs, lbls)):
-     plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
-     plt.imshow(im)
-     plt.imshow(np.argmax(lab,-1), cmap=plt.cm.bwr, alpha=0.5)
-     plt.axis('off')
-# plt.show()
-plt.savefig(trainsamples_fig.replace('.png', '_multiclass.png'), dpi=200, bbox_inches='tight')
-plt.close('all')
-
-plt.figure(figsize=(16,16))
-for imgs,lbls in val_ds.take(1):
-  #print(lbls)
-  for count,(im,lab) in enumerate(zip(imgs, lbls)):
-     plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
-     plt.imshow(im)
-     plt.imshow(np.argmax(lab,-1), cmap=plt.cm.bwr, alpha=0.5)
-     plt.axis('off')
-# plt.show()
-plt.savefig(valsamples_fig.replace('.png', '_multiclass.png'), dpi=200, bbox_inches='tight')
-plt.close('all')
-
-
+# use hinge loss
 
 nclasses=4
-model2 = res_unet((TARGET_SIZE, TARGET_SIZE, 3), BATCH_SIZE, 'multiclass', nclasses)
-model2.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = [mean_iou])
+model3 = res_unet((TARGET_SIZE, TARGET_SIZE, 3), BATCH_SIZE, 'multiclass', nclasses)
+model3.compile(optimizer = 'adam', loss = tf.keras.losses.CategoricalHinge(), metrics = [mean_iou])
+
+
+#tf.keras.metrics.MeanIoU(num_classes=nclasses)])
 
 # use multiclass Dice loss
-# model2.compile(optimizer = 'adam', loss = multiclass_dice_coef_loss(), metrics = [mean_iou, multiclass_dice_coef])
-
+# model3.compile(optimizer = 'adam', loss = multiclass_dice_coef_loss(), metrics = [mean_iou, multiclass_dice_coef])
 
 
 earlystop = EarlyStopping(monitor="val_loss",
@@ -158,10 +125,10 @@ lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch)
 callbacks = [model_checkpoint, earlystop, lr_callback]
 
 
-do_train = False #True
+do_train = False # True
 
 if do_train:
-    history = model2.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
+    history = model3.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
                           validation_data=val_ds, validation_steps=validation_steps,
                           callbacks=callbacks)
 
@@ -172,32 +139,60 @@ if do_train:
     K.clear_session()
 
 else:
-    model2.load_weights(filepath)
-
-# https://github.com/maxvfischer/keras-image-segmentation-loss-functions
+    model3.load_weights(filepath)
 
 # ##########################################################
 # ### evaluate
 
 # testing
-scores = model2.evaluate(val_ds, steps=validation_steps)
+scores = model3.evaluate(val_ds, steps=validation_steps)
 
 print('loss={loss:0.4f}, Mean IoU={mean_iou:0.4f}'.format(loss=scores[0], mean_iou=scores[1]))
 
-# mean iou = 0.63
+# mean iou = 0.69
 
 ##########################################################
 ### predict
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
-imgs, lbls = make_sample_seg_plot(model2, sample_filenames, test_samples_fig, flag='multiclass')
+make_sample_seg_plot(model3, sample_filenames, test_samples_fig, flag='multiclass')
+
+#look better
+
+
+#ensemble predictions
+
+nclasses=4
+model2 = res_unet((TARGET_SIZE, TARGET_SIZE, 3), BATCH_SIZE, 'multiclass', nclasses)
+model2.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = [mean_iou])
+model2.load_weights(filepath.replace('model3', 'model2'))
+
+
+sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
+
+# takes two models, and refines
+# the image that is returned is that with the lowest Kullback-Leibler divergence, which is a measure of
+# closeness of two probability distributions.
+
+imgs, lbls, model_nums = make_sample_ensemble_seg_plot(model2, model3, sample_filenames, test_samples_fig.replace('.png','_crf.png'), flag='multiclass')
 
 
 sample_label_filenames = sorted(tf.io.gfile.glob(sample_label_data_path+os.sep+'*.jpg'))
 
-obs = [np.array(seg_file2tensor(f)/255, dtype=np.uint8).squeeze() for f in sample_label_filenames]
+obs = [np.array(seg_file2tensor(f), dtype=np.uint8).squeeze() for f in sample_label_filenames]
 
+# 0=63=deep, 1=128=broken, 2=191=shallow, 3=255=dry
+
+# for k in range(len(obs)):
+#     obs[k][obs[k]==63]=0
+#     obs[k][obs[k]==128]=1
+#     obs[k][obs[k]==191]=2
+#     obs[k][obs[k]==255]=3
+
+for counter in range(len(obs)):
+    plt.subplot(221); plt.imshow(imgs[counter]); plt.imshow(obs[counter], alpha=0.5, cmap=plt.cm.bwr, vmin=0, vmax=255); plt.axis('off'); plt.title('Manual label', fontsize=6)
+    plt.savefig('gt-example'+str(counter)+'.png', dpi=600, bbox_inches='tight'); plt.close('all')
 
 
 iou = []
@@ -207,4 +202,4 @@ for k in range(len(obs)):
 
 print('Mean IoU={mean_iou:0.3f}'.format(mean_iou=np.mean(iou)))
 
-# mean iou = 0.67
+# mean iou = 0.82

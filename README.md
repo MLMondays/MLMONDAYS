@@ -127,9 +127,9 @@ pip install tensorflow-gpu --upgrade
 
 * [Part 2 jupyter notebook for Colab](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/2_ObjRecog/notebooks/MLMondays_week2_live_colab.ipynb)
 
-<!-- * [Part 3 jupyter notebook for Colab](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/1_ImageSeg/notebooks/MLMondays_week3_live.ipynb)
+* [Part 3 jupyter notebook for Colab](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/1_ImageSeg/notebooks/MLMondays_week3_live.ipynb)
 
-* [Part 3 jupyter notebook](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/1_ImageSeg/notebooks/MLMondays_week3_live_colab.ipynb) -->
+* [Part 3 jupyter notebook](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/1_ImageSeg/notebooks/MLMondays_week3_live_colab.ipynb)
 
 * [Part 4 jupyter notebook](https://github.com/dbuscombe-usgs/MLMONDAYS/blob/master/1_ImageUnsupRecog/notebooks/MLMondays_week4_live.ipynb)
 
@@ -320,15 +320,33 @@ python download_data.py
 
 There are also `colab` versions of both notebooks that you can save to your own google drive, then launch in google colab
 
-#### data viz. scripts
-* ?
-
 #### model training and evaluation scripts
 * `obx_imseg_part1.py`
-* `obx_imseg_part2.py`
+  * view a few examples from the OBX validation dataset
+  * make a model for a binary classification (deep water / no deep water), compile is using Dice loss
+  * train it using learning rate, checkpoint, and stopping callbacks
+  * view some examples of model segmentations on validation imagery
+* `obx_imseg_part2a.py`
+  * view a few examples from the OBX validation dataset
+  * make a model for a multiclass classification (deep water, shallow water, broken water, dry), compile is using categorical cross-entropy loss
+  * train it using learning rate, checkpoint, and stopping callbacks
+  * view some examples of model segmentations on validation imagery
 * `obx_imseg_part2b.py`
+  * view a few examples from the OBX validation dataset
+  * make a model for a multiclass classification (deep water, shallow water, broken water, dry), compile is using categorical hinge loss
+  * train it using learning rate, checkpoint, and stopping callbacks
+  * view some examples of model segmentations on validation imagery
+  * make an ensemble model that uses both trained models (the one here and the one previously trained in `obx_imseg_part2a.py`) to make predictions, then a CRF model to rewfine those predictions. The best prediction is assumed to be the one with the smaller Kullback-Liebler divergence score
 * `oyster_imseg_part1.py`
+  * view a few examples from the Oysternet validation dataset
+  * make a model for a binary classification (reef / no-reef), compile is using binary cross-entropy loss
+  * train it using learning rate, checkpoint, and stopping callbacks
+  * view some examples of model segmentations on validation imagery
 * `oyster_imseg_part2.py`
+  * view a few examples from the Oysternet validation dataset
+  * make a model for a binary classification, compile is using Dice loss
+  * train it using learning rate, checkpoint, and stopping callbacks
+  * view some examples of model segmentations on validation imagery
 
 #### functions - this is where most of the code is!
 * `imports.py`: wrapper imports function, loads the following three sets of functions from:
@@ -361,11 +379,33 @@ There are also `colab` versions of both notebooks that you can save to your own 
 
 #### model training and evaluation scripts
 * `tamucc_imrecog_part1a.py`
+  * load the subset 2-class TAMUCC train and validation datasets and visualize some examples
+  * make an embedding model and train it on the training subset
+  * train a k-nearest neighbours model on the embeddings
+  * use the trained model to estimate the embeddings for the validation subset
+  * use the kNN model on each test sample to predict the class based on the similarity of the sample embedding with the k nearest sample embeddings
 * `tamucc_imrecog_part1b.py`
+  * the same as the above, except using thr `weighted_binary_crossentropy` function instead of sparse categorical cross-entropy
 * `tamucc_imrecog_part2.py`
+  * load the subset 3-class TAMUCC train and validation datasets and visualize some examples
+  * make an embedding model and train it on the training subset
+  * train a k-nearest neighbours model on the embeddings
+  * use the trained model to estimate the embeddings for the validation subset
+  * use the kNN model on each test sample to predict the class based on the similarity of the sample embedding with the k nearest sample embeddings
 * `tamucc_imrecog_part3.py`
+  * load the subset 12-class TAMUCC train and validation datasets and visualize some examples
+  * make an embedding model and train it on the training subset
+  * train a k-nearest neighbours model on the embeddings
+  * use the trained model to estimate the embeddings for the validation subset
+  * use the kNN model on each test sample to predict the class based on the similarity of the sample embedding with the k nearest sample embeddings
 * `tamucc_imrecog_part4.py`
+  * same as the above but for the full 12-class dataset, not the subset
 * `nwpu_ssimrecog_part1.py`
+  * load the subset 11-class NWPU train and validation datasets and visualize some examples
+  * make an embedding model and train it on the training subset
+  * train a k-nearest neighbours model on the embeddings
+  * use the trained model to estimate the embeddings for the validation subset
+  * use the kNN model on each test sample to predict the class based on the similarity of the sample embedding with the k nearest sample embeddings
 
 #### functions - this is where most of the code is!
 * `imports.py`: wrapper imports function, loads the following three sets of functions from:

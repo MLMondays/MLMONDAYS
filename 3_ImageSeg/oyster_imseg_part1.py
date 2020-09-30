@@ -139,8 +139,8 @@ del imgs, lbls, im, lab
 
 nclass=1
 model = res_unet((TARGET_SIZE, TARGET_SIZE, 3), BATCH_SIZE, 'binary', nclass)
-model.compile(optimizer = 'adam', loss = dice_coef_loss, metrics = [dice_coef])
-# model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = [mean_iou])
+# model.compile(optimizer = 'adam', loss = dice_coef_loss, metrics = [dice_coef])
+model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = [mean_iou])
 
 # model.summary()
 
