@@ -28,7 +28,7 @@ files_to_download = [
 for k in range(len(files_to_download)):
     file = files_to_download[k]
     folder = folders_to_extract_to[k]
-    url = "https://github.com/dbuscombe-usgs/mlmondays_data_imrecog/releases/download/0.1.0/"+file
+    url = "https://ml-mondays-data.s3-us-west-2.amazonaws.com/mlmondays_data_imrecog/releases/download/0.1.0/"+file
     filename = os.path.join(os.getcwd(), file)
     print("Downloading %s ... " % (filename))
     tf.keras.utils.get_file(filename, url)
