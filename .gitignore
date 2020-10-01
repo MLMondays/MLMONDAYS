@@ -38,7 +38,7 @@ website/i18n/*
 4_UnsupImageSeg/data/tamucc/*
 4_UnsupImageSeg/data/nwpu/*
 4_UnsupImageRecog/results/weights_copy/*
-4_UnSupImageSeg/data/tamucc/subset_12class/*
-4_UnSupImageSeg/data/tamucc/subset_12class/sample/*
-4_UnSupImageSeg/data/tamucc/subset_12class/400/*
-4_UnSupImageSeg/data/tamucc/subset_12class/sample/*jpg
+4_UnsupImageRecog/data/tamucc/subset_12class/*
+4_UnsupImageRecog/data/tamucc/subset_12class/sample/*
+4_UnsupImageRecog/data/tamucc/subset_12class/400/*
+4_UnsupImageRecog/data/tamucc/subset_12class/sample/*jpg
