@@ -9,7 +9,6 @@ This project was conceived by Dan Buscombe (Marda Science, LLC and contractor to
 
 All code has been written by Dan Buscombe, unless where specified in function docstrings.
 
-
 ## Warning: these resources are not yet finished, so these instructions are for developers only:
 
 ### Conda environment workflow
