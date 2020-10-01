@@ -5,7 +5,7 @@ One module per week. All modules include slides, videos and jupyter notebooks.
 
 Please go to the [project website](https://dbuscombe-usgs.github.io/MLMONDAYS) for more details
 
-This project was conceived by Dan Buscombe (Marda Science, LLC and contractor to USGS PCMSC), Leslie Hsu (USGS CDI) and Jonathan Warrick (USGS PCMSC). The project is supported by USGS CDI and the USGS CMHRP. Additional input over course content and testing has been provided by Phil Wernette (USGS PCMSC), and Rich Signell (USGS Woods Hole). Thanks to Sam Congdon (USGS CHS) for Pangeo CHS environment and development.
+This project was conceived by Dan Buscombe (Marda Science, LLC and contractor to USGS PCMSC), Leslie Hsu (USGS CDI) and Jonathan Warrick (USGS PCMSC). The project is supported by USGS CDI and the USGS CMHRP. Additional input over course content and testing has been provided by Phil Wernette (USGS PCMSC), and Rich Signell (USGS Woods Hole). Thanks to Sam Congdon (USGS CHS) and Rich Signell (USGS Woods Hole) for Pangeo CHS environment and development.
 
 All code has been written by Dan Buscombe, unless where specified in function docstrings.
 
@@ -137,14 +137,13 @@ pip install tensorflow-gpu --upgrade
 
 ### Data
 
-* [Part 1 datasets repository](https://github.com/dbuscombe-usgs/mlmondays_data_imrecog)
+* [Part 1 datasets github repository](https://github.com/dbuscombe-usgs/mlmondays_data_imrecog)
 
-* [Part 2 datasets repository](https://github.com/dbuscombe-usgs/mlmondays_data_objrecog)
+* [Part 2 datasets github repository](https://github.com/dbuscombe-usgs/mlmondays_data_objrecog)
 
-* [Part 3 datasets repository](https://github.com/dbuscombe-usgs/mlmondays_data_imseg)
+* [Part 3 datasets github repository](https://github.com/dbuscombe-usgs/mlmondays_data_imseg)
 
-* [Part 4 datasets repository](https://github.com/dbuscombe-usgs/mlmondays_data_ssimrecog)
-
+* [Part 4 datasets github repository](https://github.com/dbuscombe-usgs/mlmondays_data_ssimrecog)
 
 
 ## Contents

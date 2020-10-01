@@ -116,6 +116,9 @@ patience = 10
 ###############################################################
 ## EXECUTION
 ###############################################################
+
+print('Reading files and making datasets ...')
+
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
 nb_images = ims_per_shard * len(filenames)
@@ -131,6 +134,8 @@ steps_per_epoch = int(nb_images // len(filenames) * len(training_filenames)) // 
 
 print(steps_per_epoch)
 print(validation_steps)
+
+print('Printing examples to file ...')
 
 train_ds = get_training_dataset()
 plt.figure(figsize=(16,16))
@@ -180,6 +185,10 @@ plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_2class_augtrainsamples.png
 
 ###+===================================================
 ## smaller model
+
+print('Creating and compiling model ...')
+
+
 numclass = len(CLASSES)
 
 custom_model = make_cat_model(numclass, denseunits=256, base_filters = 30, dropout=0.5)
@@ -210,12 +219,15 @@ callbacks = [model_checkpoint, earlystop, lr_callback]
 do_train = False #True
 
 if do_train:
+    print('Training model ...')
+
     history = custom_model.fit(augmented_train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
                           validation_data=augmented_val_ds, validation_steps=validation_steps,
                           callbacks=callbacks)
 
     # Plot training history
     plot_history(history, hist_fig)
+    print('Training history saved to '+hist_fig)
 
     plt.close('all')
     K.clear_session()
@@ -227,6 +239,8 @@ else:
 
 ##########################################################
 ### evaluate
+print('Evaluating model ...')
+
 loss, accuracy = custom_model.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)
 print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
@@ -234,12 +248,17 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
 ##########################################################
 ### predict
+print('Using model for prediction on jpeg images ...')
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
+
+print('Printing example predictions to '+test_samples_fig)
 
 make_sample_plot(custom_model, sample_filenames, test_samples_fig, CLASSES)
 
 ##################################################
+
+print('Computing confusion matrix and printing to '+cm_filename)
 
 ## confusion matrix
 # val_ds = get_validation_eval_dataset()

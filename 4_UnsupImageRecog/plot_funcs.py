@@ -42,7 +42,7 @@ import numpy as np #numerical operations on cpu
 import matplotlib.pyplot as plt #for plotting
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import confusion_matrix #compute confusion matrix from vectors of observed and estimated labels
-# import seaborn as sns #extended functionality / style to matplotlib plots
+import seaborn as sns #extended functionality / style to matplotlib plots
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox #for visualizing image thumbnails plotted as markers
 
 
