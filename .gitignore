@@ -38,3 +38,4 @@ website/i18n/*
 4_UnsupImageSeg/data/tamucc/*
 4_UnsupImageSeg/data/nwpu/*
 4_UnsupImageRecog/results/weights_copy/*
+4_UnSupImageSeg/data/tamucc/subset_12class/*
