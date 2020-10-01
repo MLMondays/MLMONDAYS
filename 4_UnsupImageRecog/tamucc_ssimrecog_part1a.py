@@ -129,6 +129,9 @@ num_classes = len(CLASSES)
 ###############################################################
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
 
@@ -144,6 +147,10 @@ print(steps_per_epoch)
 print(validation_steps)
 
 train_ds = get_training_dataset()
+
+print('.....................................')
+print('Printing examples to file ...')
+
 plt.figure(figsize=(16,16))
 for imgs,lbls in train_ds.take(1):
   #print(lbls)
@@ -182,6 +189,9 @@ num_batches = 10
 
 X_train, ytrain, class_idx_to_train_idxs = get_data_stuff(get_training_dataset(), num_batches)
 
+print('.....................................')
+print('Creating and compiling model ...')
+
 
 model = get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
 
@@ -212,6 +222,8 @@ do_train = False #True
 # show embeddings, etc
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
     history = model.fit(AnchorPositivePairs(num_batchs=num_batches), epochs=max_epochs, callbacks=callbacks)
 
     plt.figure(figsize = (10,10))
@@ -241,12 +253,14 @@ K.clear_session()
 num_dim_use = num_embed_dim #i.e. 8
 
 ## make functions
-
+print('.....................................')
+print('Fitting kNN model to embeddings ...')
 knn = fit_knn_to_embeddings(model, X_train, ytrain, n_neighbors)
 
 
 del X_train, ytrain
-
+print('.....................................')
+print('Evaluating model ...')
 X_test, ytest, class_idx_to_test_idxs = get_data_stuff(get_validation_dataset(), num_batches)
 
 touse = 1000
@@ -267,7 +281,8 @@ y_pred = knn.predict(embeddings_test[:,:num_dim_use])
 
 p_confmat(ytest[:touse], y_pred, cm_filename, CLASSES, thres = 0.1)
 
-
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
 ## apply to image files
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))

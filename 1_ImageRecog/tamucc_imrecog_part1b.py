@@ -145,6 +145,10 @@ patience = 10
 
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
+
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
 
@@ -165,6 +169,9 @@ lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch)
 #####################################################################
 ## class weights
 
+print('.....................................')
+print('Computing class weights ...')
+
 l = get_all_labels(nb_images, VALIDATION_SPLIT, BATCH_SIZE)
 
 # class weights will be given by n_samples / (n_classes * np.bincount(y))
@@ -178,6 +185,9 @@ print(class_weights)
 
 ##==============================
 numclass = len(CLASSES)
+
+print('.....................................')
+print('Creating and compiling model ...')
 
 custom_model2 = make_cat_model(numclass, denseunits=256, base_filters = 30, dropout=0.5)
 
@@ -199,6 +209,9 @@ callbacks = [model_checkpoint, earlystop, lr_callback]
 do_train = False #True
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
+
     K.clear_session()
 
     history = custom_model2.fit(augmented_train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
@@ -219,6 +232,9 @@ else:
 
 ##########################################################
 ### evaluate
+print('.....................................')
+print('Evaluating model ...')
+
 # loss, accuracy = custom_model2.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
 loss, accuracy = custom_model2.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)
 print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
@@ -230,9 +246,14 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
+
 make_sample_plot(custom_model2, sample_filenames, test_samples_fig, CLASSES)
 
 ##################################################
+print('.....................................')
+print('Computing confusion matrix and printing to '+cm_filename)
 
 ## confusion matrix
 val_ds = get_validation_dataset().take(50)

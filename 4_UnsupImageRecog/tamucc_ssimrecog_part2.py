@@ -125,6 +125,8 @@ CLASSES = read_classes_from_json(json_file)
 
 print(CLASSES)
 
+print('.....................................')
+print('Reading files and making datasets ...')
 
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
@@ -155,7 +157,8 @@ print(num_batches)
 
 X_train, ytrain, class_idx_to_train_idxs  = get_data_stuff(train_ds, num_batches)
 
-
+print('.....................................')
+print('Creating and compiling model ...')
 model1 = get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
 
 num_batches = int(np.ceil(len(X_train) / len(CLASSES)))
@@ -183,6 +186,8 @@ do_train = False #True
 
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
     history1 = model1.fit(AnchorPositivePairs(num_batchs=num_batches), epochs=max_epochs,
                           callbacks=callbacks)
 
@@ -210,13 +215,17 @@ K.clear_session()
 
 num_dim_use = num_embed_dim #2
 
-
+print('.....................................')
+print('Creating kNN model ...')
 knn1 = fit_knn_to_embeddings(model1, X_train, ytrain, n_neighbors)
 
 del X_train, ytrain
 
 # num_batches = 100
 
+
+print('.....................................')
+print('Evaluating model ...')
 X_test, ytest, class_idx_to_test_idxs = get_data_stuff(val_ds, num_batches)
 
 

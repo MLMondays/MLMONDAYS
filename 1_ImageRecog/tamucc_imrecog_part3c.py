@@ -146,6 +146,9 @@ patience = 30
 
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 CLASSES = read_classes_from_json(json_file)
 print(CLASSES)
 
@@ -166,6 +169,10 @@ print(validation_steps)
 train_ds = get_training_dataset()
 
 val_ds = get_validation_dataset()
+
+print('.....................................')
+print('Printing examples to file ...')
+
 
 ## data augmentation is typically used
 # augmented_train_ds, augmented_val_ds = get_aug_datasets()
@@ -195,6 +202,8 @@ plt.savefig(os.getcwd()+os.sep+'results/tamucc_full_4class_valsamples.png', dpi=
 
 #####################################################################
 ## class weights
+print('.....................................')
+print('Computing class weights ...')
 
 l = get_all_labels(nb_images, VALIDATION_SPLIT, BATCH_SIZE)
 
@@ -210,6 +219,9 @@ print(class_weights)
 
 ##=========
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=True)
+
+print('.....................................')
+print('Creating and compiling model ...')
 
 model = transfer_learning_mobilenet_model(len(CLASSES), (TARGET_SIZE, TARGET_SIZE, 3), dropout_rate=0.5)
 
@@ -236,6 +248,8 @@ do_train = False #True
 # model.summary()
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
 
     ## class weights
     # history = model.fit(augmented_train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
@@ -258,6 +272,8 @@ else:
 
 ##########################################################
 ### evaluate
+print('.....................................')
+print('Evaluating model ...')
 
 loss, accuracy = model.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)
 
@@ -271,12 +287,18 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
+
 make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES)
 
 
 ##################################################
 
 ## confusion matrix
+print('.....................................')
+print('Computing confusion matrix and printing to '+cm_filename)
+
 val_ds = get_validation_dataset().take(50)
 
 labs, preds = get_label_pairs(val_ds, model)

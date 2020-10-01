@@ -24,6 +24,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# load the subset 4-class train and validation datasets
+# augment the data
+# make a model based on a mobilenet feature extractor with imagenet weights
+# train the model using the class weights with the augmented data
+# examine the history curves
+# evaluate the model and plot a confusion matrix
+
+
 ###############################################################
 ## IMPORTS
 ###############################################################
@@ -141,6 +149,9 @@ test_samples_fig = os.getcwd()+os.sep+'results/tamucc_full_sample_4class_mv2_mod
 
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 CLASSES = read_classes_from_json(json_file)
 print(CLASSES)
 
@@ -168,6 +179,9 @@ augmented_train_ds, augmented_val_ds = get_aug_datasets()
 
 #####################################################################
 ## class weights
+print('.....................................')
+print('Computing class weights ...')
+
 l = get_all_labels(nb_images, VALIDATION_SPLIT, BATCH_SIZE)
 
 # class weights will be given by n_samples / (n_classes * np.bincount(y))
@@ -181,6 +195,9 @@ print(class_weights)
 
 ##=========
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=True)
+
+print('.....................................')
+print('Creating and compiling model ...')
 
 model2 = transfer_learning_mobilenet_model(len(CLASSES), (TARGET_SIZE, TARGET_SIZE, 3), dropout_rate=0.5)
 
@@ -204,6 +221,8 @@ do_train = False #True
 # model2.summary()
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
 
     ## class weights
     history = model2.fit(augmented_train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
@@ -221,6 +240,9 @@ else:
 
 ##########################################################
 ### evaluate
+print('.....................................')
+print('Evaluating model ...')
+
 # loss, accuracy = model2.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
 loss, accuracy = model2.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)
 
@@ -232,11 +254,17 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 ### predict
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
+
 make_sample_plot(model2, sample_filenames, test_samples_fig, CLASSES)
 
 
 ##################################################
 ## confusion matrix
+print('.....................................')
+print('Computing confusion matrix and printing to '+cm_filename)
+
 val_ds = get_validation_dataset().take(50)
 
 labs, preds = get_label_pairs(val_ds, model2)

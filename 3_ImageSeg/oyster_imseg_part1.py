@@ -81,6 +81,9 @@ training_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*train*.tfrec'))
 
 validation_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*val*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 num_files =  (len(training_filenames)+len(validation_filenames))
 
 nb_images = ims_per_shard * num_files
@@ -94,6 +97,9 @@ print(validation_steps)
 
 train_ds = get_training_dataset()
 val_ds = get_validation_dataset()
+
+print('.....................................')
+print('Printing examples to file ...')
 
 
 plt.figure(figsize=(16,16))
@@ -137,6 +143,9 @@ del imgs, lbls, im, lab
 # # plt.show()
 # plt.savefig(augsamples_fig, dpi=200, bbox_inches='tight')
 
+print('.....................................')
+print('Creating and compiling model ...')
+
 nclass=1
 model = res_unet((TARGET_SIZE, TARGET_SIZE, 3), BATCH_SIZE, 'binary', nclass)
 # model.compile(optimizer = 'adam', loss = dice_coef_loss, metrics = [dice_coef])
@@ -158,9 +167,11 @@ lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch)
 callbacks = [model_checkpoint, earlystop, lr_callback]
 
 
-do_train = False #True
+do_train = True #False #True
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
     history = model.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
                           validation_data=val_ds, validation_steps=validation_steps,
                           callbacks=callbacks)
@@ -179,7 +190,8 @@ else:
 ### evaluate
 # loss, accuracy = model.evaluate(get_validation_eval_dataset("binary"), batch_size=BATCH_SIZE)
 # print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
-
+print('.....................................')
+print('Evaluating model ...')
 scores = model.evaluate(val_ds, steps=validation_steps)
 
 print('loss={loss:0.4f}, Mean Dice={dice_coef:0.4f}'.format(loss=scores[0], dice_coef=scores[1]))
@@ -188,6 +200,8 @@ print('loss={loss:0.4f}, Mean Dice={dice_coef:0.4f}'.format(loss=scores[0], dice
 
 ##########################################################
 ### predict
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 

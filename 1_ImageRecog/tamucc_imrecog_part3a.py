@@ -114,6 +114,9 @@ test_samples_fig = os.getcwd()+os.sep+'results/tamucc_full_sample_4class_mv2_mod
 
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 CLASSES = read_classes_from_json(json_file)
 print(CLASSES)
 
@@ -132,6 +135,10 @@ print(steps_per_epoch)
 print(validation_steps)
 
 train_ds = get_training_dataset()
+
+print('.....................................')
+print('Printing examples to file ...')
+
 plt.figure(figsize=(12,12))
 for imgs,lbls in train_ds.take(1):
   #print(lbls)
@@ -175,6 +182,9 @@ plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_4class_augtrainsamples.png
 ##=========
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=True)
 
+print('.....................................')
+print('Creating and compiling model ...')
+
 model = transfer_learning_mobilenet_model(len(CLASSES), (TARGET_SIZE, TARGET_SIZE, 3), dropout_rate=0.5)
 
 model.compile(optimizer=tf.keras.optimizers.Adam(), #1e-4),
@@ -197,6 +207,8 @@ do_train = False #True
 # model.summary()
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
 
     history = model.fit(augmented_train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
                           validation_data=augmented_val_ds, validation_steps=validation_steps,
@@ -214,6 +226,9 @@ else:
 
 ##########################################################
 ### evaluate
+print('.....................................')
+print('Evaluating model ...')
+
 loss, accuracy = model.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)
 
 print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
@@ -224,11 +239,19 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 ### predict
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
+
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
+
 make_sample_plot(model, sample_filenames, test_samples_fig, CLASSES)
 
 ##################################################
 
 ## confusion matrix
+print('.....................................')
+print('Computing confusion matrix and printing to '+cm_filename)
+
+
 val_ds = get_validation_dataset().take(50)
 
 labs, preds = get_label_pairs(val_ds, model)

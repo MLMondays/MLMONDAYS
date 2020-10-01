@@ -86,6 +86,9 @@ VALIDATION_SPLIT = 0.5
 #-------------------------------------------------
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
 
@@ -103,6 +106,9 @@ print(validation_steps)
 
 train_ds = get_training_dataset('binary')
 val_ds = get_validation_dataset('binary')
+
+print('.....................................')
+print('Printing examples to file ...')
 
 for imgs,lbls in train_ds.take(1):
     print(imgs.shape)
@@ -132,6 +138,8 @@ for imgs,lbls in val_ds.take(1):
 plt.savefig(valsamples_fig, dpi=200, bbox_inches='tight')
 plt.close('all')
 
+print('.....................................')
+print('Creating and compiling model ...')
 
 
 nclasses = 1  #1 class in the sense of 1 class + background (one classifying node because binary decision)
@@ -161,6 +169,8 @@ callbacks = [model_checkpoint, earlystop, lr_callback]
 do_train = True # False #True
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
     history = model.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
                           validation_data=val_ds, validation_steps=validation_steps,
                           callbacks=callbacks)
@@ -177,7 +187,8 @@ else:
 
 #####========================================================
 ### evaluate
-
+print('.....................................')
+print('Evaluating model ...')
 scores = model.evaluate(val_ds, steps=validation_steps)
 
 print('loss={loss:0.4f}, Mean Dice={dice_coef:0.4f}'.format(loss=scores[0], dice_coef=scores[1]))
@@ -186,7 +197,8 @@ print('loss={loss:0.4f}, Mean Dice={dice_coef:0.4f}'.format(loss=scores[0], dice
 
 ##########################################################
 ### predict
-
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
 make_sample_seg_plot(model, sample_filenames, test_samples_fig)

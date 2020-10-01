@@ -17,7 +17,8 @@ except:
 # training in this example.
 # """
 
-url = "https://github.com/srihari-humbarwadi/datasets/releases/download/v0.1.0/data.zip"
+url = "https://ml-mondays-data.s3-us-west-2.amazonaws.com/mlmondays_data_imrecog/releases/download/0.1.0/data.zip"
+# url = "https://github.com/srihari-humbarwadi/datasets/releases/download/v0.1.0/data.zip"
 filename = os.path.join(os.getcwd(), "data.zip")
 tf.keras.utils.get_file(filename, url)
 
@@ -32,12 +33,12 @@ try:
 except:
     pass
 
-folder = './data/secorra'
+folder = './data/secoora'
 
 file = 'secoora.zip'
 
 #url = "https://github.com/dbuscombe-usgs/mlmondays_data_objrecog/releases/download/0.1.0/"+file
-url = "https://ml-mondays-data.s3-us-west-2.amazonaws.com/mlmondays_data_objrecog/releases/download/0.1.0/"+file
+url = "https://ml-mondays-data.s3-us-west-2.amazonaws.com/mlmondays_data_imrecog/releases/download/0.1.0/"+file
 filename = os.path.join(os.getcwd(), file)
 print("Downloading %s ... " % (filename))
 tf.keras.utils.get_file(filename, url)
@@ -69,8 +70,8 @@ try:
 except:
     pass
 
+url = "https://ml-mondays-data.s3-us-west-2.amazonaws.com/mlmondays_data_imrecog/releases/download/0.1.0/"+file
 #url = "https://github.com/dbuscombe-usgs/mlmondays_data_objrecog/releases/download/0.1.1/"+file
-url = "https://ml-mondays-data.s3-us-west-2.amazonaws.com/mlmondays_data_objrecog/releases/download/0.1.1/"+file
 filename = os.path.join(os.getcwd(), file)
 print("Downloading %s ... " % (filename))
 tf.keras.utils.get_file(filename, url)
@@ -99,8 +100,9 @@ try:
 except:
     pass
 
-url = "https://ml-mondays-data.s3-us-west-2.amazonaws.com/mlmondays_data_objrecog/releases/download/0.1.1/"+file
-# url = "https://github.com/dbuscombe-usgs/mlmondays_data_objrecog/releases/download/0.1.1/"+file
+url = "https://ml-mondays-data.s3-us-west-2.amazonaws.com/mlmondays_data_imrecog/releases/download/0.1.0/"+file
+# url = "https://ml-mondays-data.s3-us-west-2.amazonaws.com/mlmondays_data_objrecog/releases/download/0.1.1/"+file
+
 filename = os.path.join(os.getcwd(), file)
 print("Downloading %s ... " % (filename))
 tf.keras.utils.get_file(filename, url)
@@ -112,3 +114,6 @@ try:
     os.remove(file)
 except:
     pass
+
+os.system('mv data/*final* data/coco')
+os.system('mv data/check* data/coco')

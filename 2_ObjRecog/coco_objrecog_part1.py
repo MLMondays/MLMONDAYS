@@ -95,11 +95,18 @@ sample_csv = 'data/secoora/sample.csv'
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 print(len(sample_filenames))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 
 dat = pd.read_csv(sample_csv)
 print(len(dat))
 
 grouped = split(dat, 'filename')
+
+
+print('.....................................')
+print('Printing examples to file ...')
 
 SAMPLE_NUM_PEOPLE = []
 counter = 0
@@ -126,9 +133,10 @@ for group in grouped:
     plt.savefig('examples/secoora_examples'+str(counter)+'.png', dpi=200, bbox_inches='tight')
     counter += 1
     SAMPLE_NUM_PEOPLE.append(len(bboxs))
+    plt.close('all')
 
 
-
+plt.close('all')
 ###############################################################
 ## EXECUTION
 ###############################################################
@@ -142,7 +150,7 @@ y = [lrfn(x) for x in rng]
 plt.plot(rng, [lrfn(x) for x in rng])
 # plt.show()
 plt.savefig(os.getcwd()+os.sep+'results/learnratesched.png', dpi=200, bbox_inches='tight')
-
+plt.close('all')
 
 
 # ## Initializing model
@@ -151,6 +159,8 @@ plt.savefig(os.getcwd()+os.sep+'results/learnratesched.png', dpi=200, bbox_inche
 # is constructed. In the example we use ResNet50 as the backbone, and return the
 # feature maps at strides 8, 16 and 32.
 
+print('.....................................')
+print('Creating and compiling model ...')
 
 resnet50_backbone = get_backbone()
 
@@ -170,6 +180,7 @@ model = RetinaNet(num_classes, resnet50_backbone)
 ## Setting up callbacks, and compiling model
 """
 
+
 earlystop = EarlyStopping(monitor="val_loss",
                               mode="min", patience=patience)
 
@@ -188,12 +199,18 @@ optimizer = tf.optimizers.SGD(momentum=0.9)
 # optimizer = tf.optimizers.SGD(learning_rate=learning_rate_fn, momentum=0.9)
 model.compile(loss=loss_fn, optimizer=optimizer)
 
+print('.....................................')
+print('Loading model weights ...')
+
 latest_checkpoint = tf.train.latest_checkpoint(weights_dir)
 model.load_weights(latest_checkpoint)
 
 """
 ## Building inference model
 """
+print('.....................................')
+print('Creating inference model ...')
+
 
 threshold = 0.33 #0.5
 
@@ -213,8 +230,8 @@ val_dataset, dataset_info = tfds.load("coco/2017", split="validation", data_dir=
 
 int2str = dataset_info.features["objects"]["label"].int2str
 
-
-
+print('.....................................')
+print('Evaluating model ...')
 
 counter = 0
 for sample in val_dataset.take(4):
@@ -315,6 +332,9 @@ train_dataset, val_dataset = prepare_coco_datasets_for_training(train_dataset, v
 
 # epochs = 10
 
+print('.....................................')
+print('Training model ...')
+
 history = model.fit(
     train_dataset.take(50),
     validation_data=val_dataset.take(50),
@@ -342,6 +362,8 @@ model.load_weights(latest_checkpoint)
 """
 ## Building inference model amd test on secoora imagery again
 """
+print('.....................................')
+print('Evaluating model ...')
 
 threshold = 0.33 #0.5
 

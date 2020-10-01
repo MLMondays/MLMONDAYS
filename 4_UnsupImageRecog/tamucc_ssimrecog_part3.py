@@ -131,6 +131,9 @@ n_neighbors = 3
 ###############################################################
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
 
@@ -149,6 +152,10 @@ CLASSES = read_classes_from_json(json_file)
 
 
 train_ds = get_training_dataset()
+
+print('.....................................')
+print('Printing examples to file ...')
+
 plt.figure(figsize=(16,16))
 for imgs,lbls in train_ds.take(1):
   #print(lbls)
@@ -175,6 +182,8 @@ for imgs,lbls in val_ds.take(1):
 plt.savefig(valsamples_fig, dpi=200, bbox_inches='tight')
 plt.close('all')
 
+print('.....................................')
+print('Reading files and making datasets ...')
 
 #-------------------------------------------------
 training_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
@@ -189,6 +198,8 @@ num_batches = 200
 
 X_train, ytrain, class_idx_to_train_idxs  = get_data_stuff(train_ds, num_batches)
 
+print('.....................................')
+print('Creating and compiling model ...')
 model1 = get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
 
 ## use SparseCategoricalCrossentropy because multiclass
@@ -217,6 +228,8 @@ do_train = False #True
 
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
     history1 = model1.fit(AnchorPositivePairs(num_batchs=num_batches), epochs=max_epochs,
                           callbacks=callbacks)
 
@@ -241,6 +254,8 @@ else:
 K.clear_session()
 
 #### classify
+print('.....................................')
+print('Creating kNN model ...')
 
 num_dim_use = num_embed_dim #2
 
@@ -249,6 +264,8 @@ knn3 = fit_knn_to_embeddings(model1, X_train, ytrain, n_neighbors)
 del X_train, ytrain
 
 
+print('.....................................')
+print('Evaluating model ...')
 num_batches = 100
 
 X_test, ytest, class_idx_to_test_idxs = get_data_stuff(val_ds, num_batches)

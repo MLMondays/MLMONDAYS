@@ -116,6 +116,9 @@ test_samples_fig = os.getcwd()+os.sep+'results/tamucc_full_sample_3class_mv2_mod
 #images already shuffled
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
 
@@ -138,6 +141,9 @@ augmented_train_ds, augmented_val_ds = get_aug_datasets()
 ## two important questions:
 ## are train and validation sets approximately equal in terms of their class representation?
 ## are classes imbalanced overall?
+
+print('.....................................')
+print('Computing class weights ...')
 
 ## are train and validation sets approximately equal in terms of their class representation?
 
@@ -205,6 +211,9 @@ plt.plot(rng, [lrfn(x) for x in rng])
 # plt.show()
 plt.savefig(os.getcwd()+os.sep+'results/learnratesched.png', dpi=200, bbox_inches='tight')
 
+print('.....................................')
+print('Creating and compiling model ...')
+
 model2 = transfer_learning_mobilenet_model(len(CLASSES), (TARGET_SIZE, TARGET_SIZE, 3), dropout_rate=0.5)
 
 model2.compile(optimizer=tf.keras.optimizers.Adam(), #1e-4),
@@ -224,6 +233,8 @@ callbacks = [model_checkpoint, earlystop, lr_callback]
 do_train = False #True
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
 
     history = model2.fit(augmented_train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
                           validation_data=augmented_val_ds, validation_steps=validation_steps,
@@ -244,6 +255,9 @@ else:
 
 ##########################################################
 ### evaluate
+print('.....................................')
+print('Evaluating model ...')
+
 loss, accuracy = model2.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)
 
 print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
@@ -254,9 +268,15 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 ### predict
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
+
 make_sample_plot(model2, sample_filenames, test_samples_fig, CLASSES)
 
 ## confusion matrix
+print('.....................................')
+print('Computing confusion matrix and printing to '+cm_filename)
+
 val_ds = get_validation_dataset().take(50)
 
 labs, preds = get_label_pairs(val_ds, model2)

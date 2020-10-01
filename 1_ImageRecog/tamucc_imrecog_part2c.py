@@ -118,6 +118,9 @@ test_samples_fig = os.getcwd()+os.sep+'results/tamucc_full_sample_3class_mv2_mod
 
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
 
@@ -138,6 +141,9 @@ augmented_train_ds, augmented_val_ds = get_aug_datasets()
 ###########################################################
 #### fine-tuning
 
+print('.....................................')
+print('Plotting learning rate scheduler ...')
+
 ### use smaller learning rate when fine tuning, and use more patience
 lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=True)
 
@@ -149,6 +155,9 @@ plt.savefig(os.getcwd()+os.sep+'results/learnratesched2.png', dpi=200, bbox_inch
 
 
 ### finet-tuned - load weights, then freeze lower layers
+
+print('.....................................')
+print('Creating and compiling model ...')
 
 ## use more dropout for regularization
 dropout_rate =0.75
@@ -189,6 +198,8 @@ callbacks = [model_checkpoint, earlystop, lr_callback]
 do_train = False #True
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
 
     # much slower to train
     history = model3.fit(augmented_train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
@@ -206,6 +217,9 @@ else:
 
 ##########################################################
 ### evaluate
+print('.....................................')
+print('Evaluating model ...')
+
 # loss, accuracy = model3.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
 loss, accuracy = model3.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)
 
@@ -217,9 +231,15 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 ### predict
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
+
 make_sample_plot(model3, sample_filenames, test_samples_fig, CLASSES)
 
 ## confusion matrix
+print('.....................................')
+print('Computing confusion matrix and printing to '+cm_filename)
+
 val_ds = get_validation_dataset().take(50)
 
 labs, preds = get_label_pairs(val_ds, model3)

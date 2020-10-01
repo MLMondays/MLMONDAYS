@@ -119,6 +119,9 @@ VALIDATION_SPLIT = 0.4
 
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
 
@@ -139,6 +142,9 @@ val_ds = get_validation_dataset()
 
 numclass = len(CLASSES)
 
+print('.....................................')
+print('Creating and compiling model ...')
+
 custom_model3 = make_cat_model(numclass, denseunits=128, base_filters = 30, dropout=0.5) #256
 
 custom_model3.compile(optimizer=tf.keras.optimizers.Adam(),
@@ -158,6 +164,9 @@ callbacks = [model_checkpoint, earlystop, lr_callback]
 do_train = False #True
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
+
     history = custom_model3.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
                           validation_data=val_ds, validation_steps=validation_steps,
                           callbacks=callbacks)
@@ -173,6 +182,9 @@ else:
 
 ##########################################################
 ### evaluate
+print('.....................................')
+print('Evaluating model ...')
+
 # val_ds = get_validation_eval_dataset()
 loss, accuracy = custom_model3.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)
 
@@ -186,12 +198,18 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
+
+
 make_sample_plot(custom_model3, sample_filenames, test_samples_fig, CLASSES)
 
 ##################################################
 
 ## confusion matrix
 # val_ds = get_validation_eval_dataset()
+print('.....................................')
+print('Computing confusion matrix and printing to '+cm_filename)
 
 val_ds = get_validation_dataset().take(50)
 

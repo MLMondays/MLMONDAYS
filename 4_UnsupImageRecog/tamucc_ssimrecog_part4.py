@@ -131,6 +131,9 @@ n_neighbors = 3
 ## EXECUTION
 ###############################################################
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
+print('.....................................')
+print('Reading files and making datasets ...')
+
 
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
@@ -165,6 +168,8 @@ print(num_batches)
 
 X_train, ytrain, class_idx_to_train_idxs  = get_data_stuff(train_ds, num_batches)
 
+print('.....................................')
+print('Creating and compiling model ...')
 
 model2 = get_large_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
 
@@ -214,6 +219,8 @@ do_train = False #True
 
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
     history1 = model2.fit(AnchorPositivePairs(num_batchs=num_batches), epochs=max_epochs,
                           callbacks=callbacks)
 
@@ -239,6 +246,9 @@ K.clear_session()
 
 #### classify
 
+print('.....................................')
+print('Creating several kNN models ...')
+
 num_dim_use = num_embed_dim #2
 
 knn3 = fit_knn_to_embeddings(model2, X_train, ytrain, n_neighbors)
@@ -251,6 +261,8 @@ del X_train, ytrain
 
 
 ## ensemble model
+print('.....................................')
+print('Evaluating model ...')
 
 num_batches = 100
 

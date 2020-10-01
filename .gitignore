@@ -22,6 +22,8 @@ website/i18n/*
 2_ObjRecog/data/coco/2017/1.1.0/*
 2_ObjRecog/data/secoora/*
 2_ObjRecog/data/secoora/sample/*
+2_ObjRecog/retinanet/weight*
+2_ObjRecog/retinanet/check*
 2_ObjRecog/retinanet/part1/*
 2_ObjRecog/retinanet/scratch/*
 2_ObjRecog/retinanet/finetune/*

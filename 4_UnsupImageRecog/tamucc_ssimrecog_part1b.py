@@ -124,6 +124,9 @@ lr = 1e-4
 ###############################################################
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
 
@@ -156,6 +159,8 @@ X_train, ytrain, class_idx_to_train_idxs  = get_data_stuff(train_ds, num_batches
 
 #####################################################################
 ## class weights
+print('.....................................')
+print('Computing class weights ...')
 
 l = []
 num_batches = int(((1-VALIDATION_SPLIT) * nb_images) / BATCH_SIZE)
@@ -185,6 +190,8 @@ print(class_weights)
 
 # weight the loss function directly (i.e. without passing 'class weights' to the .fit() command)
 # by making a custom loss function that computes binary crossentrpy then weights by a measure of the inverse relative proportion of the class
+print('.....................................')
+print('Creating and compiling model ...')
 
 
 model2 = get_embedding_model(TARGET_SIZE, num_classes, num_embed_dim)
@@ -216,6 +223,8 @@ do_train = False #True
 
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
     history2 = model2.fit(AnchorPositivePairs(num_batchs=num_batches), epochs=max_epochs,
                           callbacks=callbacks)
 
@@ -244,13 +253,16 @@ K.clear_session()
 num_dim_use = num_embed_dim #2
 
 ## make functions
-
+print('.....................................')
+print('Fitting kNN model to embeddings ...')
 knn2 = fit_knn_to_embeddings(model2, X_train, ytrain, n_neighbors)
 
 del X_train, ytrain
 
 num_batches = 100
 
+print('.....................................')
+print('Evaluating model ...')
 X_test, ytest, class_idx_to_test_idxs = get_data_stuff(val_ds, num_batches)
 
 touse = 1000
@@ -266,7 +278,8 @@ y_pred = knn2.predict(embeddings_test[:,:num_dim_use])
 
 p_confmat(ytest[:touse], y_pred, cm_filename, CLASSES, thres = 0.1)
 
-
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
 ## apply to image files
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))

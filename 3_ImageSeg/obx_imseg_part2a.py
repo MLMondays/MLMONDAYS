@@ -82,6 +82,9 @@ VALIDATION_SPLIT = 0.5
 #-------------------------------------------------
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
 
@@ -104,6 +107,9 @@ val_ds = get_validation_dataset('multiclass')
 for imgs,lbls in train_ds.take(1):
     print(imgs.shape)
     print(lbls.shape)
+
+print('.....................................')
+print('Printing examples to file ...')
 
 plt.figure(figsize=(16,16))
 for imgs,lbls in train_ds.take(1):
@@ -130,6 +136,8 @@ plt.savefig(valsamples_fig.replace('.png', '_multiclass.png'), dpi=200, bbox_inc
 plt.close('all')
 
 
+print('.....................................')
+print('Creating and compiling model ...')
 
 nclasses=4
 model2 = res_unet((TARGET_SIZE, TARGET_SIZE, 3), BATCH_SIZE, 'multiclass', nclasses)
@@ -155,6 +163,8 @@ callbacks = [model_checkpoint, earlystop, lr_callback]
 do_train = False #True
 
 if do_train:
+    print('.....................................')
+    print('Training model ...')
     history = model2.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
                           validation_data=val_ds, validation_steps=validation_steps,
                           callbacks=callbacks)
@@ -172,7 +182,8 @@ else:
 
 # ##########################################################
 # ### evaluate
-
+print('.....................................')
+print('Evaluating model ...')
 # testing
 scores = model2.evaluate(val_ds, steps=validation_steps)
 
@@ -182,7 +193,8 @@ print('loss={loss:0.4f}, Mean IoU={mean_iou:0.4f}'.format(loss=scores[0], mean_i
 
 ##########################################################
 ### predict
-
+print('.....................................')
+print('Using model for prediction on jpeg images ...')
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
 
 imgs, lbls =make_sample_seg_plot(model2, sample_filenames, test_samples_fig, flag='multiclass')

@@ -15,7 +15,7 @@ except:
 folder = './data'
 file = 'tamucc_subset_12class.zip'
 
-url = "https://ml-mondays-data.s3-us-west-2.amazonaws.com/mlmondays_data_ssimrecog/releases/download/0.1.0/"+file
+url = "https://ml-mondays-data.s3-us-west-2.amazonaws.com/mlmondays_data_imrecog/releases/download/0.1.0/"+file
 # url = "https://github.com/dbuscombe-usgs/mlmondays_data_ssimrecog/releases/download/0.1.0/"+file
 filename = os.path.join(os.getcwd(), file)
 print("Downloading %s ... " % (filename))

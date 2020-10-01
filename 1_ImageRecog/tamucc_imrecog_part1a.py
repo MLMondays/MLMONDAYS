@@ -117,9 +117,10 @@ patience = 10
 ## EXECUTION
 ###############################################################
 
-print('Reading files and making datasets ...')
-
 filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*.tfrec'))
+
+print('.....................................')
+print('Reading files and making datasets ...')
 
 nb_images = ims_per_shard * len(filenames)
 print(nb_images)
@@ -135,9 +136,12 @@ steps_per_epoch = int(nb_images // len(filenames) * len(training_filenames)) // 
 print(steps_per_epoch)
 print(validation_steps)
 
-print('Printing examples to file ...')
 
 train_ds = get_training_dataset()
+
+print('.....................................')
+print('Printing examples to file ...')
+
 plt.figure(figsize=(16,16))
 for imgs,lbls in train_ds.take(1):
   for count,im in enumerate(imgs):
@@ -185,7 +189,7 @@ plt.savefig(os.getcwd()+os.sep+'results/tamucc_sample_2class_augtrainsamples.png
 
 ###+===================================================
 ## smaller model
-
+print('.....................................')
 print('Creating and compiling model ...')
 
 
@@ -219,6 +223,7 @@ callbacks = [model_checkpoint, earlystop, lr_callback]
 do_train = False #True
 
 if do_train:
+    print('.....................................')
     print('Training model ...')
 
     history = custom_model.fit(augmented_train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
@@ -239,6 +244,7 @@ else:
 
 ##########################################################
 ### evaluate
+print('.....................................')
 print('Evaluating model ...')
 
 loss, accuracy = custom_model.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)
@@ -248,6 +254,7 @@ print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
 
 ##########################################################
 ### predict
+print('.....................................')
 print('Using model for prediction on jpeg images ...')
 
 sample_filenames = sorted(tf.io.gfile.glob(sample_data_path+os.sep+'*.jpg'))
@@ -257,7 +264,7 @@ print('Printing example predictions to '+test_samples_fig)
 make_sample_plot(custom_model, sample_filenames, test_samples_fig, CLASSES)
 
 ##################################################
-
+print('.....................................')
 print('Computing confusion matrix and printing to '+cm_filename)
 
 ## confusion matrix

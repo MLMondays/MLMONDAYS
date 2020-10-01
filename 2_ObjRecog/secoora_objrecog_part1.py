@@ -97,7 +97,14 @@ sample_csv = 'data/secoora/sample.csv'
 val_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*val*.tfrecord'))
 train_filenames = sorted(tf.io.gfile.glob(data_path+os.sep+'*train*.tfrecord'))
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 train_dataset = get_test_secoora_dataset(train_filenames)
+
+
+print('.....................................')
+print('Printing examples to file ...')
 
 counter = 0
 for sample in train_dataset.take(4):
@@ -130,6 +137,9 @@ lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch)
 """
 ## Initializing model
 """
+print('.....................................')
+print('Creating and compiling model ...')
+
 
 resnet50_backbone = get_backbone()
 loss_fn = RetinaNetLoss(num_classes)
@@ -178,6 +188,8 @@ train_dataset, val_dataset = prepare_secoora_datasets_for_training(data_path, tr
 ## Training the model
 """
 
+print('.....................................')
+print('Training model ...')
 # history = model.fit(
 #     train_dataset, validation_data=val_dataset, epochs=MAX_EPOCHS, callbacks=callbacks)
 #
@@ -192,6 +204,8 @@ latest_checkpoint = tf.train.latest_checkpoint(finetune_weights_dir)
 print(latest_checkpoint)
 model.load_weights(latest_checkpoint)
 
+print('.....................................')
+print('Evaluating model ...')
 
 
 ## workflow for sample imagery

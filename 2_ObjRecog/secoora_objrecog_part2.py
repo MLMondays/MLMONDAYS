@@ -94,12 +94,19 @@ scratch_weights_dir = "retinanet/scratch"
 ## EXECUTION
 ###############################################################
 
+print('.....................................')
+print('Reading files and making datasets ...')
+
 sample_csv = 'data/secoora/sample.csv'
 
 dat = pd.read_csv(sample_csv)
 print(len(dat))
 
 grouped = split(dat, 'filename')
+
+
+print('.....................................')
+print('Printing examples to file ...')
 
 SAMPLE_NUM_PEOPLE = []
 counter = 0
@@ -155,6 +162,9 @@ plt.savefig(os.getcwd()+os.sep+'results/learnratesched_scratch.png', dpi=200, bb
 """
 ## Initializing model
 """
+print('.....................................')
+print('Creating and compiling model ...')
+
 
 resnet50_backbone = get_backbone()
 loss_fn = RetinaNetLoss(num_classes)
@@ -229,7 +239,8 @@ val_dataset, train_dataset = prepare_secoora_datasets_for_training(data_path, tr
 """
 ## Training the model
 """
-
+print('.....................................')
+print('Training model ...')
 # history = model.fit(
 #     train_dataset, validation_data=val_dataset, epochs=MAX_EPOCHS, callbacks=callbacks)
 #
@@ -246,6 +257,8 @@ val_dataset, train_dataset = prepare_secoora_datasets_for_training(data_path, tr
 """
 ## Building inference model amd test on secoora imagery again
 """
+print('.....................................')
+print('Evaluating model ...')
 
 
 latest_checkpoint = tf.train.latest_checkpoint(scratch_weights_dir)
