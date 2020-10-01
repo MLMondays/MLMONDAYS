@@ -330,34 +330,40 @@ SCORES = np.hstack(SCORES)
 train_dataset, val_dataset = prepare_coco_datasets_for_training(train_dataset, val_dataset)
 
 
-# epochs = 10
+do_train = True
 
-print('.....................................')
-print('Training model ...')
+if do_train is True:
 
-history = model.fit(
-    train_dataset.take(50),
-    validation_data=val_dataset.take(50),
-    epochs=MAX_EPOCHS,
-    callbacks=callbacks,
-    verbose=1,
-)
+    print('.....................................')
+    print('Training model ...')
 
-# history.history.keys()
+    history = model.fit(
+        train_dataset.take(50),
+        validation_data=val_dataset.take(50),
+        epochs=MAX_EPOCHS,
+        callbacks=callbacks,
+        verbose=1,
+    )
 
-# Plot training history
-plot_history(history, train_hist_fig)
+    # history.history.keys()
 
-plt.close('all')
-K.clear_session()
+    # Plot training history
+    plot_history(history, train_hist_fig)
+
+    plt.close('all')
+    K.clear_session()
 
 
-# """
-# ## Loading weights
-# """
+    # """
+    # ## Loading weights
+    # """
 
-latest_checkpoint = tf.train.latest_checkpoint(model_dir)
-model.load_weights(latest_checkpoint)
+    latest_checkpoint = tf.train.latest_checkpoint(model_dir)
+    model.load_weights(latest_checkpoint)
+
+else:
+
+    print("You should train the model to create your own checkpoints")
 
 """
 ## Building inference model amd test on secoora imagery again

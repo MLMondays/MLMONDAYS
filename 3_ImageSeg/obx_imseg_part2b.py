@@ -205,7 +205,7 @@ obs = [np.array(seg_file2tensor(f), dtype=np.uint8).squeeze() for f in sample_la
 
 for counter in range(len(obs)):
     plt.subplot(221); plt.imshow(imgs[counter]); plt.imshow(obs[counter], alpha=0.5, cmap=plt.cm.bwr, vmin=0, vmax=255); plt.axis('off'); plt.title('Manual label', fontsize=6)
-    plt.savefig('gt-example'+str(counter)+'.png', dpi=600, bbox_inches='tight'); plt.close('all')
+    plt.savefig(os.getcwd()+'/example/gt-example'+str(counter)+'.png', dpi=600, bbox_inches='tight'); plt.close('all')
 
 
 iou = []

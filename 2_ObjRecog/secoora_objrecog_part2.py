@@ -239,19 +239,24 @@ val_dataset, train_dataset = prepare_secoora_datasets_for_training(data_path, tr
 """
 ## Training the model
 """
-print('.....................................')
-print('Training model ...')
-# history = model.fit(
-#     train_dataset, validation_data=val_dataset, epochs=MAX_EPOCHS, callbacks=callbacks)
-#
-# # history.history.keys()
-#
-# # Plot training history
-# plot_history(history, train_hist_fig)
-#
-# plt.close('all')
-# K.clear_session()
-#
+
+do_train = False
+
+if do_train is True:
+
+    print('.....................................')
+    print('Training model ...')
+    history = model.fit(
+        train_dataset, validation_data=val_dataset, epochs=MAX_EPOCHS, callbacks=callbacks)
+
+    # history.history.keys()
+
+    # Plot training history
+    plot_history(history, train_hist_fig)
+
+    plt.close('all')
+    K.clear_session()
+
 
 
 """
@@ -313,4 +318,6 @@ plt.plot(xlim, xlim, 'r--')
 plt.title('Observed versus estimated crowd size')
 plt.xlabel('Observed number of people per frame')
 plt.ylabel('Estimated number of people per frame')
-plt.show()
+# plt.show()
+fig_name = os.getcwd()+os.sep+'results/secoora_retinanet_model2_numpeople_obs_vs_est.png'
+plt.savefig(fig_name, dpi=200, bbox_inches='tight')

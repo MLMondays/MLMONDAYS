@@ -25,7 +25,7 @@
 # SOFTWARE.
 
 from imports import *
-
+import gc
 ###############################################################
 ### DATA FUNCTIONS
 ###############################################################
@@ -38,7 +38,7 @@ def get_training_dataset():
     GLOBAL INPUTS: training_filenames
     OUTPUTS: batched data set object
     """
-    return get_batched_dataset(training_filenames)
+    return get_batched_dataset_oysternet(training_filenames)
 
 def get_validation_dataset():
     """
@@ -48,26 +48,16 @@ def get_validation_dataset():
     GLOBAL INPUTS: validation_filenames
     OUTPUTS: batched data set object
     """
-    return get_batched_dataset(validation_filenames)
-
-def get_validation_eval_dataset():
-    """
-    This function will return a batched dataset for model training
-    INPUTS: None
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: validation_filenames
-    OUTPUTS: batched data set object
-    """
-    return get_eval_dataset(validation_filenames)
+    return get_batched_dataset_oysternet(validation_filenames)
 
 #-----------------------------------
-def get_batched_dataset(filenames):
+def get_batched_eval_dataset_oysternet(filenames):
     """
-    "get_batched_dataset"
+    "get_batched_dataset_oysternet(filenames)"
     This function defines a workflow for the model to read data from
     tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
     and also formats the imagery properly for model training
-    (assumes mobilenet by using read_tfrecord_mv2)
+    (assumes oysternet by using read_seg_tfrecord_oysternet)
     INPUTS:
         * filenames [list]
     OPTIONAL INPUTS: None
@@ -80,39 +70,9 @@ def get_batched_dataset(filenames):
     dataset = tf.data.Dataset.list_files(filenames)
     dataset = dataset.with_options(option_no_order)
     dataset = dataset.interleave(tf.data.TFRecordDataset, cycle_length=16, num_parallel_calls=AUTO)
-    dataset = dataset.map(read_seg_tfrecord, num_parallel_calls=AUTO)
-
+    dataset = dataset.map(read_seg_tfrecord_oysternet, num_parallel_calls=AUTO)
     dataset = dataset.cache() # This dataset fits in RAM
-    dataset = dataset.repeat()
-    dataset = dataset.shuffle(2048)
-    dataset = dataset.batch(BATCH_SIZE, drop_remainder=True) # drop_remainder will be needed on TPU
-    dataset = dataset.prefetch(AUTO) #
-
-    return dataset
-
-#-----------------------------------
-def get_eval_dataset(filenames):
-    """
-    "get_eval_dataset"
-    This function defines a workflow for the model to read data from
-    tfrecord files by defining the degree of parallelism, batch size, pre-fetching, etc
-    and also formats the imagery properly for model training
-    (assumes mobilenet by using read_tfrecord_mv2)
-    INPUTS:
-        * filenames [list]
-    OPTIONAL INPUTS: None
-    GLOBAL INPUTS: BATCH_SIZE, AUTO
-    OUTPUTS: tf.data.Dataset object
-    """
-    option_no_order = tf.data.Options()
-    option_no_order.experimental_deterministic = True
-
-    dataset = tf.data.Dataset.list_files(filenames)
-    dataset = dataset.with_options(option_no_order)
-    dataset = dataset.interleave(tf.data.TFRecordDataset, cycle_length=16, num_parallel_calls=AUTO)
-    dataset = dataset.map(read_seg_tfrecord, num_parallel_calls=AUTO)
-
-    dataset = dataset.cache() # This dataset fits in RAM
+    #dataset = dataset.repeat()
     dataset = dataset.shuffle(2048)
     dataset = dataset.batch(BATCH_SIZE, drop_remainder=True) # drop_remainder will be needed on TPU
     dataset = dataset.prefetch(AUTO) #
@@ -145,6 +105,8 @@ max_lr = 1e-4
 max_epochs = 200
 
 patience = 20
+
+VALIDATION_SPLIT = 0.4
 
 ###############################################################
 ## EXECUTION
@@ -189,18 +151,25 @@ for imgs,lbls in train_ds.take(1):
 plt.savefig(trainsamples_fig, dpi=200, bbox_inches='tight')
 plt.close('all')
 
-plt.figure(figsize=(16,16))
-for imgs,lbls in val_ds.take(1):
-  #print(lbls)
-  for count,(im,lab) in enumerate(zip(imgs, lbls)):
-     plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
-     plt.imshow(im)
-     plt.imshow(lab, cmap=plt.cm.gray, alpha=0.5)
-     plt.axis('off')
-# plt.show()
-plt.savefig(valsamples_fig, dpi=200, bbox_inches='tight')
-plt.close('all')
+del imgs, lbls, im, lab
 
+gc.collect()
+
+K.clear_session()
+
+# plt.figure(figsize=(16,16))
+# for imgs,lbls in val_ds.take(1):
+#   #print(lbls)
+#   for count,(im,lab) in enumerate(zip(imgs, lbls)):
+#      plt.subplot(int(BATCH_SIZE/2),int(BATCH_SIZE/2),count+1)
+#      plt.imshow(im)
+#      plt.imshow(lab, cmap=plt.cm.gray, alpha=0.5)
+#      plt.axis('off')
+# # plt.show()
+# plt.savefig(valsamples_fig, dpi=200, bbox_inches='tight')
+# plt.close('all')
+#
+# del imgs, lbls, im, lab
 
 # augmented_train_ds, augmented_val_ds = get_aug_datasets()
 #
@@ -219,8 +188,9 @@ print('.....................................')
 print('Creating and compiling model ...')
 
 
-#
-model = res_unet((TARGET_SIZE, TARGET_SIZE, 3), BATCH_SIZE)
+nclass=1
+model = res_unet((TARGET_SIZE, TARGET_SIZE, 3), BATCH_SIZE, 'binary', nclass)
+
 model.compile(optimizer = 'adam', loss = dice_coef_loss, metrics = [dice_coef])
 
 # model.summary()
@@ -260,12 +230,20 @@ else:
     model.load_weights(filepath)
 
 
+K.clear_session()
 ##########################################################
 ### evaluate
 print('.....................................')
 print('Evaluating model ...')
-loss, accuracy = model.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
-print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
+# loss, accuracy = model.evaluate(get_validation_eval_dataset(), batch_size=BATCH_SIZE)
+# loss, accuracy  = model.evaluate(get_validation_dataset().take(10), steps=validation_steps)
+# print('Test Mean Accuracy: ', round((accuracy)*100, 2),' %')
+
+eval_ds = get_batched_eval_dataset_oysternet(validation_filenames)
+
+scores = model.evaluate(eval_ds, batch_size=BATCH_SIZE)
+
+print('loss={loss:0.4f}, Mean Dice={dice_coef:0.4f}'.format(loss=scores[0], dice_coef=scores[1]))
 
 ##73%
 

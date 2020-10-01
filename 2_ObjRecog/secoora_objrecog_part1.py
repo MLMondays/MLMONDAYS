@@ -188,16 +188,19 @@ train_dataset, val_dataset = prepare_secoora_datasets_for_training(data_path, tr
 ## Training the model
 """
 
-print('.....................................')
-print('Training model ...')
-# history = model.fit(
-#     train_dataset, validation_data=val_dataset, epochs=MAX_EPOCHS, callbacks=callbacks)
-#
-# # Plot training history
-# plot_history(history, train_hist_fig)
-#
-# plt.close('all')
-# K.clear_session()
+do_train = False
+
+if do_train is True:
+    print('.....................................')
+    print('Training model ...')
+    history = model.fit(
+        train_dataset, validation_data=val_dataset, epochs=MAX_EPOCHS, callbacks=callbacks)
+
+    # Plot training history
+    plot_history(history, train_hist_fig)
+
+    plt.close('all')
+    K.clear_session()
 
 
 latest_checkpoint = tf.train.latest_checkpoint(finetune_weights_dir)
@@ -259,13 +262,15 @@ for group in grouped:
 
 
 
-plt.plot(SAMPLE_NUM_PEOPLE, NUM_PEOPLE2, 'ko')
+plt.plot(SAMPLE_NUM_PEOPLE, EST_NUM_PEOPLE, 'ko')
 xlim=plt.xlim()
 plt.plot(xlim, xlim, 'r--')
 plt.title('Observed versus estimated crowd size')
 plt.xlabel('Observed number of people per frame')
 plt.ylabel('Estimated number of people per frame')
-plt.show()
+# plt.show()
+fig_name = os.getcwd()+os.sep+'results/secoora_retinanet_model1_numpeople_obs_vs_est.png'
+plt.savefig(fig_name, dpi=200, bbox_inches='tight')
 
 
 # can we do better? train from scratch

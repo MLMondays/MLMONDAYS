@@ -255,7 +255,9 @@ num_dim_use = num_embed_dim #2
 ## make functions
 print('.....................................')
 print('Fitting kNN model to embeddings ...')
-knn2 = fit_knn_to_embeddings(model2, X_train, ytrain, n_neighbors)
+n_neighbours = 3
+
+knn2 = fit_knn_to_embeddings(model2, X_train, ytrain, n_neighbours)
 
 del X_train, ytrain
 

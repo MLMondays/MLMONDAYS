@@ -125,7 +125,7 @@ num_embed_dim = 16 #8
 max_epochs = 600 #400
 lr = 1e-4
 
-n_neighbors = 3
+n_neighbours = 3
 
 ###############################################################
 ## EXECUTION
@@ -251,7 +251,7 @@ print('Creating several kNN models ...')
 
 num_dim_use = num_embed_dim #2
 
-knn3 = fit_knn_to_embeddings(model2, X_train, ytrain, n_neighbors)
+knn3 = fit_knn_to_embeddings(model2, X_train, ytrain, n_neighbours)
 
 knn5 = fit_knn_to_embeddings(model2, X_train, ytrain, 5)
 

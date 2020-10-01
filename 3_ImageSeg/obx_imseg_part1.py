@@ -166,7 +166,7 @@ lr_callback = tf.keras.callbacks.LearningRateScheduler(lambda epoch: lrfn(epoch)
 callbacks = [model_checkpoint, earlystop, lr_callback]
 
 
-do_train = True # False #True
+do_train = False #True
 
 if do_train:
     print('.....................................')

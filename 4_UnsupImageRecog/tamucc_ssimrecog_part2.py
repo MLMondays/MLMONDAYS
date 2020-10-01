@@ -217,7 +217,8 @@ num_dim_use = num_embed_dim #2
 
 print('.....................................')
 print('Creating kNN model ...')
-knn1 = fit_knn_to_embeddings(model1, X_train, ytrain, n_neighbors)
+n_neighbours = 3
+knn1 = fit_knn_to_embeddings(model1, X_train, ytrain, n_neighbours)
 
 del X_train, ytrain
 
