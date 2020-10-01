@@ -147,6 +147,8 @@ pip install tensorflow-gpu --upgrade
 
 ## Contents
 
+The following is organized by week/topic.
+
 ### Week 1: Image recognition
 
 Get the data by running the download script. Only download the data you wish to use
