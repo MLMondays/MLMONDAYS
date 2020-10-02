@@ -240,7 +240,7 @@ val_dataset, train_dataset = prepare_secoora_datasets_for_training(data_path, tr
 ## Training the model
 """
 
-do_train = False
+do_train = True # False
 
 if do_train is True:
 

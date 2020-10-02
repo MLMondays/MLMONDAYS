@@ -28,6 +28,8 @@ website/i18n/*
 2_ObjRecog/retinanet/scratch/*
 2_ObjRecog/retinanet/finetune/*
 2_ObjRecog/examples/*.png
+2_ObjRecog/retinanet/scratch*
+
 
 3_ImageSeg/*.zip
 3_ImageSeg/data/oysternet/*
