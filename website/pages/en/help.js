@@ -27,8 +27,7 @@ function Help(props) {
       title: 'Browse Docs',
     },
     {
-      content: 'Ask questions about the documentation and project on the dedicated Microsoft Teams channel - '+
-      'please check back later for more details',
+      content: 'Ask questions about the documentation and project on the dedicated Microsoft Teams channel',      
       title: 'Join the community',
     },
     {

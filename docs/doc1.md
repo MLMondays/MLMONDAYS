@@ -17,7 +17,7 @@ ____
 
 * [API](https://dbuscombe-usgs.github.io/MLMONDAYS/docs/doc4) (list of all code functions, their inputs and outputs and what they do)
 
-* [Summary of models](https://dbuscombe-usgs.github.io/MLMONDAYS/docs/doc1)
+* [Summary of models](https://dbuscombe-usgs.github.io/MLMONDAYS/docs/doc3)
 
 * [Blog](https://dbuscombe-usgs.github.io/MLMONDAYS/blog/)
 
@@ -57,7 +57,7 @@ ____
 
 ![](assets/phd.png)
 
-Martin Gorner's 123 min (approx.) course called [TensorFlow, Keras and deep learning, without a PhD](https://codelabs.developers.google.com/codelabs/cloud-tensorflow-mnist/#0) is a clear, approachable, fun introduction to neural networks. It is required pre-course reading for participants.
+Martin Gorner's 123 min (approx.) course called [TensorFlow, Keras and deep learning, without a PhD](https://codelabs.developers.google.com/codelabs/cloud-tensorflow-mnist/#0) is a clear, approachable, fun introduction to neural networks. It is required pre-course reading for participants. If you don't have access to Google Cloud Platform (GCP) - don't worry, that part (near the end) isn't necessary. The intention will be to expose you to some of the terminology and concepts we will use, but we will revisit everything and you'll have lots of opportunities to ask questions.
 
 
 ## Suggested pre-requisites

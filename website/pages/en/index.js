@@ -339,22 +339,6 @@ class Index extends React.Component {
     );
 
 
-    const Warning = () => (
-      <Block background="dark" layout="twoColumn">
-        {[
-          {
-            content:
-            'This website and associated materials is still in active development and `alpha` version. '+
-            'Use at your own risk! '+
-            '<br><br> Please check back later, `watch` the github repository to receive alerts,',
-            image: `${baseUrl}img/undraw_under_construction_46pa.svg`,
-            imageAlign: 'top',
-            title: 'Warning!',
-          },
-        ]}
-      </Block>
-    );
-
 
     const Team = () => (
       <Block background="light" layout="fourColumn">
@@ -437,7 +421,6 @@ class Index extends React.Component {
         <div className="mainContainer">
           <Info />
           <Team />
-          <Warning />
           <Features />
           <WhoIsItFor />
           <ImRecog />

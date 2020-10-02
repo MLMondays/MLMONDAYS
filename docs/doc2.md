@@ -42,6 +42,10 @@ An additional dataset will be provided that you can work on using the same model
 
 ![](assets/geosciences-08-00244-g003-550.jpg)
 
+#### Data availability
+
+The ML-Mondays image recognition datasets may be found in the [mlmondays_data_imrecog github repo](https://github.com/dbuscombe-usgs/mlmondays_data_imrecog) and the [mlmondays_data_ssimrecog github repo](https://github.com/dbuscombe-usgs/mlmondays_data_ssimrecog)
+
 ## Object Detection
 
 ### *How do people use beaches?*
@@ -59,6 +63,11 @@ The imagery and associated label data have been curated especially for this cour
 > SECOORA Data Disclaimer: There are no understandings, agreements, and representations, express or implied warranties (including any regarding merchantability or fitness for a particular purpose) respecting this data. Further, no employee of SECOORA, agent or other person is authorized to give any warranties on behalf of SECOORA, or to assume any liability in connection with the use of this data.
 
 For more information about the data and its uses, see [here](https://secoora.org/data/#products)
+
+#### Data availability
+
+The ML-Mondays object recognition datasets may be found in the [mlmondays_data_objrecog github repo](https://github.com/dbuscombe-usgs/mlmondays_data_objrecog)
+
 
 ## Image Segmentation
 
@@ -83,3 +92,7 @@ The categories are (and corresponding colours in the above image):
 An additional dataset will be provided that you can work on using the same models introduced in the class on your own. This [dataset](https://scholars.duke.edu/display/pub1419444) consists of aerial UAV colour imagery and labels of oyster reefs in shallow water, made publicly available by Duke University researcher [Patrick Gray](https://github.com/patrickcgray/oyster_net). There are two labels: `reef` and `no reef`.
 
 ![](assets/reef_montage.png)
+
+#### Data availability
+
+The ML-Mondays image segmentation datasets may be found in the [mlmondays_data_imseg github repo](https://github.com/dbuscombe-usgs/mlmondays_data_imseg)
