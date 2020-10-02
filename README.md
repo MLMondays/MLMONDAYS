@@ -110,7 +110,7 @@ pip install tensorflow-gpu --upgrade
 
 * [API](https://dbuscombe-usgs.github.io/MLMONDAYS/docs/doc4) (list of all code functions, their inputs and outputs and what they do)
 
-* [Summary of models](https://dbuscombe-usgs.github.io/MLMONDAYS/docs/doc1)
+* [Summary of models](https://dbuscombe-usgs.github.io/MLMONDAYS/docs/doc3)
 
 * [Blog](https://dbuscombe-usgs.github.io/MLMONDAYS/blog/)
 
