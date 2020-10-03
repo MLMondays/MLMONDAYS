@@ -1,7 +1,7 @@
 # MLMONDAYS
 Materials for the USGS Deep Learning for Image Classification and Segmentation CDI workshop, October 2020, called ML MONDAYS
 
-One module per week. All modules include slides, videos and jupyter notebooks.
+One module per week. All modules include slides, live session (plus video recordings), code, data, blog posts, and jupyter notebooks.
 
 Please go to the [project website](https://dbuscombe-usgs.github.io/MLMONDAYS) for more details
 
@@ -9,9 +9,13 @@ This project was conceived by Dan Buscombe (Marda Science, LLC and contractor to
 
 All code has been written by Dan Buscombe, unless where specified in function docstrings.
 
-## Warning: these resources are not yet finished, so these instructions are for developers only:
 
-### Conda environment workflow
+### USGS ML-Mondays participants
+
+Please do nothing, other than ensure you have access to the CHS/AWS environment especially set up for the course. Everything will be introduced in class in stages.
+
+
+### Desktop conda environment workflow
 
 1. Clone the repo:
 
@@ -45,7 +49,6 @@ A. Test 1: does your Tensorflow installation see your GPU?
 `python -c "import tensorflow as tf; print('Num GPUs Available: ', len(tf.config.experimental.list_physical_devices('GPU')))"`
 
 
-
 You should see a bunch of output from tensorflow, and then this line at the bottom
 
 `Num GPUs Available:  1`
@@ -74,14 +77,7 @@ which should open your browser and show your directory structure within the jupy
 To shut down, use `Ctrl+C`
 
 
-### Google Colab workflow
-
-In each section, there are notebooks you can run on Google Colab instead of your own machine. They are identified by `colab` in the name.
-
-Colab provide free GPU access to run these computational notebooks. If you save the notebooks to your own Google Drive, you can launch them from there.
-
-
-### Windows desktop workflow
+### Windows desktop installation workflow
 
 Follow this sequence of commands in this order:
 
@@ -98,6 +94,12 @@ pip install tensorflow --upgrade
 pip install tensorflow --upgrade   # --> yes, this needs to be run twice (likely)
 pip install tensorflow-gpu --upgrade
 ```
+
+### Google Colab workflow
+
+In each section, there are notebooks you can run on Google Colab instead of your own machine. They are identified by `colab` in the name.
+
+Colab provide free GPU access to run these computational notebooks. If you save the notebooks to your own Google Drive, you can launch them from there.
 
 
 ## Useful Links
@@ -143,6 +145,26 @@ pip install tensorflow-gpu --upgrade
 * [Part 3 datasets github repository](https://github.com/dbuscombe-usgs/mlmondays_data_imseg)
 
 * [Part 4 datasets github repository](https://github.com/dbuscombe-usgs/mlmondays_data_ssimrecog)
+
+
+### Slides (these will be presented in the live class)
+
+* [Week 1: What is Machine Learning?](https://docs.google.com/presentation/d/1amhYiIMMpVDyTL9IiecMdCcktyTqtNS4nXjpljWnHfs/edit?usp=sharing)
+
+* [Week 1: ML Mondays overview](https://docs.google.com/presentation/d/1lyZ0YAzP-9pLLTyAuwBgmD7uBO83MkJF1e-Ps3xXlgs/edit?usp=sharing)
+
+* [Week 2: Models overview](https://docs.google.com/presentation/d/1P1w0kbq_XFWd242nuAruUe5TLgF29kTuDVTjSzGIlNM/edit?usp=sharing)
+
+* [Week 2: Object Detection with RetinaNet](https://docs.google.com/presentation/d/1tz63hV3eWNl6HjtiB4LzTX8HGU7Z1sVckJh6XzWdvas/edit?usp=sharing)
+
+* [Week 2: Know thy data](https://docs.google.com/presentation/d/1Om8bFJPI4kC7QmIoFXVozI3lTeF0s-YKBylkfdvuYT4/edit?usp=sharing)
+
+* [Week 3: U-Nets](https://docs.google.com/presentation/d/1mYi-k0PQNu_c6_BiSZTmU8UlJ6S8JuFomFyXU3t4KwY/edit?usp=sharing)
+
+* [Week 3: Going beyond ML Mondays](https://docs.google.com/presentation/d/1-Rvghi8XougN64xTJm9kDIj6PpoeBBqMVGs6b20ex9w/edit?usp=sharing)
+
+* [Week 4: Classifying embeddings](https://docs.google.com/presentation/d/1FODqB5y1I3HdTZ8IPVSqxNbN4UF7kHWs2xWovsbbSng/edit?usp=sharing)
+
 
 
 ## Contents

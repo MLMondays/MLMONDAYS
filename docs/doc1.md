@@ -53,6 +53,25 @@ ____
 * [Part 4 datasets repository](https://github.com/dbuscombe-usgs/mlmondays_data_ssimrecog)
 
 ____
+### Slides (these will be presented in the live class)
+
+* [Week 1: What is Machine Learning?](https://docs.google.com/presentation/d/1amhYiIMMpVDyTL9IiecMdCcktyTqtNS4nXjpljWnHfs/edit?usp=sharing)
+
+* [Week 1: ML Mondays overview](https://docs.google.com/presentation/d/1lyZ0YAzP-9pLLTyAuwBgmD7uBO83MkJF1e-Ps3xXlgs/edit?usp=sharing)
+
+* [Week 2: Models overview](https://docs.google.com/presentation/d/1P1w0kbq_XFWd242nuAruUe5TLgF29kTuDVTjSzGIlNM/edit?usp=sharing)
+
+* [Week 2: Object Detection with RetinaNet](https://docs.google.com/presentation/d/1tz63hV3eWNl6HjtiB4LzTX8HGU7Z1sVckJh6XzWdvas/edit?usp=sharing)
+
+* [Week 2: Know thy data](https://docs.google.com/presentation/d/1Om8bFJPI4kC7QmIoFXVozI3lTeF0s-YKBylkfdvuYT4/edit?usp=sharing)
+
+* [Week 3: U-Nets](https://docs.google.com/presentation/d/1mYi-k0PQNu_c6_BiSZTmU8UlJ6S8JuFomFyXU3t4KwY/edit?usp=sharing)
+
+* [Week 3: Going beyond ML Mondays](https://docs.google.com/presentation/d/1-Rvghi8XougN64xTJm9kDIj6PpoeBBqMVGs6b20ex9w/edit?usp=sharing)
+
+* [Week 4: Classifying embeddings](https://docs.google.com/presentation/d/1FODqB5y1I3HdTZ8IPVSqxNbN4UF7kHWs2xWovsbbSng/edit?usp=sharing)
+
+
 ## Required pre-course reading
 
 ![](assets/phd.png)
