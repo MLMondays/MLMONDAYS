@@ -39,16 +39,16 @@ image_dir = root+'train_images'
 
 csv_input = root+'train_labels.csv'
 
-# write_tfrecords(output_path, image_dir, csv_input)
+write_tfrecords(output_path, image_dir, csv_input)
 
-
-writer = tf.io.TFRecordWriter(output_path)
-
-path = os.path.join(os.getcwd(),image_dir)
-
-examples = pd.read_csv(csv_input)
-print(len(examples))
-grouped = split(examples, 'filename')
+#
+# writer = tf.io.TFRecordWriter(output_path)
+#
+# path = os.path.join(os.getcwd(),image_dir)
+#
+# examples = pd.read_csv(csv_input)
+# print(len(examples))
+# grouped = split(examples, 'filename')
 
 
 ##================
