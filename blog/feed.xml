@@ -4,7 +4,7 @@
         <title>"ML Mondays" Blog</title>
         <link>https://dbuscombe-usgs.github.io/MLMONDAYS/blog</link>
         <description>The best place to stay up-to-date with the latest "ML Mondays" news and events.</description>
-        <lastBuildDate>Sat, 03 Oct 2020 06:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 11 Oct 2020 06:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <image>
@@ -13,6 +13,13 @@
             <link>https://dbuscombe-usgs.github.io/MLMONDAYS/blog</link>
         </image>
         <copyright>Copyright © 2020 Marda Science, LLC</copyright>
+        <item>
+            <title><![CDATA[Preparing a new dataset for an object recognition project]]></title>
+            <link>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/11/blog-post.html</link>
+            <guid>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/11/blog-post.html</guid>
+            <pubDate>Sun, 11 Oct 2020 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p>Formatting your own data into a format that you can use in your data processing pipeline is arguably the most difficult aspect of this largely self-guided course.</p> <p>The workflows I have provided each week to create tfrecords can be adapted to many diff...</p>]]></description>
+        </item>
         <item>
             <title><![CDATA[ML terminology, demystified]]></title>
             <link>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/03/blog-post.html</link>

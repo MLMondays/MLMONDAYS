@@ -1,0 +1,351 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Preparing a new dataset for an object recognition project · &quot;ML Mondays&quot;</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Formatting your own data into a format that you can use in your data processing pipeline is arguably the most difficult aspect of this largely self-guided course."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Preparing a new dataset for an object recognition project · &quot;ML Mondays&quot;"/><meta property="og:type" content="website"/><meta property="og:url" content="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/11/blog-post"/><meta property="og:description" content="Formatting your own data into a format that you can use in your data processing pipeline is arguably the most difficult aspect of this largely self-guided course."/><meta property="og:image" content="https://dbuscombe-usgs.github.io/MLMONDAYS/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://dbuscombe-usgs.github.io/MLMONDAYS/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/MLMONDAYS/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/atom.xml" title="&quot;ML Mondays&quot; Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/feed.xml" title="&quot;ML Mondays&quot; Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/MLMONDAYS/js/scrollSpy.js"></script><link rel="stylesheet" href="/MLMONDAYS/css/main.css"/><script src="/MLMONDAYS/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/MLMONDAYS/"><img class="logo" src="/MLMONDAYS/img/favicon.ico" alt="&quot;ML Mondays&quot;"/><h2 class="headerTitleWithLogo">&quot;ML Mondays&quot;</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/MLMONDAYS/docs/doc1" target="_self">Docs</a></li><li class=""><a href="/MLMONDAYS/docs/doc2" target="_self">Data</a></li><li class=""><a href="/MLMONDAYS/docs/doc3" target="_self">Models</a></li><li class=""><a href="/MLMONDAYS/docs/doc4" target="_self">API</a></li><li class=""><a href="/MLMONDAYS/help" target="_self">Help</a></li><li class="siteNavGroupActive"><a href="/MLMONDAYS/blog/" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Recent Posts</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Recent Posts</h3><ul class=""><li class="navListItem navListItemActive"><a class="navItem" href="/MLMONDAYS/blog/2020/10/11/blog-post">Preparing a new dataset for an object recognition project</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/10/03/blog-post">ML terminology, demystified</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/10/01/blog-post">Creating a Tensorflow Dataset for an image segmentation task</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/09/15/blog-post">Making workflows reproducible</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/09/01/blog-post">Creating a Tensorflow Dataset for an image recognition task</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/MLMONDAYS/blog/2020/10/11/blog-post">Preparing a new dataset for an object recognition project</a></h1><p class="post-meta">October 11, 2020</p><div class="authorBlock"><p class="post-authorName"><a href="http://twitter.com/magic_walnut" target="_blank" rel="noreferrer noopener">Dan Buscombe</a></p></div></header><div><span><p>Formatting your own data into a format that you can use in your data processing pipeline is arguably the most difficult aspect of this largely self-guided course.</p>
+<p>The workflows I have provided each week to create tfrecords can be adapted to many different datasets, but will require some work on your part, using my provided examples and these blog posts. I don't know of any package that helps you out for every case. Perhaps I should write one! Perhaps you should!</p>
+<p>We're going to:</p>
+<ul>
+<li>download some data from the internet</li>
+<li>convert the labels data into a format we can use</li>
+<li>write all the data to one big TFrecord file</li>
+<li>write the data out in chunks to TFRecord shards</li>
+</ul>
+<p>This workflow is also provided in the following script: <code>2_ObjRecog/conservationdrones_make_tfrecords.py</code></p>
+<h2><a class="anchor" aria-hidden="true" id="convert-images-and-bounding-boxes-into-tfrecords"></a><a href="#convert-images-and-bounding-boxes-into-tfrecords" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Convert images and bounding boxes into TFrecords</h2>
+<h3><a class="anchor" aria-hidden="true" id="prepare-your-dataset-as-images-and-corresponding-labels"></a><a href="#prepare-your-dataset-as-images-and-corresponding-labels" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Prepare your dataset as images and corresponding labels</h3>
+<p>To create an example, I headed over the excellent <a href="http://lila.science/datasets/">Labeled Information Library of Alexandria: Biology and Conservation</a> and chose the <a href="http://lila.science/datasets/conservationdrones">Conservation Drones</a> dataset. Specifically, I downloaded <a href="https://lilablobssc.blob.core.windows.net/conservationdrones/TrainReal.zip">TrainReal.zip</a>. Each of these folders contains folders for the annotation .csv files for each video (annotations) and the individual .jpg frames in each video (images).</p>
+<p>We're not afraid of real-world examples in ML-Mondays - I chose a particularly difficult computer vision problem. We'll see why ...</p>
+<p>I unzipped the TrainReal data to a folder on my computer called <code>/media/marda/TWOTB/USGS/DATA/TrainReal</code>, which contains <code>images</code> (jpegs) and <code>labels</code> (annotations in csv format). Here is an example image. Notice it is infrared and therefore greyscale. That's ok- the models we use can cope with single-banded inputs</p>
+<p><img src="/MLMONDAYS/blog/assets/0000000359_0000000000_0000000142.jpg" alt=""></p>
+<p>The associated label data for this image is</p>
+<pre><code class="hljs"><span class="hljs-number">142</span> <span class="hljs-number">2</span>   <span class="hljs-number">276</span> <span class="hljs-number">243</span> <span class="hljs-number">11</span>  <span class="hljs-number">12</span>  <span class="hljs-number">0</span>   <span class="hljs-number">2</span>   <span class="hljs-number">0</span>   <span class="hljs-number">0</span>
+<span class="hljs-number">142</span> <span class="hljs-number">4</span>   <span class="hljs-number">204</span> <span class="hljs-number">260</span> <span class="hljs-number">16</span>  <span class="hljs-number">13</span>  <span class="hljs-number">0</span>   <span class="hljs-number">2</span>   <span class="hljs-number">0</span>   <span class="hljs-number">0</span>
+<span class="hljs-number">142</span> <span class="hljs-number">5</span>   <span class="hljs-number">266</span> <span class="hljs-number">246</span> <span class="hljs-number">11</span>  <span class="hljs-number">10</span>  <span class="hljs-number">0</span>   <span class="hljs-number">2</span>   <span class="hljs-number">0</span>   <span class="hljs-number">0</span>
+<span class="hljs-number">142</span> <span class="hljs-number">108</span> <span class="hljs-number">424</span> <span class="hljs-number">136</span> <span class="hljs-number">11</span>  <span class="hljs-number">12</span>  <span class="hljs-number">0</span>   <span class="hljs-number">2</span>   <span class="hljs-number">0</span>   <span class="hljs-number">0</span>
+<span class="hljs-number">142</span> <span class="hljs-number">114</span> <span class="hljs-number">430</span> <span class="hljs-number">101</span> <span class="hljs-number">17</span>  <span class="hljs-number">21</span>  <span class="hljs-number">0</span>   <span class="hljs-number">2</span>   <span class="hljs-number">0</span>   <span class="hljs-number">0</span>
+<span class="hljs-number">142</span> <span class="hljs-number">115</span> <span class="hljs-number">429</span> <span class="hljs-number">121</span> <span class="hljs-number">11</span>  <span class="hljs-number">11</span>  <span class="hljs-number">0</span>   <span class="hljs-number">2</span>   <span class="hljs-number">0</span>   <span class="hljs-number">0</span>
+</code></pre>
+<p>This is the <a href="https://motchallenge.net/instructions/">MOT</a> annotation format, with the following columns:</p>
+<pre><code class="hljs"><span class="hljs-selector-attr">[frame_number]</span>, <span class="hljs-selector-attr">[object_id]</span>, <span class="hljs-selector-attr">[x]</span>, <span class="hljs-selector-attr">[y]</span>, <span class="hljs-selector-attr">[w]</span>, <span class="hljs-selector-attr">[h]</span>, <span class="hljs-selector-attr">[class]</span>, <span class="hljs-selector-attr">[species]</span>, <span class="hljs-selector-attr">[occlusion]</span>, <span class="hljs-selector-attr">[noise]</span>
+</code></pre>
+<ul>
+<li>class: 0 if animals, 1 if humans</li>
+<li>species: -1: unknown, 0: human, 1: elephant, 2: lion, 3: giraffe, 4: dog, 5: crocodile, 6: hippo, 7: zebra, 8: rhino. 3 and 4 occur only in real data. 5, 6, 7, 8 occur only in synthetic data.</li>
+<li>occlusion: 0 if there is no occlusion, 1 if there is an occlusion (i.e., either occluding or occluded) (note: intersection over union threshold of 0.3 used to assign * occlusion; more details in paper)</li>
+<li>noise: 0 if there is no noise, 1 if there is noise (note: noise labels were interpolated from object locations in previous and next frames; for more than 4 consecutive frames without labels, no noise labels were included; more details in paper)</li>
+</ul>
+<p>So, based on this info, we have 6 lions in the scene, each only 10-20 pixels in size</p>
+<h3><a class="anchor" aria-hidden="true" id="converting-between-label-formats"></a><a href="#converting-between-label-formats" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Converting between label formats</h3>
+<p>The first thing we need to do is convert this csv format into one of</p>
+<pre><code class="hljs"><span class="hljs-selector-attr">[filename]</span>, <span class="hljs-selector-attr">[width]</span>, <span class="hljs-selector-attr">[height]</span>, <span class="hljs-selector-attr">[class]</span>, <span class="hljs-selector-attr">[xmin]</span>, <span class="hljs-selector-attr">[ymin]</span>, <span class="hljs-selector-attr">[xmax]</span>, <span class="hljs-selector-attr">[ymax]</span>
+</code></pre>
+<p>which is perhaps slightly more standard for deep learning workflows. You could do this manually in excel, by using <code>w</code> and <code>h</code> to compute <code>xmax</code> and <code>ymax</code>, then convert the <code>frame_number</code> into a <code>filename</code>. In this case we'll use <code>species</code> as <code>class</code>.</p>
+<p>Honestly, every dataset has its foibles and you have to <code>wrangle</code> the data into one form or another, so get used to it! The python library <code>pandas</code> can help a lot in these situations. I won't lie - this is tricky - as I said before, the data part of any data modeling project is just as hard - if not more so - than the 'modeling' part.</p>
+<h3><a class="anchor" aria-hidden="true" id="combining-all-csv-files-into-one"></a><a href="#combining-all-csv-files-into-one" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Combining all csv files into one</h3>
+<p>These are the libraries we'll need:</p>
+<pre><code class="hljs"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-title">from</span> glob <span class="hljs-keyword">import</span> glob
+<span class="hljs-keyword">import</span> os
+</code></pre>
+<p>This is the top level directory where all the annotation csv files are</p>
+<pre><code class="hljs"><span class="hljs-attr">csv_folder</span> = <span class="hljs-string">'/media/marda/TWOTB/USGS/DATA/TrainReal/annotations'</span>
+</code></pre>
+<p>First we define empty lists to collate image file names, and to concatenate all label data into one list</p>
+<pre><code class="hljs"><span class="hljs-attr">all_label_data</span> = []<span class="hljs-comment">; files = []</span>
+</code></pre>
+<p>We cycle through each csv file, read it in using pandas, and append it to <code>all_label_data</code>. Next we get the filename of the image that <code>id</code> (column zero) corresponds to. This is not an easy file naming convention to deal with ... all strings are forced to have the same length.</p>
+<pre><code class="hljs"><span class="hljs-keyword">for</span> <span class="hljs-keyword">f</span> in csv_file<span class="hljs-variable">s:</span>
+    dat = np.array(pd.read_csv(<span class="hljs-keyword">f</span>))
+    all_label_data.<span class="hljs-keyword">append</span>(dat)
+    # <span class="hljs-built_in">get</span> the <span class="hljs-keyword">file</span> name root
+    tmp = <span class="hljs-keyword">f</span>.replace(<span class="hljs-string">'annotations'</span>, <span class="hljs-string">'images'</span>).replace(<span class="hljs-string">'.csv'</span>,<span class="hljs-string">''</span>)
+    # construct filenames <span class="hljs-keyword">for</span> each annotation
+    <span class="hljs-keyword">for</span> i in dat[:,<span class="hljs-number">0</span>]:
+       <span class="hljs-keyword">if</span> i&lt;<span class="hljs-number">10</span>:
+          <span class="hljs-keyword">files</span>.<span class="hljs-keyword">append</span>(tmp+os.sep+tmp.<span class="hljs-keyword">split</span>(os.sep)[-<span class="hljs-number">1</span>]+<span class="hljs-string">'_000000000'</span>+str(i)+<span class="hljs-string">'.jpg'</span>)
+       elif i&lt;<span class="hljs-number">100</span>:
+          <span class="hljs-keyword">files</span>.<span class="hljs-keyword">append</span>(tmp+os.sep+tmp.<span class="hljs-keyword">split</span>(os.sep)[-<span class="hljs-number">1</span>]+<span class="hljs-string">'_00000000'</span>+str(i)+<span class="hljs-string">'.jpg'</span>)
+       elif i&lt;<span class="hljs-number">1000</span>:
+          <span class="hljs-keyword">files</span>.<span class="hljs-keyword">append</span>(tmp+os.sep+tmp.<span class="hljs-keyword">split</span>(os.sep)[-<span class="hljs-number">1</span>]+<span class="hljs-string">'_0000000'</span>+str(i)+<span class="hljs-string">'.jpg'</span>)
+       elif i&lt;<span class="hljs-number">10000</span>:
+          <span class="hljs-keyword">files</span>.<span class="hljs-keyword">append</span>(tmp+os.sep+tmp.<span class="hljs-keyword">split</span>(os.sep)[-<span class="hljs-number">1</span>]+<span class="hljs-string">'_000000'</span>+str(i)+<span class="hljs-string">'.jpg'</span>)
+       elif i&lt;<span class="hljs-number">100000</span>:
+          <span class="hljs-keyword">files</span>.<span class="hljs-keyword">append</span>(tmp+os.sep+tmp.<span class="hljs-keyword">split</span>(os.sep)[-<span class="hljs-number">1</span>]+<span class="hljs-string">'_00000'</span>+str(i)+<span class="hljs-string">'.jpg'</span>)
+
+</code></pre>
+<p>We use numpy's <code>vstack</code> to concatenate the list of lists into a numpy array with the correct shape (samples x columns)</p>
+<pre><code class="hljs">all_label_data = np.vstack(all_label_data)
+files = np.vstack(files).<span class="hljs-built_in">squeeze</span>()
+
+<span class="hljs-keyword">print</span>(all_label_data.shape)
+<span class="hljs-meta"># 87167 annotations, 10 columns</span>
+<span class="hljs-keyword">print</span>(files.shape)
+<span class="hljs-meta"># 87167 filenames, 1 column</span>
+</code></pre>
+<p>We have converted all the ids to filenames already, next we need to make xmaxs ymaxs</p>
+<pre><code class="hljs"><span class="hljs-attr">xmax</span> = all_label_data[:,<span class="hljs-number">2</span>] + all_label_data[:,<span class="hljs-number">4</span>] <span class="hljs-comment">#xmin + width</span>
+<span class="hljs-attr">ymax</span> = all_label_data[:,<span class="hljs-number">3</span>] + all_label_data[:,<span class="hljs-number">5</span>] <span class="hljs-comment">#ymin + height</span>
+</code></pre>
+<p>Next we map the integers to strings - strings are better in general than integers for class identification</p>
+<pre><code class="hljs"><span class="hljs-comment"># list of integers</span>
+<span class="hljs-attr">classes</span> = all_label_data[:,<span class="hljs-number">7</span>]
+<span class="hljs-comment"># mapping from integers to strings</span>
+<span class="hljs-attr">class_dict</span> = {-<span class="hljs-number">1</span>:<span class="hljs-string">'unknown'</span>,<span class="hljs-number">0</span>: <span class="hljs-string">'human'</span>, <span class="hljs-number">1</span>:<span class="hljs-string">'elephant'</span>, <span class="hljs-number">2</span>:<span class="hljs-string">'lion'</span>, <span class="hljs-number">3</span>:<span class="hljs-string">'giraffe'</span>}
+<span class="hljs-comment">#list of strings</span>
+<span class="hljs-attr">classes_string</span> = [class_dict[i] for i in classes]
+</code></pre>
+<p>Make a pandas dataset so we can write it out to csv file</p>
+<pre><code class="hljs">d = {<span class="hljs-string">'filename'</span>: files, <span class="hljs-string">'width'</span>: all_label_data[:,<span class="hljs-number">4</span>], <span class="hljs-string">'height'</span>: all_label_data[:,<span class="hljs-number">5</span>], <span class="hljs-string">'class'</span>: classes_string,
+     <span class="hljs-string">'xmin'</span>: all_label_data[:,<span class="hljs-number">2</span>], <span class="hljs-string">'ymin'</span>: all_label_data[:,<span class="hljs-number">3</span>], <span class="hljs-string">'xmax'</span>: xmax, <span class="hljs-string">'ymax'</span>: ymax }
+df = pd.<span class="hljs-symbol">DataFrame</span>(data=d)
+</code></pre>
+<p>Interrogate the columns:</p>
+<pre><code class="hljs"><span class="hljs-selector-tag">df</span><span class="hljs-selector-class">.keys</span>()
+</code></pre>
+<p>Print the first few examples to screen:</p>
+<pre><code class="hljs"><span class="hljs-selector-tag">df</span><span class="hljs-selector-class">.head</span>()
+</code></pre>
+<p>Print the last few examples to screen:</p>
+<pre><code class="hljs"><span class="hljs-selector-tag">df</span><span class="hljs-selector-class">.tail</span>()
+</code></pre>
+<p>Write to file:</p>
+<pre><code class="hljs">df.<span class="hljs-keyword">to</span><span class="hljs-constructor">_csv('<span class="hljs-params">conservationdrones_labels</span>.<span class="hljs-params">csv</span>')</span>
+</code></pre>
+<p>Much better! All labels are in one file, that is more manageable and easier to read (in fact, it is stand-alone)</p>
+<h3><a class="anchor" aria-hidden="true" id="writing-data-to-a-single-tfrecord"></a><a href="#writing-data-to-a-single-tfrecord" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Writing data to a single TFRecord</h3>
+<p>Define some paths and inputs</p>
+<pre><code class="hljs"><span class="hljs-attr">root</span> = <span class="hljs-string">'data/conservationdrones'</span>+os.sep
+<span class="hljs-attr">output_path</span> = root+<span class="hljs-string">'conservationdrones.tfrecord'</span>
+<span class="hljs-attr">csv_input</span> = root+<span class="hljs-string">'conservationdrones_labels.csv'</span>
+</code></pre>
+<p>Initiate a <code>TFRecordWriter</code> object that will write the TFRecords</p>
+<pre><code class="hljs"><span class="hljs-keyword">import</span> tensorflow <span class="hljs-keyword">as</span> tf
+<span class="hljs-title">writer</span> = tf.io.<span class="hljs-type">TFRecordWriter</span>(output_path)
+</code></pre>
+<p>Each image has variable number of annotations, so just like in the SECORRA example, we split the data into groups based on filename</p>
+<pre><code class="hljs">examples = pd.read_csv(csv_input)
+<span class="hljs-function"><span class="hljs-title">print</span><span class="hljs-params">(<span class="hljs-string">'Number of labels: %i'</span> % len(examples)</span></span>)
+grouped = split(examples, <span class="hljs-string">'filename'</span>)
+</code></pre>
+<p>How many images?</p>
+<pre><code class="hljs"><span class="hljs-attribute">nb_images</span>=len(grouped)
+<span class="hljs-builtin-name">print</span>(<span class="hljs-string">'Number of images: %i'</span> % nb_images)
+</code></pre>
+<p>We need a function like <code>create_tf_example_coco</code> that creates a bytestring from an image and associated boundng box</p>
+<p>The following function differs from <code>create_tf_example_coco</code> in that filename paths need not be specified and concatenated, and that <code>class_dict = {'unknown':-1,'human':0,'elephant':1, 'lion':2, 'giraffe':3}</code> is usd to convert the strings back to integers</p>
+<pre><code class="hljs"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_tf_example_conservationdrones</span><span class="hljs-params">(group)</span>:</span>
+    <span class="hljs-string">"""
+    create_tf_example_conservationdrones(group)
+    ""
+    This function creates an example tfrecord consisting of an image and label encoded as bytestrings
+    The jpeg image is read into a bytestring, and the bbox coordinates and classes are collated and
+    converted also
+    INPUTS:
+        * group [pandas dataframe group object]
+        * path [tensorflow dataset]: training dataset
+    OPTIONAL INPUTS: None
+    OUTPUTS:
+        * tf_example [tf.train.Example object]
+    GLOBAL INPUTS: BATCH_SIZE
+    """</span>
+    <span class="hljs-keyword">with</span> tf.io.gfile.GFile(group.filename, <span class="hljs-string">'rb'</span>) <span class="hljs-keyword">as</span> fid:
+        encoded_jpg = fid.read()
+    encoded_jpg_io = io.BytesIO(encoded_jpg)
+
+    filename = group.filename.encode(<span class="hljs-string">'utf8'</span>)
+
+    ids = []
+    areas = []
+    xmins = [] ; xmaxs = []; ymins = []; ymaxs = []
+    labels = []
+    is_crowds = []
+
+    <span class="hljs-comment">#for converting back to integer</span>
+    class_dict = {<span class="hljs-string">'unknown'</span>:<span class="hljs-number">-1</span>,<span class="hljs-string">'human'</span>:<span class="hljs-number">0</span>,<span class="hljs-string">'elephant'</span>:<span class="hljs-number">1</span>, <span class="hljs-string">'lion'</span>:<span class="hljs-number">2</span>, <span class="hljs-string">'giraffe'</span>:<span class="hljs-number">3</span>}
+
+    <span class="hljs-keyword">for</span> index, row <span class="hljs-keyword">in</span> group.object.iterrows():
+        labels.append(class_dict[row[<span class="hljs-string">'class'</span>]])
+        ids.append(index)
+        xmins.append(row[<span class="hljs-string">'xmin'</span>])
+        ymins.append(row[<span class="hljs-string">'ymin'</span>])
+        xmaxs.append(row[<span class="hljs-string">'xmax'</span>])
+        ymaxs.append(row[<span class="hljs-string">'ymax'</span>])
+        areas.append((row[<span class="hljs-string">'xmax'</span>]-row[<span class="hljs-string">'xmin'</span>])*(row[<span class="hljs-string">'ymax'</span>]-row[<span class="hljs-string">'ymin'</span>]))
+        is_crowds.append(<span class="hljs-literal">False</span>)
+
+    tf_example = tf.train.Example(features=tf.train.Features(feature={
+        <span class="hljs-string">'objects/is_crowd'</span>: int64_list_feature(is_crowds),
+        <span class="hljs-string">'image/filename'</span>: bytes_feature(filename),
+        <span class="hljs-string">'image/id'</span>: int64_list_feature(ids),
+        <span class="hljs-string">'image'</span>: bytes_feature(encoded_jpg),
+        <span class="hljs-string">'objects/xmin'</span>: float_list_feature(xmins), <span class="hljs-comment">#xs</span>
+        <span class="hljs-string">'objects/xmax'</span>: float_list_feature(xmaxs), <span class="hljs-comment">#xs</span>
+        <span class="hljs-string">'objects/ymin'</span>: float_list_feature(ymins), <span class="hljs-comment">#xs</span>
+        <span class="hljs-string">'objects/ymax'</span>: float_list_feature(ymaxs), <span class="hljs-comment">#xs</span>
+        <span class="hljs-string">'objects/area'</span>: float_list_feature(areas), <span class="hljs-comment">#ys</span>
+        <span class="hljs-string">'objects/id'</span>: int64_list_feature(ids), <span class="hljs-comment">#ys</span>
+        <span class="hljs-string">'objects/label'</span>: int64_list_feature(labels),
+    }))
+
+    <span class="hljs-keyword">return</span> tf_example
+</code></pre>
+<p>Now we can write out each group (bounding boxes of each image)</p>
+<pre><code class="hljs"><span class="hljs-keyword">for</span><span class="hljs-built_in"> group </span><span class="hljs-keyword">in</span> grouped:
+    tf_example = create_tf_example_conservationdrones(group)
+    writer.write(tf_example.SerializeToString())
+</code></pre>
+<p>Close the writer  - we are done!</p>
+<pre><code class="hljs">writer.<span class="hljs-built_in">close</span>()
+output_path = <span class="hljs-built_in">os</span>.<span class="hljs-built_in">path</span>.join(<span class="hljs-built_in">os</span>.getcwd(), output_path)
+<span class="hljs-built_in">print</span>(<span class="hljs-string">'Successfully created the TFRecords: {}'</span>.<span class="hljs-built_in">format</span>(output_path))
+</code></pre>
+<p>This is a big file (1.2 GB). But not as big as the 42,684 individual files that this one file contains, which is 2.3 GB</p>
+<p>How do we split this big TFRecord up in small chunks?</p>
+<h3><a class="anchor" aria-hidden="true" id="writing-data-to-multiple-tfrecords"></a><a href="#writing-data-to-multiple-tfrecords" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Writing data to multiple TFRecords</h3>
+<p>This time we'll create smaller files with 1000 examples per file</p>
+<pre><code class="hljs"><span class="hljs-attr">ims_per_shard</span> = <span class="hljs-number">1000</span>
+</code></pre>
+<p>How many individual files would we make?</p>
+<pre><code class="hljs">SHARDS = <span class="hljs-built_in">int</span>(nb_images / ims_per_shard) + (<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> nb_images % ims_per_shard != <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>)
+print(SHARDS)
+
+shared_size = <span class="hljs-built_in">int</span>(np.ceil(<span class="hljs-number">1.0</span> * nb_images / SHARDS))
+print(shared_size)
+</code></pre>
+<p>Create indices into grouped that will enable writing SHARDS files, each containing shared_size examples</p>
+<pre><code class="hljs">grouped_forshards = np<span class="hljs-class">.<span class="hljs-keyword">lib</span>.<span class="hljs-title">stride_tricks</span>.<span class="hljs-title">as_strided</span>(<span class="hljs-title">np</span>.<span class="hljs-title">arange</span>(<span class="hljs-title">len</span>(<span class="hljs-title">grouped</span>)), (<span class="hljs-title">SHARDS</span>, <span class="hljs-title">shared_size</span>))</span>
+</code></pre>
+<p>Write out each group to a different TFRecord file. Update a counter to increment the file name.</p>
+<pre><code class="hljs">counter= 0
+<span class="hljs-keyword">for</span> indices <span class="hljs-keyword">in</span> grouped_forshards[:-1]:
+
+    tmp = [] #create a new list containing only data <span class="hljs-keyword">in</span> indices
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> indices:
+        tmp.append(grouped[i])
+
+    # modify the original filepath <span class="hljs-keyword">in</span> a consistent way
+    output_path = root+<span class="hljs-string">'conservationdrones.tfrecord'</span>
+    output_path = output_path.replace(<span class="hljs-string">'.tfrecord'</span>,<span class="hljs-string">''</span>)+ <span class="hljs-string">"{:02d}-{}.tfrec"</span>.format(counter, shared_size)
+    writer = tf.io.TFRecordWriter(output_path)
+
+    # write out each example <span class="hljs-keyword">to</span> the shard
+    <span class="hljs-keyword">for</span><span class="hljs-built_in"> group </span><span class="hljs-keyword">in</span> tmp:
+        tf_example = create_tf_example_conservationdrones(group)
+        writer.write(tf_example.SerializeToString())
+
+    writer.close()
+    <span class="hljs-builtin-name">print</span>(<span class="hljs-string">'Successfully created the TFRecords: {}'</span>.format(output_path))
+
+    counter += 1
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="how-do-you-know-you-did-it-right"></a><a href="#how-do-you-know-you-did-it-right" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>How do you know you did it right?</h3>
+<p>You should read the data back in and plot it. Get a list of the tfrec files you made:</p>
+<pre><code class="hljs">filenames = sorted(<span class="hljs-name">tf</span>.io.gfile.glob(<span class="hljs-name">os</span>.getcwd()+os.sep+root+'*.tfrec'))
+</code></pre>
+<p>This dictionary and associated parsing function is what you need to decode</p>
+<pre><code class="hljs">features = {
+    'image': tf.io.<span class="hljs-constructor">FixedLenFeature([], <span class="hljs-params">tf</span>.<span class="hljs-params">string</span>, <span class="hljs-params">default_value</span>='')</span>,
+    'objects/xmin': tf.io.<span class="hljs-constructor">FixedLenSequenceFeature([], <span class="hljs-params">tf</span>.<span class="hljs-params">float32</span>, <span class="hljs-params">allow_missing</span>=True)</span>,
+    'objects/ymin': tf.io.<span class="hljs-constructor">FixedLenSequenceFeature([], <span class="hljs-params">tf</span>.<span class="hljs-params">float32</span>,<span class="hljs-params">allow_missing</span>=True)</span>,
+    'objects/xmax': tf.io.<span class="hljs-constructor">FixedLenSequenceFeature([], <span class="hljs-params">tf</span>.<span class="hljs-params">float32</span>,<span class="hljs-params">allow_missing</span>=True)</span>,
+    'objects/ymax': tf.io.<span class="hljs-constructor">FixedLenSequenceFeature([], <span class="hljs-params">tf</span>.<span class="hljs-params">float32</span>,<span class="hljs-params">allow_missing</span>=True)</span>,
+    'objects/label': tf.io.<span class="hljs-constructor">FixedLenSequenceFeature([], <span class="hljs-params">tf</span>.<span class="hljs-params">int64</span>,<span class="hljs-params">allow_missing</span>=True)</span>,
+}
+
+def <span class="hljs-constructor">_parse_function(<span class="hljs-params">example_proto</span>)</span>:
+  # Parse the input `tf.train.Example` proto using the dictionary above.
+  return tf.io.parse<span class="hljs-constructor">_single_example(<span class="hljs-params">example_proto</span>, <span class="hljs-params">features</span>)</span>
+</code></pre>
+<p>Create a <code>TFRecordDataset</code> object from the list of files, and using the parsing function to create the dataset</p>
+<pre><code class="hljs"><span class="hljs-attr">dataset</span> = tf.data.TFRecordDataset(filenames)
+<span class="hljs-attr">dataset</span> = dataset.map(_parse_function)
+</code></pre>
+<p>Import a plotting library</p>
+<pre><code class="hljs"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+</code></pre>
+<p>Get ten images and their associated labels and plot them</p>
+<pre><code class="hljs">for i <span class="hljs-keyword">in</span> dataset.take(<span class="hljs-number">10</span>):
+    image = tf.image.decode<span class="hljs-constructor">_jpeg(<span class="hljs-params">i</span>['<span class="hljs-params">image</span>'], <span class="hljs-params">channels</span>=1)</span>
+    bbox = tf.numpy<span class="hljs-constructor">_function(<span class="hljs-params">np</span>.<span class="hljs-params">array</span>,[[<span class="hljs-params">i</span>[<span class="hljs-string">"objects/xmin"</span>], <span class="hljs-params">i</span>[<span class="hljs-string">"objects/ymin"</span>], <span class="hljs-params">i</span>[<span class="hljs-string">"objects/xmax"</span>], <span class="hljs-params">i</span>[<span class="hljs-string">"objects/ymax"</span>]]], <span class="hljs-params">tf</span>.<span class="hljs-params">float32</span>)</span>.numpy<span class="hljs-literal">()</span>.T#.squeeze<span class="hljs-literal">()</span>
+    print(len(bbox))
+
+    ids = <span class="hljs-literal">[]</span>
+    for id <span class="hljs-keyword">in</span> i<span class="hljs-literal">["<span class="hljs-identifier">objects</span><span class="hljs-operator">/</span><span class="hljs-identifier">label</span>"]</span>.numpy<span class="hljs-literal">()</span>:
+       ids.append(class_dict<span class="hljs-literal">[<span class="hljs-identifier">id</span>]</span>)
+
+    fig =plt.figure(figsize=(<span class="hljs-number">16</span>,<span class="hljs-number">16</span>))
+    plt.axis(<span class="hljs-string">"off"</span>)
+    plt.imshow(image, cmap=plt.cm.gray)
+    ax = plt.gca<span class="hljs-literal">()</span>
+
+    for box,id <span class="hljs-keyword">in</span> zip(bbox,ids):
+        x1, y1, x2, y2 = box
+        w, h = x2 - x1, y2 - y1
+        patch = plt.<span class="hljs-constructor">Rectangle([<span class="hljs-params">x1</span>, <span class="hljs-params">y1</span>], <span class="hljs-params">w</span>, <span class="hljs-params">h</span>, <span class="hljs-params">fill</span>=False, <span class="hljs-params">edgecolor</span>=[0, 1, 0], <span class="hljs-params">linewidth</span>=1)</span>
+        ax.add<span class="hljs-constructor">_patch(<span class="hljs-params">patch</span>)</span>
+        ax.text(x1, y1, id, bbox={<span class="hljs-string">"facecolor"</span>: <span class="hljs-literal">[<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>]</span>, <span class="hljs-string">"alpha"</span>: <span class="hljs-number">0.4</span>}, clip_box=ax.clipbox, clip_on=True, fontsize=<span class="hljs-number">5</span>)
+    plt.show<span class="hljs-literal">()</span>
+</code></pre>
+<p>Here's an example output. Two tiny(!) elephants in scene:</p>
+<p><img src="/MLMONDAYS/blog/assets/conservationdrone_label.png" alt=""></p>
+<h3><a class="anchor" aria-hidden="true" id="last-word-"></a><a href="#last-word-" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>last word ...</h3>
+<p>Datasets like this are extremely difficult to acquire and in my view are just as valuable as other types of scholarly output, so I encourage you to publish your datasets (if they are <a href="https://www.go-fair.org/fair-principles/">F.A.I.R</a>) and cite other's data. If you use this dataset, please consider citing the paper:</p>
+<blockquote>
+<p>Bondi E, Jain R, Aggrawal P, Anand S, Hannaford R, Kapoor A, Piavis J, Shah S, Joppa L, Dilkina B, Tambe M. BIRDSAI: A Dataset for Detection and Tracking in Aerial Thermal Infrared Videos.</p>
+</blockquote>
+<p>Thanks to the authors for making it publicly available.</p>
+</span></div></div><div class="blogSocialSection"></div></div><div class="blog-recent"><a class="button" href="/MLMONDAYS/blog/">Recent Posts</a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#convert-images-and-bounding-boxes-into-tfrecords">Convert images and bounding boxes into TFrecords</a><ul class="toc-headings"><li><a href="#prepare-your-dataset-as-images-and-corresponding-labels">Prepare your dataset as images and corresponding labels</a></li><li><a href="#converting-between-label-formats">Converting between label formats</a></li><li><a href="#combining-all-csv-files-into-one">Combining all csv files into one</a></li><li><a href="#writing-data-to-a-single-tfrecord">Writing data to a single TFRecord</a></li><li><a href="#writing-data-to-multiple-tfrecords">Writing data to multiple TFRecords</a></li><li><a href="#how-do-you-know-you-did-it-right">How do you know you did it right?</a></li><li><a href="#last-word-">last word ...</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/MLMONDAYS/" class="nav-home"><img src="/MLMONDAYS/img/favicon.ico" alt="&quot;ML Mondays&quot;" width="66" height="58"/></a><div><h5>Internal links</h5><a href="/MLMONDAYS/docs/en/doc1.html">Docs</a><a href="/MLMONDAYS/docs/en/doc2.html">Data</a><a href="/MLMONDAYS/docs/en/doc3.html">Help</a></div><div><h5>Community</h5><a href="https://stackoverflow.com/questions/tagged/" target="_blank" rel="noreferrer noopener">Stack Overflow</a><a href="https://www.usgs.gov/centers/cdi" target="_blank" rel="noreferrer noopener">USGS Community for Data Integration (CDI)</a><a href="https://www.usgs.gov/centers/pcmsc/science/remote-sensing-coastal-change?qt-science_center_objects=0#qt-science_center_objects" target="_blank" rel="noreferrer noopener">USGS Remote Sensing Coastal Change Project</a><a href="https://www.danielbuscombe.com" target="_blank" rel="noreferrer noopener">www.danielbuscombe.com</a></div><div><h5>More</h5><a href="/MLMONDAYS/blog">Blog</a><a href="https://github.com/dbuscombe-usgs/DL-CDI2020">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a><div class="social"><a href="https://twitter.com/magic_walnut" class="twitter-follow-button">Follow @magic_walnut</a></div></div></section><a href="https://mardascience.com/" target="_blank" rel="noreferrer noopener" class="fbOpenSource"><img src="/MLMONDAYS/img/dash-logo-new.png" alt="Marda Science" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Marda Science, LLC</section></footer></div><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script></body></html>
