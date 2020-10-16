@@ -1,0 +1,280 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Converting makesense.ai JSON labels to label (mask) imagery for an image segmentation project · &quot;ML Mondays&quot;</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="## Annotate images on makesense.ai"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Converting makesense.ai JSON labels to label (mask) imagery for an image segmentation project · &quot;ML Mondays&quot;"/><meta property="og:type" content="website"/><meta property="og:url" content="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/14/blog-post"/><meta property="og:description" content="## Annotate images on makesense.ai"/><meta property="og:image" content="https://dbuscombe-usgs.github.io/MLMONDAYS/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://dbuscombe-usgs.github.io/MLMONDAYS/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/MLMONDAYS/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/atom.xml" title="&quot;ML Mondays&quot; Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/feed.xml" title="&quot;ML Mondays&quot; Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/MLMONDAYS/js/scrollSpy.js"></script><link rel="stylesheet" href="/MLMONDAYS/css/main.css"/><script src="/MLMONDAYS/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/MLMONDAYS/"><img class="logo" src="/MLMONDAYS/img/favicon.ico" alt="&quot;ML Mondays&quot;"/><h2 class="headerTitleWithLogo">&quot;ML Mondays&quot;</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/MLMONDAYS/docs/doc1" target="_self">Docs</a></li><li class=""><a href="/MLMONDAYS/docs/doc2" target="_self">Data</a></li><li class=""><a href="/MLMONDAYS/docs/doc3" target="_self">Models</a></li><li class=""><a href="/MLMONDAYS/docs/doc4" target="_self">API</a></li><li class=""><a href="/MLMONDAYS/help" target="_self">Help</a></li><li class="siteNavGroupActive"><a href="/MLMONDAYS/blog/" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Recent Posts</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Recent Posts</h3><ul class=""><li class="navListItem navListItemActive"><a class="navItem" href="/MLMONDAYS/blog/2020/10/14/blog-post">Converting makesense.ai JSON labels to label (mask) imagery for an image segmentation project</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/10/11/blog-post">Preparing a new dataset for an object recognition project</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/10/03/blog-post">ML terminology, demystified</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/10/01/blog-post">Creating a Tensorflow Dataset for an image segmentation task</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/09/15/blog-post">Making workflows reproducible</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/MLMONDAYS/blog/2020/10/14/blog-post">Converting makesense.ai JSON labels to label (mask) imagery for an image segmentation project</a></h1><p class="post-meta">October 14, 2020</p><div class="authorBlock"><p class="post-authorName"><a href="http://twitter.com/magic_walnut" target="_blank" rel="noreferrer noopener">Dan Buscombe</a></p></div></header><div><span><h2><a class="anchor" aria-hidden="true" id="annotate-images-on-makesenseai"></a><a href="#annotate-images-on-makesenseai" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Annotate images on makesense.ai</h2>
+<p><a href="makesense.ai">makesense.ai</a> is pretty great and the tool I generally recommend for labeling images because it:</p>
+<ul>
+<li>works well and has a well designed interface</li>
+<li>is free and open source</li>
+<li>requires no account or uploading of data.</li>
+</ul>
+<p>Press 'Get started'</p>
+<p><img src="/MLMONDAYS/blog/assets/shot1.png" alt=""></p>
+<p>Load images (in my example, I am using two pictures of coins and other objects on sand). Select 'object detection' which will give you the point, line, box, and polygon toolsets</p>
+<p><img src="/MLMONDAYS/blog/assets/shot2.png" alt=""></p>
+<p>Create a list of labels (mine are 'coin', 'sand' and 'other')</p>
+<p><img src="/MLMONDAYS/blog/assets/shot3.png" alt=""></p>
+<p>Use the polygon tool to start delineating the scene, and select the label from the drop down list for each annotation</p>
+<p><img src="/MLMONDAYS/blog/assets/shot4.png" alt=""></p>
+<p><img src="/MLMONDAYS/blog/assets/shot5.png" alt=""></p>
+<p>Image two (these sorts of scenes are tricky to label because sand is really a background class)</p>
+<p><img src="/MLMONDAYS/blog/assets/shot6.png" alt=""></p>
+<p>Actions &gt; Export annotations</p>
+<p><img src="/MLMONDAYS/blog/assets/shot7.png" alt=""></p>
+<p>Export in VGG JSON format in the polygon category</p>
+<p><img src="/MLMONDAYS/blog/assets/shot8.png" alt=""></p>
+<p>This is what your JSON format file looks like</p>
+<p><img src="/MLMONDAYS/blog/assets/shot9.png" alt=""></p>
+<p>Let's read it into python and convert it into a label mask</p>
+<h2><a class="anchor" aria-hidden="true" id="create-label-images"></a><a href="#create-label-images" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Create label images</h2>
+<p>Load the libraries we need</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">import</span> json, os, glob
+<span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image, ImageDraw
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+</code></pre>
+<p>Define a class dictionary that allows for mapping of class string names to integers. Avoid zero - that is usually reserved for null/background for a binary segmentation. 'Other' is different in this context (rulers, and other things in the scene)</p>
+<pre><code class="hljs css language-python">class_dict = {<span class="hljs-string">'coin'</span>:<span class="hljs-number">1</span>, <span class="hljs-string">'sand'</span>:<span class="hljs-number">2</span>, <span class="hljs-string">'other'</span>:<span class="hljs-number">3</span>}
+</code></pre>
+<p>Load the contents of the VGG JSON file downloaded from makesense.ai into the dictionary, <code>all_labels</code></p>
+<pre><code class="hljs css language-python">json_file = <span class="hljs-string">'labels_my-project-name_2020-10-15-03-40-44.json'</span>
+all_labels = json.load(open(json_file))
+</code></pre>
+<p>The keys of the dictionary are the image filenames</p>
+<pre><code class="hljs css language-python">print(all_labels.keys())
+</code></pre>
+<p>And these are the quantities defined for each image</p>
+<pre><code class="hljs css language-python">rawfile = <span class="hljs-string">'20181223_133712.jpg'</span>
+
+print(all_labels[rawfile].keys())
+</code></pre>
+<p>This function will strip image coordinates (<code>X</code> and <code>Y</code>) of polygons, and associated class labels (<code>L</code>) from</p>
+<pre><code class="hljs css language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_data</span><span class="hljs-params">(data)</span>:</span>
+    X = []; Y = []; L=[] <span class="hljs-comment">#pre-allocate lists to fill in a for loop</span>
+    <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> data[<span class="hljs-string">'regions'</span>]: <span class="hljs-comment">#cycle through each polygon</span>
+        <span class="hljs-comment"># get the x and y points from the dictionary</span>
+        X.append(data[<span class="hljs-string">'regions'</span>][k][<span class="hljs-string">'shape_attributes'</span>][<span class="hljs-string">'all_points_x'</span>])
+        Y.append(data[<span class="hljs-string">'regions'</span>][k][<span class="hljs-string">'shape_attributes'</span>][<span class="hljs-string">'all_points_y'</span>])
+        L.append(data[<span class="hljs-string">'regions'</span>][k][<span class="hljs-string">'region_attributes'</span>][<span class="hljs-string">'label'</span>])
+    <span class="hljs-keyword">return</span> Y,X,L <span class="hljs-comment">#image coordinates are flipped relative to json coordinates</span>
+</code></pre>
+<p>Use it to extract the polygons from the first image:</p>
+<pre><code class="hljs css language-python">X, Y, L = get_data(all_labels[rawfile])
+</code></pre>
+<p>Open an image to get its dimensions:</p>
+<pre><code class="hljs css language-python">image = Image.open(rawfile)
+
+nx, ny, nz = np.shape(image)
+</code></pre>
+<p>Next we need a function that will create a label image from the polygon vector data (coordinates and labels)</p>
+<pre><code class="hljs css language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_mask</span><span class="hljs-params">(X, Y, nx, ny, L, class_dict)</span>:</span>
+    <span class="hljs-comment"># get the dimensions of the image</span>
+    mask = np.zeros((nx,ny))
+
+    <span class="hljs-keyword">for</span> y,x,l <span class="hljs-keyword">in</span> zip(X,Y,L):
+        <span class="hljs-comment"># the ImageDraw.Draw().polygon function we will use to create the mask</span>
+        <span class="hljs-comment"># requires the x's and y's are interweaved, which is what the following</span>
+        <span class="hljs-comment"># one-liner does</span>
+        polygon = np.vstack((x,y)).reshape((<span class="hljs-number">-1</span>,),order=<span class="hljs-string">'F'</span>).tolist()
+
+        <span class="hljs-comment"># create a mask image of the right size and infill according to the polygon</span>
+        <span class="hljs-keyword">if</span> nx&gt;ny:
+           x,y = y,x
+           img = Image.new(<span class="hljs-string">'L'</span>, (nx, ny), <span class="hljs-number">0</span>)
+        <span class="hljs-keyword">elif</span> ny&gt;nx:
+           <span class="hljs-comment">#x,y = y,x</span>
+           img = Image.new(<span class="hljs-string">'L'</span>, (ny, nx), <span class="hljs-number">0</span>)
+        <span class="hljs-keyword">else</span>:
+           img = Image.new(<span class="hljs-string">'L'</span>, (nx, ny), <span class="hljs-number">0</span>)
+        ImageDraw.Draw(img).polygon(polygon, outline=<span class="hljs-number">0</span>, fill=<span class="hljs-number">1</span>)
+        <span class="hljs-comment"># turn into a numpy array</span>
+        m = np.flipud(np.rot90(np.array(img)))
+        <span class="hljs-keyword">try</span>:
+            mask[m==<span class="hljs-number">1</span>] = class_dict[l] <span class="hljs-comment">#mask + m</span>
+        <span class="hljs-keyword">except</span>:
+            mask[m.T==<span class="hljs-number">1</span>] = class_dict[l]  <span class="hljs-comment">#mask + m.T</span>
+
+    <span class="hljs-keyword">return</span> mask
+</code></pre>
+<p>Apply it to get the label mask for the first image</p>
+<pre><code class="hljs css language-python">mask = get_mask(X, Y, nx, ny, L, class_dict)
+</code></pre>
+<p>Next we'll define a function that we rescale our integer codes into 8-bit integer codes that span the full range. This 8-bit scaling will facilitate creation of label images that can be viewed using ordinary operating system image viewer software</p>
+<pre><code class="hljs css language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rescale</span><span class="hljs-params">(dat,mn,mx)</span>:</span>
+    <span class="hljs-string">'''
+    rescales an input dat between mn and mx
+    '''</span>
+    m = min(dat.flatten())
+    M = max(dat.flatten())
+    <span class="hljs-keyword">return</span> (mx-mn)*(dat-m)/(M-m)+mn
+</code></pre>
+<p>Rescale the mask and convert it into a greyscale Image object, then save to file</p>
+<pre><code class="hljs css language-python">mask = Image.fromarray(rescale(mask,<span class="hljs-number">0</span>,<span class="hljs-number">255</span>)).convert(<span class="hljs-string">'L'</span>)
+
+mask.save(rawfile.replace(<span class="hljs-string">'imagery'</span>,<span class="hljs-string">'labels'</span>), format=<span class="hljs-string">'PNG'</span>)
+</code></pre>
+<p>Loop through several files at once:</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">for</span> rawfile <span class="hljs-keyword">in</span> all_labels.keys():
+
+    X, Y, L = get_data(all_labels[rawfile])
+
+    image = Image.open(rawfile)
+
+    nx, ny, nz = np.shape(image)
+
+    mask = get_mask(X, Y, nx, ny, L, class_dict)
+
+    mask = Image.fromarray(rescale(mask,<span class="hljs-number">0</span>,<span class="hljs-number">255</span>)).convert(<span class="hljs-string">'L'</span>)
+
+    mask.save(rawfile.replace(<span class="hljs-string">'.jpg'</span>,<span class="hljs-string">'_label.jpg'</span>), format=<span class="hljs-string">'PNG'</span>)    
+</code></pre>
+<p>Here are the label images:</p>
+<p><img src="/MLMONDAYS/blog/assets/20181223_133712_label.jpg" alt=""></p>
+<p><img src="/MLMONDAYS/blog/assets/20181223_133732_label.jpg" alt=""></p>
+<p>Clearly, I'm a careless labeller. How could you make these labels better? Read on ...</p>
+<h2><a class="anchor" aria-hidden="true" id="refine-label-images-with-a-crf"></a><a href="#refine-label-images-with-a-crf" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Refine label images with a CRF</h2>
+<p>A CRF is a model that we will introduce and use in Week 3 and is useful for pre-processing manual labels, such as here, or post-processing model estimates.</p>
+<p>It works by examining the label in each pixel of the label image, and assessing the likelihood of it, given the distribution of image values that it observes in the same and other classes in the scene. It is a probabilistic assessment based on both image features that it extracts, append</p>
+<p>A CRF is not a deep learning model, or a neural network at all, but it is a network-based (or so-called <code>graphical</code> model). You can read more about it in <a href="https://www.mdpi.com/2076-3263/8/7/244">this paper</a>, where it was used as a post-processing rather than a pre-processing step.</p>
+<p>These are the extra python libraries we need (within the <code>mlmondays</code> conda environment)</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">import</span> pydensecrf.densecrf <span class="hljs-keyword">as</span> dcrf
+<span class="hljs-keyword">from</span> pydensecrf.utils <span class="hljs-keyword">import</span> create_pairwise_bilateral, unary_from_labels
+</code></pre>
+<p>Next we define a function that will use the CRF to process the label with respect to the image, and provide a new refined label</p>
+<pre><code class="hljs css language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">crf_refine</span><span class="hljs-params">(label, img)</span>:</span>
+    <span class="hljs-string">"""
+    "crf_refine(label, img)"
+    This function refines a label image based on an input label image and the associated image
+    Uses a conditional random field algorithm using spatial and image features
+    INPUTS:
+        * label [ndarray]: label image 2D matrix of integers
+        * image [ndarray]: image 3D matrix of integers
+    OPTIONAL INPUTS: None
+    GLOBAL INPUTS: None
+    OUTPUTS: label [ndarray]: label image 2D matrix of integers
+    """</span>
+    H = label.shape[<span class="hljs-number">0</span>]
+    W = label.shape[<span class="hljs-number">1</span>]
+    U = unary_from_labels(label,<span class="hljs-number">1</span>+len(np.unique(label)),gt_prob=<span class="hljs-number">0.51</span>)
+    d = dcrf.DenseCRF2D(H, W, <span class="hljs-number">5</span>)
+    d.setUnaryEnergy(U)
+
+    <span class="hljs-comment"># to add the color-independent term, where features are the locations only:</span>
+    d.addPairwiseGaussian(sxy=(<span class="hljs-number">3</span>, <span class="hljs-number">3</span>),
+                 compat=<span class="hljs-number">3</span>,
+                 kernel=dcrf.DIAG_KERNEL,
+                 normalization=dcrf.NORMALIZE_SYMMETRIC)
+    feats = create_pairwise_bilateral(
+                          sdims=(<span class="hljs-number">100</span>, <span class="hljs-number">100</span>),
+                          schan=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>),
+                          img=img,
+                          chdim=<span class="hljs-number">2</span>)
+
+    d.addPairwiseEnergy(feats, compat=<span class="hljs-number">120</span>,kernel=dcrf.DIAG_KERNEL,normalization=dcrf.NORMALIZE_SYMMETRIC)
+    Q = d.inference(<span class="hljs-number">10</span>)
+    <span class="hljs-keyword">return</span> np.argmax(Q, axis=<span class="hljs-number">0</span>).reshape((H, W)).astype(np.uint8)
+</code></pre>
+<p>Now we modify the <code>get_mask</code> function from before with the post-processing step</p>
+<pre><code class="hljs css language-python">
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_mask_crf</span><span class="hljs-params">(X, Y, nx, ny, L, class_dict, image)</span>:</span>
+    <span class="hljs-comment"># get the dimensions of the image</span>
+    mask = np.zeros((nx,ny))
+
+    <span class="hljs-keyword">for</span> y,x,l <span class="hljs-keyword">in</span> zip(X,Y,L):
+        <span class="hljs-comment"># the ImageDraw.Draw().polygon function we will use to create the mask</span>
+        <span class="hljs-comment"># requires the x's and y's are interweaved, which is what the following</span>
+        <span class="hljs-comment"># one-liner does</span>
+        polygon = np.vstack((x,y)).reshape((<span class="hljs-number">-1</span>,),order=<span class="hljs-string">'F'</span>).tolist()
+
+        <span class="hljs-comment"># create a mask image of the right size and infill according to the polygon</span>
+        <span class="hljs-keyword">if</span> nx&gt;ny:
+           x,y = y,x
+           img = Image.new(<span class="hljs-string">'L'</span>, (nx, ny), <span class="hljs-number">0</span>)
+        <span class="hljs-keyword">elif</span> ny&gt;nx:
+           <span class="hljs-comment">#x,y = y,x</span>
+           img = Image.new(<span class="hljs-string">'L'</span>, (ny, nx), <span class="hljs-number">0</span>)
+        <span class="hljs-keyword">else</span>:
+           img = Image.new(<span class="hljs-string">'L'</span>, (nx, ny), <span class="hljs-number">0</span>)
+        ImageDraw.Draw(img).polygon(polygon, outline=<span class="hljs-number">0</span>, fill=<span class="hljs-number">1</span>)
+        <span class="hljs-comment"># turn into a numpy array</span>
+        m = np.flipud(np.rot90(np.array(img)))
+        <span class="hljs-keyword">try</span>:
+            mask[m==<span class="hljs-number">1</span>] = class_dict[l] <span class="hljs-comment">#mask + m</span>
+        <span class="hljs-keyword">except</span>:
+            mask[m.T==<span class="hljs-number">1</span>] = class_dict[l]  <span class="hljs-comment">#mask + m.T</span>
+
+    mask = crf_refine(np.array(mask, dtype=np.int), np.array(image, dtype=np.uint8))
+
+    <span class="hljs-keyword">return</span> mask
+</code></pre>
+<p>And use a similar loop as before to apply this CRF processing</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">for</span> rawfile <span class="hljs-keyword">in</span> all_labels.keys():
+
+    X, Y, L = get_data(all_labels[rawfile])
+
+    image = Image.open(rawfile)
+
+    nx, ny, nz = np.shape(image)
+
+    mask = get_mask_crf(X, Y, nx, ny, L, class_dict, image)
+
+    mask = Image.fromarray(rescale(mask/<span class="hljs-number">255</span>,<span class="hljs-number">0</span>,<span class="hljs-number">255</span>)).convert(<span class="hljs-string">'L'</span>)
+
+    mask.save(rawfile.replace(<span class="hljs-string">'.jpg'</span>,<span class="hljs-string">'_label_crf.jpg'</span>), format=<span class="hljs-string">'PNG'</span>)
+</code></pre>
+<p>Here are the CRF-refined label images. Now there is no black (0) background class. The black (0) class is class 1; class 2 is 127; and class 3 is 255.</p>
+<p><img src="/MLMONDAYS/blog/assets/20181223_133712_label_crf.jpg" alt=""></p>
+<p><img src="/MLMONDAYS/blog/assets/20181223_133732_label_crf.jpg" alt=""></p>
+</span></div></div><div class="blogSocialSection"></div></div><div class="blog-recent"><a class="button" href="/MLMONDAYS/blog/">Recent Posts</a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#annotate-images-on-makesenseai">Annotate images on makesense.ai</a></li><li><a href="#create-label-images">Create label images</a></li><li><a href="#refine-label-images-with-a-crf">Refine label images with a CRF</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/MLMONDAYS/" class="nav-home"><img src="/MLMONDAYS/img/favicon.ico" alt="&quot;ML Mondays&quot;" width="66" height="58"/></a><div><h5>Internal links</h5><a href="/MLMONDAYS/docs/en/doc1.html">Docs</a><a href="/MLMONDAYS/docs/en/doc2.html">Data</a><a href="/MLMONDAYS/docs/en/doc3.html">Help</a></div><div><h5>Community</h5><a href="https://stackoverflow.com/questions/tagged/" target="_blank" rel="noreferrer noopener">Stack Overflow</a><a href="https://www.usgs.gov/centers/cdi" target="_blank" rel="noreferrer noopener">USGS Community for Data Integration (CDI)</a><a href="https://www.usgs.gov/centers/pcmsc/science/remote-sensing-coastal-change?qt-science_center_objects=0#qt-science_center_objects" target="_blank" rel="noreferrer noopener">USGS Remote Sensing Coastal Change Project</a><a href="https://www.danielbuscombe.com" target="_blank" rel="noreferrer noopener">www.danielbuscombe.com</a></div><div><h5>More</h5><a href="/MLMONDAYS/blog">Blog</a><a href="https://github.com/dbuscombe-usgs/DL-CDI2020">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a><div class="social"><a href="https://twitter.com/magic_walnut" class="twitter-follow-button">Follow @magic_walnut</a></div></div></section><a href="https://mardascience.com/" target="_blank" rel="noreferrer noopener" class="fbOpenSource"><img src="/MLMONDAYS/img/dash-logo-new.png" alt="Marda Science" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Marda Science, LLC</section></footer></div><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script></body></html>
