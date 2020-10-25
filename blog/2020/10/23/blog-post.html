@@ -1,0 +1,398 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>From 2 geotiffs to a trained U-Net: 2D, 3D, and 4D imagery example. Part 1: Data · &quot;ML Mondays&quot;</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="In this blog post, we present an end-to-end image segmetation workflow, using a small dataset, consisting of both imagery and digital elevation model (DEM). We are exploring a few goals:"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="From 2 geotiffs to a trained U-Net: 2D, 3D, and 4D imagery example. Part 1: Data · &quot;ML Mondays&quot;"/><meta property="og:type" content="website"/><meta property="og:url" content="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/23/blog-post"/><meta property="og:description" content="In this blog post, we present an end-to-end image segmetation workflow, using a small dataset, consisting of both imagery and digital elevation model (DEM). We are exploring a few goals:"/><meta property="og:image" content="https://dbuscombe-usgs.github.io/MLMONDAYS/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://dbuscombe-usgs.github.io/MLMONDAYS/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/MLMONDAYS/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/atom.xml" title="&quot;ML Mondays&quot; Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/feed.xml" title="&quot;ML Mondays&quot; Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/MLMONDAYS/js/scrollSpy.js"></script><link rel="stylesheet" href="/MLMONDAYS/css/main.css"/><script src="/MLMONDAYS/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/MLMONDAYS/"><img class="logo" src="/MLMONDAYS/img/favicon.ico" alt="&quot;ML Mondays&quot;"/><h2 class="headerTitleWithLogo">&quot;ML Mondays&quot;</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/MLMONDAYS/docs/doc1" target="_self">Docs</a></li><li class=""><a href="/MLMONDAYS/docs/doc2" target="_self">Data</a></li><li class=""><a href="/MLMONDAYS/docs/doc3" target="_self">Models</a></li><li class=""><a href="/MLMONDAYS/docs/doc4" target="_self">API</a></li><li class=""><a href="/MLMONDAYS/help" target="_self">Help</a></li><li class="siteNavGroupActive"><a href="/MLMONDAYS/blog/" target="_self">Blog</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Recent Posts</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Recent Posts</h3><ul class=""><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/10/24/blog-post">From 2 geotiffs to a trained U-Net: 2D, 3D, and 4D imagery example. Part 2: Models</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/MLMONDAYS/blog/2020/10/23/blog-post">From 2 geotiffs to a trained U-Net: 2D, 3D, and 4D imagery example. Part 1: Data</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/10/14/blog-post">Converting makesense.ai JSON labels to label (mask) imagery for an image segmentation project</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/10/11/blog-post">Preparing a new dataset for an object recognition project</a></li><li class="navListItem"><a class="navItem" href="/MLMONDAYS/blog/2020/10/03/blog-post">ML terminology, demystified</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/MLMONDAYS/blog/2020/10/23/blog-post">From 2 geotiffs to a trained U-Net: 2D, 3D, and 4D imagery example. Part 1: Data</a></h1><p class="post-meta">October 23, 2020</p><div class="authorBlock"><p class="post-authorName"><a href="http://twitter.com/magic_walnut" target="_blank" rel="noreferrer noopener">Dan Buscombe, Jonathan Warrick, Andy Ritchie (Pacific Coastal &amp; Marine Science Center, Santa Cruz)</a></p></div></header><div><span><p>In this blog post, we present an end-to-end image segmetation workflow, using a small dataset, consisting of both imagery and digital elevation model (DEM). We are exploring a few goals:</p>
+<ol>
+<li>Can we use high-resolution RGB imagery with a U-Net model to segment sand dune types and forms</li>
+<li>Can we do so using a small dataset, using data augmentation?</li>
+<li>What creates the best prediction; RGB imagery alone? 2D elevation alone? Or the 4D combination of RGB and elevation?</li>
+</ol>
+<p>This is a long workflow, so this blog post is split into two: data, then models. This post, 'Data', covers the following workflows:</p>
+<ol>
+<li>Split large geoTIFF orthomosaics and DEMs into smaller tiles, using python and GDAL, for labelling and segmentation. This will create 9-bit RGB imagery and coincident 8-bit elevation data. Elevation can be negative, and is usually measured on a continuous scale, but we convert elevation values to positive relative discrete values. This relative elevation raster might be combined with the 3D imagery to create 4D raster stacks</li>
+<li>Convert imagery to jpeg format</li>
+<li>Use <code>dash_doodler</code> to semi-supervised image segmentation into 8 classes that relate to dune types and cover, and adjacent land cover.</li>
+<li>The dataset is small - only 16 images, each only 613x613 pixels. Ordinarily for a deep learning project you would need MUCH more data. So, for this example we will use data augmentation to expand the dataset. In your adaptations of this workflow, you shouldn't rely so much on image augmentation and have more labelled examples. We use augmentation to create 64 new examples, each 608x608 pixels, which is the closest size to 613x613 pixels that will work with the U-Net model</li>
+<li>TFRecords are created from the 3D (RGB) imagery and the 2D (greyscale) labels</li>
+<li>TFRecords are created by combining 2D DEMs with 3D RGB imagery, with 2D (greyscale) labels</li>
+</ol>
+<h1><a class="anchor" aria-hidden="true" id="dataset"></a><a href="#dataset" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Dataset</h1>
+<p>The dataset consists of a 50-cm orthomosaic and a 50-cm digital elevation model (DEM) of sand dunes in central Monterey Bay. These data were collected and processed by Jon Warrick and Andy Ritchie at the U.S Geological Survey Pacific Coastal &amp; Marine Science Center, Santa Cruz, using Structure-from-Motion photogrammetry.</p>
+<p>The GeoTiFF image (below, left) show incipient dunes (Northern, at the river mouth), established dunes without iceplant (Central), established dunes with iceplant (Southern).  The iceplant is a non-native and has been weeded from the central portion by non-profits. You can see the iceplant in the southern section by the 'red' patches. There is a distinct difference in elevation in the incipient dunes and the established dunes (below, right).</p>
+<p><img src="/MLMONDAYS/blog/assets/ortho_dem.png" alt=""></p>
+<h2><a class="anchor" aria-hidden="true" id="prepare-dataset-for-ml-labelingtraining-using-pythongdal"></a><a href="#prepare-dataset-for-ml-labelingtraining-using-pythongdal" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Prepare dataset for ML labeling/training using python/GDAL</h2>
+<p>Load the libraries we need. We'll be using mostly system calls (from <code>os.system</code>) to <a href="https://gdal.org/index.html">GDAL</a> libraries installed, such that the commands <code>gdal_translate</code> and <code>gdal_calc.py</code> are accessible. GDAL is cross-platform (<a href="https://gdal.org/download.html">install instructions</a>)</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">from</span> glob <span class="hljs-keyword">import</span> glob
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="create-rgb-and-dem-tiles"></a><a href="#create-rgb-and-dem-tiles" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Create RGB and DEM tiles</h3>
+<p>Define some inputs; the size of the tiles we would like to create, the files we'd like to tile, and their heights and widths</p>
+<pre><code class="hljs css language-python">tilesize = <span class="hljs-number">613</span>
+
+bigfiles = [<span class="hljs-string">'MontBay_Dunes_Ortho_50cm.tif'</span>, <span class="hljs-string">'MontBay_Dunes_DEM_50cm.tif'</span>]
+widths = [<span class="hljs-number">1226</span>, <span class="hljs-number">1226</span>]
+heights = [<span class="hljs-number">4930</span>, <span class="hljs-number">4930</span>]
+</code></pre>
+<p>Create tiled geotiffs by calling <code>gdal_translate</code> as a system command, within a nested for-loop that first cycles through files, then position on a grid in x, then position on a grid in y, just applying the window (<code>srcwin</code>) flag</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> range(len(bigfiles)):
+
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">0</span>, widths[k], tilesize):
+        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> range(<span class="hljs-number">0</span>, heights[k], tilesize):
+            <span class="hljs-keyword">if</span> <span class="hljs-string">'Ortho'</span> <span class="hljs-keyword">in</span> bigfiles[k]:
+                gdaltranString = <span class="hljs-string">"gdal_translate -of GTIFF -srcwin "</span>+str(i)+<span class="hljs-string">", "</span>+str(j)+<span class="hljs-string">", "</span>+str(tilesize)+<span class="hljs-string">", "</span> \
+                +str(tilesize)+<span class="hljs-string">" "</span>+bigfiles[k]+<span class="hljs-string">" ortho_"</span>+str(i)+<span class="hljs-string">"_"</span>+str(j)+<span class="hljs-string">".tif"</span>
+            <span class="hljs-keyword">else</span>:
+                gdaltranString = <span class="hljs-string">"gdal_translate -of GTIFF -srcwin "</span>+str(i)+<span class="hljs-string">", "</span>+str(j)+<span class="hljs-string">", "</span>+str(tilesize)+<span class="hljs-string">", "</span> \
+                +str(tilesize)+<span class="hljs-string">" "</span>+bigfiles[k]+<span class="hljs-string">" dem_"</span>+str(i)+<span class="hljs-string">"_"</span>+str(j)+<span class="hljs-string">".tif"</span>
+            os.system(gdaltranString)
+</code></pre>
+<p>These images are at the edge of the raster and are thus smaller than the rest. We'll delete them</p>
+<pre><code class="hljs css language-python">os.system(<span class="hljs-string">'rm dem*0_4904.tif'</span>)
+os.system(<span class="hljs-string">'rm ortho*0_4904.tif'</span>)
+</code></pre>
+<p>We need to add a scalar to every value in each DEM tile, to avoid negative numbers (negative elevation umbers occur in coastal data due to datum specifications). In this example the absolute elevation values are not important, only relative ones, because eventually the DEM will be discretized as an 8-bit raster with values ranging from 0 to 255. To ensure all negative numbers are not encoded 0, 40m is sufficient in this case.</p>
+<pre><code class="hljs css language-python">voffset = <span class="hljs-number">40</span> <span class="hljs-comment">#vertical offset to avoid negative numbers</span>
+
+files = glob(<span class="hljs-string">'dem*.tif'</span>)
+
+<span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> files:
+    gdalstring = <span class="hljs-string">'gdal_calc.py -A '</span>+file+<span class="hljs-string">' --outfile='</span>+file.replace(<span class="hljs-string">'.tif'</span>, <span class="hljs-string">'_a0.tif'</span>)+<span class="hljs-string">'  --calc="(A+'</span>+str(voffset)+<span class="hljs-string">')" --NoDataValue=0'</span>
+    os.system(gdalstring)
+</code></pre>
+<p>Next we'll ensure no remaining negative numbers (setting them to zero) and convert to 16-bit. In this case there are no negative numbers left, but this would be a generic way to enforce non-negativity</p>
+<pre><code class="hljs css language-python">files = glob(<span class="hljs-string">'dem*_a0.tif'</span>)
+
+<span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> files:
+    gdalstring = <span class="hljs-string">'gdal_calc.py -A '</span>+file+<span class="hljs-string">' --outfile='</span>+file.replace(<span class="hljs-string">'_a0.tif'</span>, <span class="hljs-string">'_a00.tif'</span>)+<span class="hljs-string">'  --calc="A*(A&gt;0)" --NoDataValue=0 --type=Int16'</span>
+    os.system(gdalstring)
+</code></pre>
+<p>The full range of elevation in the data set is 7 to 36 m. The next command will simultaneously convert the image to <code>BYTE</code> or 8-bit unsigned integer, which is the format we need going forward, and scale to the full range (0 to 255). And, it will convert from tiff to jpg format</p>
+<pre><code class="hljs css language-python">files = glob(<span class="hljs-string">'dem*_a00.tif'</span>)
+
+<span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> files:
+    gdalstring = <span class="hljs-string">'gdal_translate -of GTIFF -ot BYTE -scale 7 36 0 255 '</span>+file+<span class="hljs-string">' '</span>+file.replace(<span class="hljs-string">'_a00.tif'</span>, <span class="hljs-string">'_a000.jpg'</span>)
+    os.system(gdalstring)
+</code></pre>
+<p>Remove those intermediate files; we no longer need them</p>
+<pre><code class="hljs css language-python">os.system(<span class="hljs-string">'rm dem*a0.tif'</span>)
+os.system(<span class="hljs-string">'rm dem*a00.tif'</span>)
+</code></pre>
+<p>Convert each RGB image from tiff to jpg format. Actually these files won't be in jpeg encoding yet, only have the extension and bit-depth. We will correct the encoding later</p>
+<pre><code class="hljs css language-python">files = glob(<span class="hljs-string">'ortho*.tif'</span>)
+
+<span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> files:
+    gdalstring = <span class="hljs-string">'gdal_translate -of GTIFF -ot BYTE '</span>+file+<span class="hljs-string">' '</span>+file.replace(<span class="hljs-string">'.tif'</span>, <span class="hljs-string">'_a000.jpg'</span>)
+    os.system(gdalstring)
+</code></pre>
+<p>Then run the following bash command to enforce jpeg encoding for all the images, optionally writing new versions by profided a suffix e.g <code>_c</code> in front of the file extension (<code>.jpg</code>), such as here</p>
+<pre><code class="hljs css language-bash"><span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> *.jpg; <span class="hljs-keyword">do</span> convert <span class="hljs-variable">$file</span> $<span class="hljs-string">"<span class="hljs-variable">${file%.jpg}</span>_c.jpg"</span>; <span class="hljs-keyword">done</span>
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="labeling-images"></a><a href="#labeling-images" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Labeling images</h3>
+<p><img src="/MLMONDAYS/blog/assets/orthos.png" alt=""></p>
+<p><img src="/MLMONDAYS/blog/assets/dems.png" alt=""></p>
+<p>We'll use the new protoype &quot;dash doodler&quot; tool that you can find <a href="https://github.com/dbuscombe-usgs/dash_doodler">here</a> for rapidly annotating these 16 images. I could label the RGB imagery in doodler, but it isn't designed to accept more than 3-band imagery, and that format wouldn't be helpful (we'll see later on that RGB+DEM imagery just looks like the RGB image with the high parts whited out - not helpful, generally)</p>
+<p>These are the 8 classes I'm interested in, written to <code>classes.txt</code> :</p>
+<pre><code class="hljs"><span class="hljs-symbol">water</span>
+<span class="hljs-keyword">marsh
+</span><span class="hljs-keyword">beach
+</span><span class="hljs-symbol">incipient_foredune</span>
+<span class="hljs-symbol">foredune_complex</span>
+<span class="hljs-symbol">veg_dune</span>
+<span class="hljs-keyword">bare_dune
+</span><span class="hljs-symbol">iceplant</span>
+</code></pre>
+<p>Here is a video of me annotating all 16 images:</p>
+<p><img src="/MLMONDAYS/blog/assets/doodler_dunes1.gif" alt=""></p>
+<p>Doodler creates RGB and greyscale label images. RGB images are easier to see and evaluate, and they can be used to create TFRecords and segmentation workflows, like we saw in the OBX data example, but ultimately you have to decode the RGB image and that isn't necessarily easy to do. In fact that becomes hard to do when you have many classes and encode your labels as jpegs. The former because you have to use colors that tend to be increasingly similar the more classes you have, and compression and chroma subsampling used in jpeg creation isn't ideal at preserving those color values, so it becomes difficult to decode the labels. Jpeg compression isn't generally a problem for simple greyscale integer label images. That is why doodler creates greyscale images, and greyscale label imagery is what we will use going forward.</p>
+<h3><a class="anchor" aria-hidden="true" id="image-augmentation"></a><a href="#image-augmentation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Image augmentation</h3>
+<p>We'll create a few more examples to create enough data for demonstration purposes. Ordinarily you would try to label <em>much</em> more data</p>
+<p>Define image dimensions. The images are actually 613 x 613 pixels, but that won't fit within the U-Net framework without modification, so we'll resize to the nearest dimension that will, which is 608 x 608 pixels. Within the mlmondays conda environment,</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">from</span> imports <span class="hljs-keyword">import</span> *
+NY = <span class="hljs-number">608</span>
+NX = <span class="hljs-number">608</span>
+</code></pre>
+<p>Define two <code>ImageDataGenerator</code> instances with the same arguments, one for images and the other for labels (masks)</p>
+<pre><code class="hljs css language-python">data_gen_args = dict(featurewise_center=<span class="hljs-literal">False</span>,
+                     featurewise_std_normalization=<span class="hljs-literal">False</span>,
+                     rotation_range=<span class="hljs-number">10</span>,
+                     width_shift_range=<span class="hljs-number">0.2</span>,
+                     height_shift_range=<span class="hljs-number">0.2</span>,
+                     zoom_range=<span class="hljs-number">0.2</span>)
+image_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**data_gen_args)
+dem_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**data_gen_args)
+mask_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**data_gen_args)
+</code></pre>
+<p>Put your images somewhere and define the labels</p>
+<pre><code class="hljs css language-python">imdir = <span class="hljs-string">'data/dunes/images'</span>
+
+dem_path = <span class="hljs-string">'data/dunes/dems'</span>
+
+lab_path = <span class="hljs-string">'data/dunes/labels'</span>
+</code></pre>
+<p>Note that you'll have to actually place your images inside another folder inside these respective directories, and it doesn't matter what that folder is called. The reason is that <code>ImageDataGenerator</code> expects imagery to be in class folders, even though in this case we are not using that functionality</p>
+<p>Next, you'll need a function to write your images to file. We'll also use a median filter with a disk kernel (you'll need to install <a href="https://scikit-image.org/">scikit-image</a> to use these commands: <code>conda install scikit-image</code>)</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">from</span> imageio <span class="hljs-keyword">import</span> imwrite
+<span class="hljs-keyword">from</span> skimage.filters.rank <span class="hljs-keyword">import</span> median
+<span class="hljs-keyword">from</span> skimage.morphology <span class="hljs-keyword">import</span> disk
+</code></pre>
+<p>You likely can't read all your images into memory if you did augmentation on a real-sized dataset (i.e. bigger), so you'll likely have to do this in batches. Therefore we present the batched workflow.</p>
+<p>The following loop will grab a new random batch of images, apply the augmentation generator to the images to create alternate versions, then writes those alternate versions of images and labels to disk. We use <code>class_mode=None</code> because the images don't belong to any particular class. The list <code>L</code> is for enumerating all the unique values of each label image, to check that no integers outside the class range are present.</p>
+<pre><code class="hljs css language-python">L = []
+i=<span class="hljs-number">1</span>
+<span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> range(<span class="hljs-number">4</span>): <span class="hljs-comment">#create 4 more sets ....</span>
+
+    <span class="hljs-comment">#set a different seed each time to get a new batch of ten</span>
+    seed = int(np.random.randint(<span class="hljs-number">0</span>,<span class="hljs-number">100</span>,size=<span class="hljs-number">1</span>))
+    img_generator = image_datagen.flow_from_directory(
+            imdir,
+            target_size=(NX, NY),
+            batch_size=<span class="hljs-number">16</span>, <span class="hljs-comment">## .... of 16 images ...</span>
+            class_mode=<span class="hljs-literal">None</span>, seed=seed, shuffle=<span class="hljs-literal">True</span>)
+
+    dem_generator = image_datagen.flow_from_directory(
+            dem_path,
+            target_size=(NX, NY),
+            batch_size=<span class="hljs-number">16</span>, <span class="hljs-comment">## .... of 16 images ...</span>
+            class_mode=<span class="hljs-literal">None</span>, seed=seed, shuffle=<span class="hljs-literal">True</span>)
+
+    <span class="hljs-comment">#the seed must be the same as for the training set to get the same images</span>
+    mask_generator = mask_datagen.flow_from_directory(
+            lab_path,
+            target_size=(NX, NY),
+            batch_size=<span class="hljs-number">16</span>,  <span class="hljs-comment">## .... and of 16 labels</span>
+            class_mode=<span class="hljs-literal">None</span>, seed=seed, shuffle=<span class="hljs-literal">True</span>)
+
+    <span class="hljs-comment">#The following merges the 3 generators (and their flows) together:</span>
+    train_generator = (pair <span class="hljs-keyword">for</span> pair <span class="hljs-keyword">in</span> zip(img_generator, dem_generator, mask_generator))
+
+    <span class="hljs-comment">#grab a batch of images, dems, and label images</span>
+    x, y, z = next(train_generator)
+
+    <span class="hljs-comment"># write them to file and increment the counter</span>
+    <span class="hljs-keyword">for</span> im,dem,lab <span class="hljs-keyword">in</span> zip(x,y,z):
+        imwrite(imdir+os.sep+<span class="hljs-string">'augimage_000'</span>+str(i)+<span class="hljs-string">'.jpg'</span>, im)
+        imwrite(dem_path+os.sep+<span class="hljs-string">'augdem_000'</span>+str(i)+<span class="hljs-string">'.jpg'</span>, dem)
+
+        lab = median(lab[:,:,<span class="hljs-number">0</span>]/<span class="hljs-number">255.0</span>, disk(<span class="hljs-number">5</span>)).astype(np.uint8)
+        lab[im[:,:,<span class="hljs-number">0</span>]==<span class="hljs-number">0</span>]=<span class="hljs-number">0</span>        
+        L.append(np.unique(lab.flatten()))
+        imwrite(lab_path+os.sep+<span class="hljs-string">'auglabel_000'</span>+str(i)+<span class="hljs-string">'_label.jpg'</span>,(lab).astype(np.uint8))
+        i += <span class="hljs-number">1</span>
+        print(lab.shape)
+
+    <span class="hljs-comment">#save memory</span>
+    <span class="hljs-keyword">del</span> x, y, im, dem, lab
+    <span class="hljs-comment">#get a new batch</span>
+</code></pre>
+<p>when this completes you should have 64 new images, dems and labels, that look something like this.</p>
+<p>Images:</p>
+<p><img src="/MLMONDAYS/blog/assets/aug2.png" alt=""></p>
+<p>DEMs:</p>
+<p><img src="/MLMONDAYS/blog/assets/aug3.png" alt=""></p>
+<p>Labels:</p>
+<p><img src="/MLMONDAYS/blog/assets/aug1.png" alt=""></p>
+<p>What unique values do we have in our augmented imagery?</p>
+<pre><code class="hljs css language-python">print(np.round(np.unique(np.hstack(L))))
+
+[<span class="hljs-number">0</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span> <span class="hljs-number">5</span> <span class="hljs-number">6</span> <span class="hljs-number">7</span> <span class="hljs-number">8</span>]
+</code></pre>
+<p>Great. Zero for null, and our 1 through 8 classes</p>
+<h3><a class="anchor" aria-hidden="true" id="4d-image-creation"></a><a href="#4d-image-creation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>4D image creation</h3>
+<p>Now you have 64 images, dems and labels total. Next, we need to merge the images and dems together into 4-band images</p>
+<p>But how do you make a 4-band image from a 3-band image and a 1-band image?</p>
+<p>First, import libraries</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">from</span> imageio <span class="hljs-keyword">import</span> imread
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+</code></pre>
+<p>Read RGB image</p>
+<pre><code class="hljs css language-python">im1 = imread(<span class="hljs-string">'data/dunes/images/augimage_0001.jpg'</span>)
+</code></pre>
+<p>Read elevation and get just the first band</p>
+<pre><code class="hljs css language-python">im2 = imread(<span class="hljs-string">'data/dunes/dems/augdem_0001.jpg'</span>)[:,:,<span class="hljs-number">0</span>]
+</code></pre>
+<p>Merge bands - creates a numpy array with 4 channels</p>
+<pre><code class="hljs css language-python">merged = np.dstack((im1, im2))
+</code></pre>
+<p>Make this figure:</p>
+<p><img src="/MLMONDAYS/blog/assets/4d.png" alt=""></p>
+<p>using this code:</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+plt.subplot(<span class="hljs-number">131</span>)
+plt.imshow(im1); plt.axis(<span class="hljs-string">'off'</span>); plt.title(<span class="hljs-string">'RGB'</span>)
+plt.subplot(<span class="hljs-number">132</span>)
+plt.imshow(im2); plt.axis(<span class="hljs-string">'off'</span>); plt.title(<span class="hljs-string">'DEM'</span>)
+plt.subplot(<span class="hljs-number">133</span>)
+plt.imshow(merged); plt.axis(<span class="hljs-string">'off'</span>); plt.title(<span class="hljs-string">'4D'</span>)
+plt.savefig(<span class="hljs-string">'4d.png'</span>, dpi=<span class="hljs-number">200</span>, bbox_inches=<span class="hljs-string">'tight'</span>); plt.close(<span class="hljs-string">'all'</span>)
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="tfrecord-creation"></a><a href="#tfrecord-creation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TFRecord creation</h2>
+<h3><a class="anchor" aria-hidden="true" id="getting-set-up"></a><a href="#getting-set-up" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Getting set up</h3>
+<p>With the <code>mlmondays</code> conda environment enabled, import some libraries:</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">from</span> imports <span class="hljs-keyword">import</span> *
+<span class="hljs-keyword">from</span> imageio <span class="hljs-keyword">import</span> imwrite
+</code></pre>
+<p>Define our three paths:</p>
+<pre><code class="hljs css language-python">imdir = <span class="hljs-string">'/media/marda/TWOTB/USGS/SOFTWARE/Projects/DL-CDI2020/3_ImageSeg/data/dunes/images'</span>
+demdir = <span class="hljs-string">'/media/marda/TWOTB/USGS/SOFTWARE/Projects/DL-CDI2020/3_ImageSeg/data/dunes/dems'</span>
+labdir = <span class="hljs-string">'/media/marda/TWOTB/USGS/SOFTWARE/Projects/DL-CDI2020/3_ImageSeg/data/dunes/labels'</span>
+</code></pre>
+<p>And this path for the tfrecord files</p>
+<pre><code class="hljs css language-python">tfrecord_dir = <span class="hljs-string">'/media/marda/TWOTB/USGS/SOFTWARE/Projects/DL-CDI2020/3_ImageSeg/data/dunes'</span>
+</code></pre>
+<p>Define images per shard (12, so there will be <code>SHARD</code>=8 tfrecord files, since there are 48 images) and shard sizes</p>
+<pre><code class="hljs css language-python">nb_images=len(tf.io.gfile.glob(imdir+os.sep+<span class="hljs-string">'*.jpg'</span>))
+
+ims_per_shard = <span class="hljs-number">8</span>
+
+SHARDS = int(nb_images / ims_per_shard) + (<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> nb_images % ims_per_shard != <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>)
+
+shared_size = int(np.ceil(<span class="hljs-number">1.0</span> * nb_images / SHARDS))
+</code></pre>
+<p>List the images:</p>
+<pre><code class="hljs css language-python">img_files = tf.io.gfile.glob(imdir+os.sep+<span class="hljs-string">'*.jpg'</span>)
+</code></pre>
+<p>Encode back to jpeg for efficient binary string storage</p>
+<pre><code class="hljs css language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">recompress_seg_image</span><span class="hljs-params">(image, label)</span>:</span>
+
+    image = tf.cast(image, tf.uint8)
+    image = tf.image.encode_jpeg(image, optimize_size=<span class="hljs-literal">False</span>, chroma_downsampling=<span class="hljs-literal">False</span>, quality=<span class="hljs-number">100</span>)
+
+    label = tf.cast(label, tf.uint8)
+    label = tf.image.encode_jpeg(label, optimize_size=<span class="hljs-literal">False</span>, chroma_downsampling=<span class="hljs-literal">False</span>, quality=<span class="hljs-number">100</span>)
+    <span class="hljs-keyword">return</span> image, label
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="3d-workflow-r-g-b"></a><a href="#3d-workflow-r-g-b" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3D workflow (R, G, B)</h3>
+<p>This function reads an image</p>
+<pre><code class="hljs css language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read_seg_image_and_label_dunes</span><span class="hljs-params">(img_path)</span>:</span>
+    bits = tf.io.read_file(img_path)
+    image = tf.image.decode_jpeg(bits)
+
+    dem_path = tf.strings.regex_replace(img_path, <span class="hljs-string">"images"</span>, <span class="hljs-string">"dems"</span>)
+    dem_path = tf.strings.regex_replace(dem_path, <span class="hljs-string">"augimage"</span>, <span class="hljs-string">"augdem"</span>)     
+    bits = tf.io.read_file(dem_path)
+    dem = tf.image.decode_jpeg(bits)
+
+    <span class="hljs-comment"># have to use this tf.strings.regex_replace utility because img_path is a Tensor object</span>
+    lab_path = tf.strings.regex_replace(img_path, <span class="hljs-string">"images"</span>, <span class="hljs-string">"labels"</span>)
+    lab_path = tf.strings.regex_replace(lab_path, <span class="hljs-string">"augimage"</span>, <span class="hljs-string">"auglabel"</span>)
+    lab_path = tf.strings.regex_replace(lab_path, <span class="hljs-string">".jpg"</span>, <span class="hljs-string">"_label.jpg"</span>)      
+    bits = tf.io.read_file(lab_path)
+    label = tf.image.decode_jpeg(bits, channels=<span class="hljs-number">1</span>)
+
+    label = tf.cast(label, tf.uint8)
+
+    <span class="hljs-comment">## merge dem and image</span>
+    <span class="hljs-keyword">if</span> flag <span class="hljs-keyword">is</span> <span class="hljs-string">'3d'</span>:
+      merged = tf.stack([image[:,:,<span class="hljs-number">0</span>], image[:,:,<span class="hljs-number">1</span>], image[:,:,<span class="hljs-number">2</span>]], axis=<span class="hljs-number">2</span>)
+    <span class="hljs-keyword">elif</span> flag <span class="hljs-keyword">is</span> <span class="hljs-string">'3db'</span>:
+      merged = tf.stack([image[:,:,<span class="hljs-number">0</span>], image[:,:,<span class="hljs-number">2</span>], dem[:,:,<span class="hljs-number">0</span>]], axis=<span class="hljs-number">2</span>)
+    <span class="hljs-keyword">else</span>:
+      merged = tf.stack([image[:,:,<span class="hljs-number">0</span>], image[:,:,<span class="hljs-number">1</span>], image[:,:,<span class="hljs-number">2</span>], dem[:,:,<span class="hljs-number">0</span>]], axis=<span class="hljs-number">2</span>)
+
+    merged = tf.cast(merged, tf.uint8)
+
+    <span class="hljs-keyword">return</span> merged, label
+</code></pre>
+<pre><code class="hljs css language-python">flag=<span class="hljs-string">'3d'</span>
+dataset = tf.data.Dataset.list_files(imdir+os.sep+<span class="hljs-string">'*.jpg'</span>, seed=<span class="hljs-number">10000</span>) <span class="hljs-comment"># This also shuffles the images</span>
+dataset = dataset.map(read_seg_image_and_label_dunes)
+dataset = dataset.map(recompress_seg_image, num_parallel_calls=AUTO)
+dataset = dataset.batch(shared_size)
+</code></pre>
+<!-- for img, lbl in dataset.take(1):
+  print(img.shape)
+  print(lbl.shape)
+ -->
+<p>Now we can write our 3D dataset out to TFRecords:</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">for</span> shard, (image, label) <span class="hljs-keyword">in</span> enumerate(dataset):
+  shard_size = image.numpy().shape[<span class="hljs-number">0</span>]
+  filename = tfrecord_dir+os.sep+<span class="hljs-string">"dunes3d-"</span> + <span class="hljs-string">"{:02d}-{}.tfrec"</span>.format(shard, shard_size)
+
+  <span class="hljs-keyword">with</span> tf.io.TFRecordWriter(filename) <span class="hljs-keyword">as</span> out_file:
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(shard_size):
+      example = to_seg_tfrecord(image.numpy()[i],label.numpy()[i])
+      out_file.write(example.SerializeToString())
+    print(<span class="hljs-string">"Wrote file {} containing {} records"</span>.format(filename, shard_size))
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="4d-workflow-r-g-b-dem"></a><a href="#4d-workflow-r-g-b-dem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>4D workflow (R, G, B, DEM)</h3>
+<p>JPEGs can be either 1 or 4 bands, not 4 bands. So, we use a png encoder this time, which means we'll have to use a png decoder when we read the data in later for model training</p>
+<pre><code class="hljs css language-python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">recompress_seg_image4d</span><span class="hljs-params">(image, label)</span>:</span>
+
+    image = tf.cast(image, tf.uint8)
+    image = tf.image.encode_png(image)
+
+    label = tf.cast(label, tf.uint8)
+    label = tf.image.encode_png(label)
+    <span class="hljs-keyword">return</span> image, label
+</code></pre>
+<pre><code class="hljs css language-python">flag=<span class="hljs-string">'4d'</span>
+dataset = tf.data.Dataset.list_files(imdir+os.sep+<span class="hljs-string">'*.jpg'</span>, seed=<span class="hljs-number">10000</span>) <span class="hljs-comment"># This also shuffles the images</span>
+dataset = dataset.map(read_seg_image_and_label_dunes)
+dataset = dataset.map(recompress_seg_image4d, num_parallel_calls=AUTO)
+dataset = dataset.batch(shared_size)
+</code></pre>
+<p>Now we can write our 4D dataset out to TFRecords:</p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">for</span> shard, (image, label) <span class="hljs-keyword">in</span> enumerate(dataset):
+  shard_size = image.numpy().shape[<span class="hljs-number">0</span>]
+  filename = tfrecord_dir+os.sep+<span class="hljs-string">"dunes4d-"</span> + <span class="hljs-string">"{:02d}-{}.tfrec"</span>.format(shard, shard_size)
+
+  <span class="hljs-keyword">with</span> tf.io.TFRecordWriter(filename) <span class="hljs-keyword">as</span> out_file:
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(shard_size):
+      example = to_seg_tfrecord(image.numpy()[i],label.numpy()[i])
+      out_file.write(example.SerializeToString())
+    print(<span class="hljs-string">"Wrote file {} containing {} records"</span>.format(filename, shard_size))
+</code></pre>
+</span></div></div><div class="blogSocialSection"></div></div><div class="blog-recent"><a class="button" href="/MLMONDAYS/blog/">Recent Posts</a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#prepare-dataset-for-ml-labelingtraining-using-pythongdal">Prepare dataset for ML labeling/training using python/GDAL</a><ul class="toc-headings"><li><a href="#create-rgb-and-dem-tiles">Create RGB and DEM tiles</a></li><li><a href="#labeling-images">Labeling images</a></li><li><a href="#image-augmentation">Image augmentation</a></li><li><a href="#4d-image-creation">4D image creation</a></li></ul></li><li><a href="#tfrecord-creation">TFRecord creation</a><ul class="toc-headings"><li><a href="#getting-set-up">Getting set up</a></li><li><a href="#3d-workflow-r-g-b">3D workflow (R, G, B)</a></li><li><a href="#4d-workflow-r-g-b-dem">4D workflow (R, G, B, DEM)</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/MLMONDAYS/" class="nav-home"><img src="/MLMONDAYS/img/favicon.ico" alt="&quot;ML Mondays&quot;" width="66" height="58"/></a><div><h5>Internal links</h5><a href="/MLMONDAYS/docs/en/doc1.html">Docs</a><a href="/MLMONDAYS/docs/en/doc2.html">Data</a><a href="/MLMONDAYS/docs/en/doc3.html">Help</a></div><div><h5>Community</h5><a href="https://stackoverflow.com/questions/tagged/" target="_blank" rel="noreferrer noopener">Stack Overflow</a><a href="https://www.usgs.gov/centers/cdi" target="_blank" rel="noreferrer noopener">USGS Community for Data Integration (CDI)</a><a href="https://www.usgs.gov/centers/pcmsc/science/remote-sensing-coastal-change?qt-science_center_objects=0#qt-science_center_objects" target="_blank" rel="noreferrer noopener">USGS Remote Sensing Coastal Change Project</a><a href="https://www.danielbuscombe.com" target="_blank" rel="noreferrer noopener">www.danielbuscombe.com</a></div><div><h5>More</h5><a href="/MLMONDAYS/blog">Blog</a><a href="https://github.com/dbuscombe-usgs/DL-CDI2020">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a><div class="social"><a href="https://twitter.com/magic_walnut" class="twitter-follow-button">Follow @magic_walnut</a></div></div></section><a href="https://mardascience.com/" target="_blank" rel="noreferrer noopener" class="fbOpenSource"><img src="/MLMONDAYS/img/dash-logo-new.png" alt="Marda Science" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Marda Science, LLC</section></footer></div><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script></body></html>

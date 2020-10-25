@@ -2,12 +2,34 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog</id>
     <title>"ML Mondays" Blog</title>
-    <updated>2020-10-14T06:00:00.000Z</updated>
+    <updated>2020-10-24T06:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog"/>
     <subtitle>The best place to stay up-to-date with the latest "ML Mondays" news and events.</subtitle>
     <logo>https://dbuscombe-usgs.github.io/MLMONDAYS/img/favicon.ico</logo>
     <rights>Copyright © 2020 Marda Science, LLC</rights>
+    <entry>
+        <title type="html"><![CDATA[From 2 geotiffs to a trained U-Net: 2D, 3D, and 4D imagery example. Part 2: Models]]></title>
+        <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/24/blog-post.html</id>
+        <link href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/24/blog-post.html"/>
+        <updated>2020-10-24T06:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<h1><a class="anchor" aria-hidden="true" id="segmentation-model"></a><a href="#segmentation-model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>Segmentation Model</h1> <p>In the <a href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/23/blog-post">previous post</a> we prepared two analysis ready datasets, the first consisting of RGB (or 3D) images and associated greyscale labels, and the second consisting of 4D (RGB + DEM) imagery and the same labels. Here I show how to u...</p>]]></summary>
+        <author>
+            <name>Dan Buscombe</name>
+            <uri>http://twitter.com/magic_walnut</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[From 2 geotiffs to a trained U-Net: 2D, 3D, and 4D imagery example. Part 1: Data]]></title>
+        <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/23/blog-post.html</id>
+        <link href="https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/23/blog-post.html"/>
+        <updated>2020-10-23T06:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>In this blog post, we present an end-to-end image segmetation workflow, using a small dataset, consisting of both imagery and digital elevation model (DEM). We are exploring a few goals:</p> <ol> <li>Can we use high-resolution RGB imagery with a U-Net model to s...</li></ol>]]></summary>
+        <author>
+            <name>Dan Buscombe, Jonathan Warrick, Andy Ritchie (Pacific Coastal &amp; Marine Science Center, Santa Cruz)</name>
+            <uri>http://twitter.com/magic_walnut</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Converting makesense.ai JSON labels to label (mask) imagery for an image segmentation project]]></title>
         <id>https://dbuscombe-usgs.github.io/MLMONDAYS/blog/2020/10/14/blog-post.html</id>
