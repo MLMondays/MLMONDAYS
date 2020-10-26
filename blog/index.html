@@ -100,10 +100,10 @@
     label = tf.image.decode_jpeg(example[<span class="hljs-string">'label'</span>], channels=<span class="hljs-number">1</span>)
     label = tf.cast(label, tf.uint8)
 
-    cond = tf.greater(label, tf.ones(tf.shape(label),dtype=tf.uint8)*<span class="hljs-number">8</span>)
+    cond = tf.greater(label, tf.ones(tf.shape(label),dtype=tf.uint8)*<span class="hljs-number">6</span>)<span class="hljs-comment">#8)</span>
     label = tf.where(cond, tf.ones(tf.shape(label),dtype=tf.uint8)*<span class="hljs-number">0</span>, label)
 
-    label = tf.one_hot(tf.cast(label, tf.uint8), <span class="hljs-number">9</span>)
+    label = tf.one_hot(tf.cast(label, tf.uint8), <span class="hljs-number">7</span>) <span class="hljs-comment">#9)</span>
     label = tf.squeeze(label)
 
     <span class="hljs-keyword">return</span> image, label
@@ -156,13 +156,13 @@ L = []
 <p>What unique values do we have in our augmented imagery?</p>
 <pre><code class="hljs css language-python">print(np.round(np.unique(np.hstack(L))))
 
-[<span class="hljs-number">0</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span> <span class="hljs-number">5</span> <span class="hljs-number">6</span> <span class="hljs-number">7</span> <span class="hljs-number">8</span>]
+[<span class="hljs-number">0</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span> <span class="hljs-number">5</span> <span class="hljs-number">6</span>]
 </code></pre>
 <pre><code class="hljs css language-python">val_ds = get_validation_dataset()
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="model-training"></a><a href="#model-training" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model training</h3>
 <p>Define the number of classes (9, including the null class) and target size (the encoded image's size), then create a model. Compile it, define callbacks.</p>
-<pre><code class="hljs css language-python">nclasses=<span class="hljs-number">9</span>
+<pre><code class="hljs css language-python">nclasses=<span class="hljs-number">7</span> <span class="hljs-comment">#9</span>
 TARGET_SIZE = <span class="hljs-number">608</span>
 model = res_unet((TARGET_SIZE, TARGET_SIZE, <span class="hljs-number">3</span>), BATCH_SIZE, <span class="hljs-string">'multiclass'</span>, nclasses)
 <span class="hljs-comment"># model.compile(optimizer = 'adam', loss = tf.keras.losses.CategoricalHinge(), metrics = [mean_iou])</span>
@@ -180,7 +180,13 @@ lr_callback = tf.keras.callbacks.LearningRateScheduler(<span class="hljs-keyword
 callbacks = [model_checkpoint, earlystop, lr_callback]
 </code></pre>
 <p>Fit the model, and make a plot of the model training history (loss and mean IOU).</p>
-<pre><code class="hljs css language-python">history = model.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
+<pre><code class="hljs css language-python">
+<span class="hljs-comment">#warmup</span>
+model.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
+                      validation_data=val_ds, validation_steps=validation_steps,
+                      callbacks=callbacks)
+
+history = model.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
                       validation_data=val_ds, validation_steps=validation_steps,
                       callbacks=callbacks)
 
@@ -196,7 +202,8 @@ K.clear_session()
 
 print(<span class="hljs-string">'loss={loss:0.4f}, Mean IOU={iou:0.4f}'</span>.format(loss=scores[<span class="hljs-number">0</span>], iou=scores[<span class="hljs-number">1</span>]))
 
-loss=<span class="hljs-number">0.5822</span>, Mean IOU=<span class="hljs-number">0.9632</span>
+loss=<span class="hljs-number">0.2917</span>, Mean IOU=<span class="hljs-number">0.9542</span>
+
 </code></pre>
 <pre><code class="hljs css language-python">sample_data_path = os.getcwd()+os.sep+<span class="hljs-string">'data/dunes/images/files'</span>
 test_samples_fig = os.getcwd()+os.sep+<span class="hljs-string">'dunes_sample_16class_est16samples.png'</span>
@@ -210,8 +217,8 @@ sample_label_filenames = sorted(tf.io.gfile.glob(sample_label_data_path+os.sep+<
 cmap = ListedColormap([<span class="hljs-string">"#000000"</span>,
       <span class="hljs-string">"#3366CC"</span>, <span class="hljs-string">"#DC3912"</span>,
       <span class="hljs-string">"#FF9900"</span>, <span class="hljs-string">"#109618"</span>,
-      <span class="hljs-string">"#990099"</span>, <span class="hljs-string">"#0099C6"</span>,
-      <span class="hljs-string">"#DD4477"</span>, <span class="hljs-string">"#66AA00"</span>])
+      <span class="hljs-string">"#990099"</span>, <span class="hljs-string">"#0099C6"</span>])<span class="hljs-comment">#,</span>
+      <span class="hljs-comment"># "#DD4477", "#66AA00"])</span>
 </code></pre>
 <p>We're going to adopt a spatial filter again to remove high-frequency noise associated with jpeg compression and unpacking</p>
 <pre><code class="hljs css language-python"><span class="hljs-keyword">from</span> skimage.filters.rank <span class="hljs-keyword">import</span> median
@@ -258,7 +265,7 @@ plt.figure(figsize=(<span class="hljs-number">24</span>,<span class="hljs-number
     plt.title(name, fontsize=<span class="hljs-number">10</span>)
     plt.imshow(image)
 
-    plt.imshow(label, cmap=cmap, vmin=<span class="hljs-number">0</span>, vmax=<span class="hljs-number">8</span>)
+    plt.imshow(label, cmap=cmap, vmin=<span class="hljs-number">0</span>, vmax=<span class="hljs-number">6</span>) <span class="hljs-comment">#8)</span>
 
     plt.axis(<span class="hljs-string">'off'</span>)
     L.append(label)
@@ -278,7 +285,7 @@ plt.figure(figsize=(<span class="hljs-number">24</span>,<span class="hljs-number
     est_label = model.predict(tf.expand_dims(image, <span class="hljs-number">0</span>) , batch_size=<span class="hljs-number">1</span>).squeeze()
 
     est_labelp = tf.argmax(est_label, axis=<span class="hljs-number">-1</span>)
-    l = tf.one_hot(tf.cast(L[counter], tf.uint8), <span class="hljs-number">9</span>)
+    l = tf.one_hot(tf.cast(L[counter], tf.uint8), <span class="hljs-number">7</span>) <span class="hljs-comment">#9)</span>
     iou = mean_iou_np(np.expand_dims(l.numpy(),<span class="hljs-number">0</span>), np.expand_dims(est_label,<span class="hljs-number">0</span>))
 
     plt.subplot(<span class="hljs-number">4</span>,<span class="hljs-number">4</span>,counter+<span class="hljs-number">1</span>)
@@ -286,7 +293,7 @@ plt.figure(figsize=(<span class="hljs-number">24</span>,<span class="hljs-number
     plt.title(name+<span class="hljs-string">' '</span>+str(iou)[:<span class="hljs-number">5</span>], fontsize=<span class="hljs-number">12</span>)
     plt.imshow(image)
 
-    plt.imshow(est_labelp, alpha=<span class="hljs-number">0.5</span>, cmap=cmap, vmin=<span class="hljs-number">0</span>, vmax=<span class="hljs-number">8</span>)
+    plt.imshow(est_labelp, alpha=<span class="hljs-number">0.5</span>, cmap=cmap, vmin=<span class="hljs-number">0</span>, vmax=<span class="hljs-number">6</span>) <span class="hljs-comment">#8)</span>
 
     plt.axis(<span class="hljs-string">'off'</span>)
     <span class="hljs-keyword">del</span> est_labelp
@@ -299,7 +306,7 @@ plt.close(<span class="hljs-string">'all'</span>)
 </code></pre>
 <p>These are the predictions:</p>
 <p><img src="/MLMONDAYS/blog/assets/dunes_sample_16class_est16samples.png" alt=""></p>
-<p>As you can see, the model does well at delineating the landscape but doesn't always get the class prediction correct. IoU scores are fairly low, 0.2, 0.4. The mean is only 0.26. This, I would confidently predict, is due to a lack of data. Big neural networks like this are designed for more independent examples.</p>
+<p>As you can see, the model does well at delineating the landscape but doesn't always get the class prediction correct. IoU scores are fairly low, 0.2, 0.4. The mean is only 0.3. This, I would confidently predict, is due to a lack of data. Big neural networks like this are designed for more independent examples.</p>
 <p>Next we'll show the workflow and performance of a model trained to predict based on DEM alone</p>
 <h2><a class="anchor" aria-hidden="true" id="dem-imagery"></a><a href="#dem-imagery" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>DEM imagery</h2>
 <h3><a class="anchor" aria-hidden="true" id="model-preparation-1"></a><a href="#model-preparation-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Model preparation</h3>
@@ -319,10 +326,10 @@ plt.close(<span class="hljs-string">'all'</span>)
     label = tf.image.decode_jpeg(example[<span class="hljs-string">'label'</span>], channels=<span class="hljs-number">1</span>)
     label = tf.cast(label, tf.uint8)
 
-    cond = tf.greater(label, tf.ones(tf.shape(label),dtype=tf.uint8)*<span class="hljs-number">8</span>)
+    cond = tf.greater(label, tf.ones(tf.shape(label),dtype=tf.uint8)*<span class="hljs-number">6</span>) <span class="hljs-comment">#8)</span>
     label = tf.where(cond, tf.ones(tf.shape(label),dtype=tf.uint8)*<span class="hljs-number">0</span>, label)
 
-    label = tf.one_hot(tf.cast(label, tf.uint8), <span class="hljs-number">9</span>)
+    label = tf.one_hot(tf.cast(label, tf.uint8), <span class="hljs-number">7</span>) <span class="hljs-comment">#9)</span>
     label = tf.squeeze(label)
 
     <span class="hljs-keyword">return</span> image[:,:,<span class="hljs-number">-1</span>], label
@@ -409,8 +416,7 @@ K.clear_session()
 
 print(<span class="hljs-string">'loss={loss:0.4f}, Mean IOU={iou:0.4f}'</span>.format(loss=scores[<span class="hljs-number">0</span>], iou=scores[<span class="hljs-number">1</span>]))
 
-loss=<span class="hljs-number">1.2285</span>, Mean IOU=<span class="hljs-number">0.8473</span>
-
+loss=<span class="hljs-number">0.5537</span>, Mean IOU=<span class="hljs-number">0.9835</span>
 </code></pre>
 <pre><code class="hljs css language-python">sample_data_path = os.getcwd()+os.sep+<span class="hljs-string">'data/dunes/dems/files'</span>
 
@@ -426,7 +432,7 @@ plt.figure(figsize=(<span class="hljs-number">24</span>,<span class="hljs-number
     est_label = model.predict(tf.expand_dims(image, <span class="hljs-number">0</span>) , batch_size=<span class="hljs-number">1</span>).squeeze()
 
     est_labelp = tf.argmax(est_label, axis=<span class="hljs-number">-1</span>)
-    l = tf.one_hot(tf.cast(L[counter], tf.uint8), <span class="hljs-number">9</span>)
+    l = tf.one_hot(tf.cast(L[counter], tf.uint8), <span class="hljs-number">7</span>) <span class="hljs-comment">#9)</span>
     iou = mean_iou_np(np.expand_dims(l.numpy(),<span class="hljs-number">0</span>), np.expand_dims(est_label,<span class="hljs-number">0</span>))
 
     plt.subplot(<span class="hljs-number">4</span>,<span class="hljs-number">4</span>,counter+<span class="hljs-number">1</span>)
@@ -434,7 +440,7 @@ plt.figure(figsize=(<span class="hljs-number">24</span>,<span class="hljs-number
     plt.title(name+<span class="hljs-string">' '</span>+str(iou)[:<span class="hljs-number">5</span>], fontsize=<span class="hljs-number">8</span>)
     plt.imshow(image, cmap=plt.cm.gray)
 
-    plt.imshow(est_labelp, alpha=<span class="hljs-number">0.5</span>, cmap=cmap, vmin=<span class="hljs-number">0</span>, vmax=<span class="hljs-number">8</span>)
+    plt.imshow(est_labelp, alpha=<span class="hljs-number">0.5</span>, cmap=cmap, vmin=<span class="hljs-number">0</span>, vmax=<span class="hljs-number">6</span>) <span class="hljs-comment">#8)</span>
 
     plt.axis(<span class="hljs-string">'off'</span>)
     <span class="hljs-keyword">del</span> est_labelp
@@ -465,10 +471,10 @@ plt.close(<span class="hljs-string">'all'</span>)
     label = tf.image.decode_jpeg(example[<span class="hljs-string">'label'</span>], channels=<span class="hljs-number">1</span>)
     label = tf.cast(label, tf.uint8)
 
-    cond = tf.greater(label, tf.ones(tf.shape(label),dtype=tf.uint8)*<span class="hljs-number">8</span>)
+    cond = tf.greater(label, tf.ones(tf.shape(label),dtype=tf.uint8)*<span class="hljs-number">6</span>) <span class="hljs-comment">#8)</span>
     label = tf.where(cond, tf.ones(tf.shape(label),dtype=tf.uint8)*<span class="hljs-number">0</span>, label)
 
-    label = tf.one_hot(tf.cast(label, tf.uint8), <span class="hljs-number">9</span>)
+    label = tf.one_hot(tf.cast(label, tf.uint8), <span class="hljs-number">7</span>) <span class="hljs-comment">#9)</span>
     label = tf.squeeze(label)
 
     <span class="hljs-keyword">return</span> image, label
@@ -572,7 +578,12 @@ lr_callback = tf.keras.callbacks.LearningRateScheduler(<span class="hljs-keyword
 callbacks = [model_checkpoint, earlystop, lr_callback]
 </code></pre>
 <p>Fit the model</p>
-<pre><code class="hljs css language-python">history = model.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
+<pre><code class="hljs css language-python"><span class="hljs-comment">#warm start</span>
+model.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
+                      validation_data=val_ds, validation_steps=validation_steps,
+                      callbacks=callbacks)
+
+history = model.fit(train_ds, steps_per_epoch=steps_per_epoch, epochs=MAX_EPOCHS,
                       validation_data=val_ds, validation_steps=validation_steps,
                       callbacks=callbacks)
 
@@ -588,8 +599,9 @@ K.clear_session()
 
 print(<span class="hljs-string">'loss={loss:0.4f}, Mean IOU={iou:0.4f}'</span>.format(loss=scores[<span class="hljs-number">0</span>], iou=scores[<span class="hljs-number">1</span>]))
 
-loss=<span class="hljs-number">0.6370</span>, Mean IOU=<span class="hljs-number">0.9496</span>
+loss=<span class="hljs-number">0.2936</span>, Mean IOU=<span class="hljs-number">0.9748</span>
 </code></pre>
+<p>Almost identical to the 3D example</p>
 <pre><code class="hljs css language-python">sample_data_path = os.getcwd()+os.sep+<span class="hljs-string">'data/dunes/images/files'</span>
 
 test_samples_fig = os.getcwd()+os.sep+<span class="hljs-string">'dunes4d_sample_16class_est16samples.png'</span>
@@ -608,7 +620,7 @@ plt.figure(figsize=(<span class="hljs-number">24</span>,<span class="hljs-number
 
     est_label = model.predict(tf.expand_dims(merged, <span class="hljs-number">0</span>) , batch_size=<span class="hljs-number">1</span>).squeeze()
 
-    l = tf.one_hot(tf.cast(L[counter], tf.uint8), <span class="hljs-number">9</span>)
+    l = tf.one_hot(tf.cast(L[counter], tf.uint8), <span class="hljs-number">7</span>) <span class="hljs-comment">#9)</span>
     iou = mean_iou_np(np.expand_dims(l.numpy(),<span class="hljs-number">0</span>), np.expand_dims(est_label,<span class="hljs-number">0</span>))
 
     est_label = tf.argmax(est_label, axis=<span class="hljs-number">-1</span>)
@@ -618,7 +630,7 @@ plt.figure(figsize=(<span class="hljs-number">24</span>,<span class="hljs-number
     plt.title(name, fontsize=<span class="hljs-number">10</span>)
     plt.imshow(dem, cmap=plt.cm.gray)
 
-    plt.imshow(est_label, alpha=<span class="hljs-number">0.5</span>, cmap=cmap, vmin=<span class="hljs-number">0</span>, vmax=<span class="hljs-number">8</span>)
+    plt.imshow(est_label, alpha=<span class="hljs-number">0.5</span>, cmap=cmap, vmin=<span class="hljs-number">0</span>, vmax=<span class="hljs-number">6</span>) <span class="hljs-comment">#8)</span>
 
     plt.axis(<span class="hljs-string">'off'</span>)
 
@@ -629,7 +641,7 @@ plt.savefig(test_samples_fig,
             dpi=<span class="hljs-number">200</span>, bbox_inches=<span class="hljs-string">'tight'</span>)
 plt.close(<span class="hljs-string">'all'</span>)
 </code></pre>
-<p>Again, only an IOU of 0.26 -  a marginal improvement over the 3D data. But overall I conclude that 1) you can use 2D, 3D, or 4D imagery with a U-Net and get a reasonable segmentation, however 2) I hypothesize that this workflow requires much more data.</p>
+<p>Again, only an IOU of 0.32 -  a marginal improvement over the 3D data. But overall I conclude that 1) you can use 2D, 3D, or 4D imagery with a U-Net and get a reasonable segmentation, however 2) I hypothesize that this workflow requires much more data. I achieved similar results with 8 classes.</p>
 <p><img src="/MLMONDAYS/blog/assets/dunes4d_sample_16class_est16samples.png" alt=""></p>
 </span></div></article></div><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/MLMONDAYS/blog/2020/10/23/blog-post">From 2 geotiffs to a trained U-Net: 2D, 3D, and 4D imagery example. Part 1: Data</a></h1><p class="post-meta">October 23, 2020</p><div class="authorBlock"><p class="post-authorName"><a href="http://twitter.com/magic_walnut" target="_blank" rel="noreferrer noopener">Dan Buscombe, Jonathan Warrick, Andy Ritchie (Pacific Coastal &amp; Marine Science Center, Santa Cruz)</a></p></div></header><article class="post-content"><div><span><p>In this blog post, we present an end-to-end image segmetation workflow, using a small dataset, consisting of both imagery and digital elevation model (DEM). We are exploring a few goals:</p>
 <ol>
@@ -641,7 +653,7 @@ plt.close(<span class="hljs-string">'all'</span>)
 <ol>
 <li>Split large geoTIFF orthomosaics and DEMs into smaller tiles, using python and GDAL, for labelling and segmentation. This will create 9-bit RGB imagery and coincident 8-bit elevation data. Elevation can be negative, and is usually measured on a continuous scale, but we convert elevation values to positive relative discrete values. This relative elevation raster might be combined with the 3D imagery to create 4D raster stacks</li>
 <li>Convert imagery to jpeg format</li>
-<li>Use <code>dash_doodler</code> to semi-supervised image segmentation into 8 classes that relate to dune types and cover, and adjacent land cover.</li>
+<li>Use <code>dash_doodler</code> to semi-supervised image segmentation into 6 classes that relate to dune types and cover, and adjacent land cover.</li>
 <li>The dataset is small - only 16 images, each only 613x613 pixels. Ordinarily for a deep learning project you would need MUCH more data. So, for this example we will use data augmentation to expand the dataset. In your adaptations of this workflow, you shouldn't rely so much on image augmentation and have more labelled examples. We use augmentation to create 64 new examples, each 608x608 pixels, which is the closest size to 613x613 pixels that will work with the U-Net model</li>
 <li>TFRecords are created from the 3D (RGB) imagery and the 2D (greyscale) labels</li>
 <li>TFRecords are created by combining 2D DEMs with 3D RGB imagery, with 2D (greyscale) labels</li>
@@ -721,17 +733,15 @@ os.system(<span class="hljs-string">'rm dem*a00.tif'</span>)
 <p><img src="/MLMONDAYS/blog/assets/orthos.png" alt=""></p>
 <p><img src="/MLMONDAYS/blog/assets/dems.png" alt=""></p>
 <p>We'll use the new protoype &quot;dash doodler&quot; tool that you can find <a href="https://github.com/dbuscombe-usgs/dash_doodler">here</a> for rapidly annotating these 16 images. I could label the RGB imagery in doodler, but it isn't designed to accept more than 3-band imagery, and that format wouldn't be helpful (we'll see later on that RGB+DEM imagery just looks like the RGB image with the high parts whited out - not helpful, generally)</p>
-<p>These are the 8 classes I'm interested in, written to <code>classes.txt</code> :</p>
+<p>These are the 6 classes I'm interested in, written to <code>classes.txt</code> :</p>
 <pre><code class="hljs"><span class="hljs-symbol">water</span>
 <span class="hljs-keyword">marsh
 </span><span class="hljs-keyword">beach
 </span><span class="hljs-symbol">incipient_foredune</span>
-<span class="hljs-symbol">foredune_complex</span>
-<span class="hljs-symbol">veg_dune</span>
-<span class="hljs-keyword">bare_dune
-</span><span class="hljs-symbol">iceplant</span>
+<span class="hljs-symbol">established_dune</span>
+<span class="hljs-symbol">iceplant</span>
 </code></pre>
-<p>Here is a video of me annotating all 16 images:</p>
+<p>Here is a video of me annotating all 16 images (actually this is a previous version where I labeled 8 classes - but you get the idea):</p>
 <p><img src="/MLMONDAYS/blog/assets/doodler_dunes1.gif" alt=""></p>
 <p>Doodler creates RGB and greyscale label images. RGB images are easier to see and evaluate, and they can be used to create TFRecords and segmentation workflows, like we saw in the OBX data example, but ultimately you have to decode the RGB image and that isn't necessarily easy to do. In fact that becomes hard to do when you have many classes and encode your labels as jpegs. The former because you have to use colors that tend to be increasingly similar the more classes you have, and compression and chroma subsampling used in jpeg creation isn't ideal at preserving those color values, so it becomes difficult to decode the labels. Jpeg compression isn't generally a problem for simple greyscale integer label images. That is why doodler creates greyscale images, and greyscale label imagery is what we will use going forward.</p>
 <h3><a class="anchor" aria-hidden="true" id="image-augmentation"></a><a href="#image-augmentation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Image augmentation</h3>
@@ -744,10 +754,10 @@ NX = <span class="hljs-number">608</span>
 <p>Define two <code>ImageDataGenerator</code> instances with the same arguments, one for images and the other for labels (masks)</p>
 <pre><code class="hljs css language-python">data_gen_args = dict(featurewise_center=<span class="hljs-literal">False</span>,
                      featurewise_std_normalization=<span class="hljs-literal">False</span>,
-                     rotation_range=<span class="hljs-number">10</span>,
-                     width_shift_range=<span class="hljs-number">0.2</span>,
-                     height_shift_range=<span class="hljs-number">0.2</span>,
-                     zoom_range=<span class="hljs-number">0.2</span>)
+                     rotation_range=<span class="hljs-number">2</span>,
+                     width_shift_range=<span class="hljs-number">0.1</span>,
+                     height_shift_range=<span class="hljs-number">0.1</span>,
+                     zoom_range=<span class="hljs-number">0.1</span>)
 image_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**data_gen_args)
 dem_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**data_gen_args)
 mask_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**data_gen_args)
@@ -803,7 +813,7 @@ i=<span class="hljs-number">1</span>
         imwrite(imdir+os.sep+<span class="hljs-string">'augimage_000'</span>+str(i)+<span class="hljs-string">'.jpg'</span>, im)
         imwrite(dem_path+os.sep+<span class="hljs-string">'augdem_000'</span>+str(i)+<span class="hljs-string">'.jpg'</span>, dem)
 
-        lab = median(lab[:,:,<span class="hljs-number">0</span>]/<span class="hljs-number">255.0</span>, disk(<span class="hljs-number">5</span>)).astype(np.uint8)
+        lab = median(lab[:,:,<span class="hljs-number">0</span>]/<span class="hljs-number">255.0</span>, disk(<span class="hljs-number">3</span>)).astype(np.uint8)
         lab[im[:,:,<span class="hljs-number">0</span>]==<span class="hljs-number">0</span>]=<span class="hljs-number">0</span>        
         L.append(np.unique(lab.flatten()))
         imwrite(lab_path+os.sep+<span class="hljs-string">'auglabel_000'</span>+str(i)+<span class="hljs-string">'_label.jpg'</span>,(lab).astype(np.uint8))
@@ -826,7 +836,7 @@ i=<span class="hljs-number">1</span>
 
 [<span class="hljs-number">0</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span> <span class="hljs-number">5</span> <span class="hljs-number">6</span> <span class="hljs-number">7</span> <span class="hljs-number">8</span>]
 </code></pre>
-<p>Great. Zero for null, and our 1 through 8 classes</p>
+<p>Great. Zero for null, and our 1 through 6 classes</p>
 <h3><a class="anchor" aria-hidden="true" id="4d-image-creation"></a><a href="#4d-image-creation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>4D image creation</h3>
 <p>Now you have 64 images, dems and labels total. Next, we need to merge the images and dems together into 4-band images</p>
 <p>But how do you make a 4-band image from a 3-band image and a 1-band image?</p>
