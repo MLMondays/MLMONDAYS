@@ -102,7 +102,7 @@ In each section, there are notebooks you can run on Google Colab instead of your
 Colab provide free GPU access to run these computational notebooks. If you save the notebooks to your own Google Drive, you can launch them from there.
 
 
-## Useful Links
+## <a name="links"></a>Useful Links
 
 ### Reference
 
@@ -166,8 +166,7 @@ Colab provide free GPU access to run these computational notebooks. If you save 
 * [Week 4: Classifying embeddings](https://docs.google.com/presentation/d/1FODqB5y1I3HdTZ8IPVSqxNbN4UF7kHWs2xWovsbbSng/edit?usp=sharing)
 
 
-
-## Contents
+## <a name="contents"></a>Contents
 
 The following is organized by week/topic.
 
@@ -444,7 +443,7 @@ There are also `colab` versions of both notebooks that you can save to your own 
 
 
 
-## General workflow using your own data
+## <a name="workflow"></a>General workflow using your own data
 
 ### Part 1: Supervised Image Recognition
 
@@ -573,3 +572,61 @@ There are also `colab` versions of both notebooks that you can save to your own 
   * Use the `loss, accuracy = model.evaluate(get_validation_dataset(), batch_size=BATCH_SIZE, steps=validation_steps)` function using the validation dataset and specifying the number of validation steps
   * Make plots of model outputs, organized in such a way that you can at-a-glance see where the model is failing. Make use of `make_sample_plot` and `p_confmat`, as a starting point, to visualize sample imagery with their model predictions, and a confusion matrix of predicted/true class-correspondences
   * On the test set, play `tf.nn.l2_normalize` (i.e. don't use it on test and/or train embeddings and see if it improves results)
+
+
+## <a name="contribute"></a>Contributing
+Contributions are welcome, and they are greatly appreciated! Credit will always be given.
+
+#### Report Bugs
+
+Report bugs at https://github.com/dbuscombe-usgs/MLMONDAYS/issues.
+
+Please include:
+
+    * Your operating system name and version.
+    * Any details about your local setup that might be helpful in troubleshooting.
+    * Detailed steps to reproduce the bug.
+
+#### Fix Bugs
+
+Look through the GitHub issues for bugs. Anything tagged with "bug" and "help wanted" is open to whoever wants to implement it.
+
+#### Implement Features
+
+Look through the GitHub issues for features. Anything tagged with "enhancement" and "help wanted" is open to whoever wants to implement it.
+
+#### Write Documentation
+
+We could always use more documentation, whether as part of the docs, in docstrings, or using this software in blog posts, articles, etc.
+
+#### Get Started!
+
+Ready to contribute? Here's how to set up for local development.
+
+* Fork the dash_doodler repo on GitHub.
+
+* Clone your fork locally:
+
+`$ git clone git@github.com:your_name_here/MLMONDAYS.git`
+
+Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development:
+
+`$ cd MLMONDAYS/`
+`$ conda env create --file mlmondays.yml`
+`$ conda activate dashdoodler`
+
+Create a branch for local development:
+
+`$ git checkout -b name-of-your-bugfix-or-feature`
+
+Now you can make your changes locally.
+
+Commit your changes and push your branch to GitHub:
+
+`$ git add .`
+
+`$ git commit -m "Your detailed description of your changes."`
+
+`$ git push origin name-of-your-bugfix-or-feature`
+
+Submit a pull request through the GitHub website.
